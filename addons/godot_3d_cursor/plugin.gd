@@ -26,6 +26,7 @@ var command_palette: EditorCommandPalette
 ## The InputEvent holding the MouseButton event to trigger the
 ## set position function of the 3D Cursor
 var input_event_set_3d_cursor: InputEventMouseButton
+## The boolean that ensures the _recover_cursor function is executed once
 var cursor_set: bool = false
 
 
@@ -44,7 +45,9 @@ func _enter_tree() -> void:
 	command_palette = EditorInterface.get_command_palette()
 	# Adding the previously mentioned actions
 	command_palette.add_command("3D Cursor to Origin", "3D Cursor/3D Cursor to Origin", _3d_cursor_to_origin)
-	command_palette.add_command("3D Cursor to selected object", "3D Cursor/3D Cursor to selected object", _3d_cursor_to_selected_object)
+	command_palette.add_command("3D Cursor to Selected Object", "3D Cursor/3D Cursor to Selected Object", _3d_cursor_to_selected_object)
+	# Adding the remove 3D Cursor in Scene action
+	command_palette.add_command("Remove 3D Cursor from Scene", "3D Cursor/Remove 3D Cursor from Scene", _remove_3d_cursor_from_scene)
 
 	editor_viewport = EditorInterface.get_editor_viewport_3d()
 	editor_camera = editor_viewport.get_camera_3d()
@@ -65,7 +68,8 @@ func _exit_tree() -> void:
 
 	# Removing the actions from the [EditorCommandPalette]
 	command_palette.remove_command("3D Cursor/3D Cursor to Origin")
-	command_palette.remove_command("3D Cursor/3D Cursor to selected object")
+	command_palette.remove_command("3D Cursor/3D Cursor to Selected Object")
+	command_palette.remove_command("3D Cursor/Remove 3D Cursor from Scene")
 	command_palette = null
 
 	# Removing the Action from the InputMap
@@ -174,6 +178,23 @@ func _3d_cursor_to_selected_object() -> void:
 	# the 3D Cursor to this position
 	var average_position = position_sum / count
 	cursor.global_position = average_position
+
+
+## Remove every 3D Cursor from the scene including the active one.
+func _remove_3d_cursor_from_scene() -> void:
+	if cursor == null:
+		return
+
+	# Remove the active 3D Cursor
+	cursor.queue_free()
+	cursor = null
+
+	# Get the root nodes children to filter for old instances of [Cursor3D]
+	var root_children = edited_scene_root.get_children()
+	if root_children.any(func(node): return node is Cursor3D):
+		# Iterate over all old instances and free them
+		for old_cursor: Cursor3D in root_children.filter(func(node): return node is Cursor3D):
+			old_cursor.queue_free()
 
 
 ## Check whether the 3D Cursor is set up and ready for use. A hidden 3D Cursor
