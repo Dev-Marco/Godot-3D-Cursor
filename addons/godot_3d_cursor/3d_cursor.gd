@@ -24,6 +24,9 @@ var _scale: float = 0.25
 
 
 func _process(delta: float) -> void:
+	if not Engine.is_editor_hint():
+		hide()
+
 	# No manual user input allowed on rotation and scale;
 	# Reset any user input to 0 or 1 respectively
 	rotation = Vector3.ZERO
