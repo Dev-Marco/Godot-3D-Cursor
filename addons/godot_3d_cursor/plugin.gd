@@ -26,6 +26,7 @@ var command_palette: EditorCommandPalette
 ## The InputEvent holding the MouseButton event to trigger the
 ## set position function of the 3D Cursor
 var input_event_set_3d_cursor: InputEventMouseButton
+var cursor_set: bool = false
 
 
 func _enter_tree() -> void:
@@ -44,7 +45,6 @@ func _enter_tree() -> void:
 	# Adding the previously mentioned actions
 	command_palette.add_command("3D Cursor to Origin", "3D Cursor/3D Cursor to Origin", _3d_cursor_to_origin)
 	command_palette.add_command("3D Cursor to selected object", "3D Cursor/3D Cursor to selected object", _3d_cursor_to_selected_object)
-
 
 	editor_viewport = EditorInterface.get_editor_viewport_3d()
 	editor_camera = editor_viewport.get_camera_3d()
@@ -204,6 +204,9 @@ func _get_selection() -> void:
 		cursor.queue_free()
 		cursor = null
 
+	if not cursor_set:
+		_recover_cursor()
+
 	if temp_camera == null:
 		# Set up the temp_camera to resemble the one of the 3D Viewport
 		_create_temp_camera()
@@ -277,3 +280,18 @@ func _get_editor_camera_transform() -> Transform3D:
 	if editor_camera != null:
 		return editor_camera.get_camera_transform()
 	return Transform3D.IDENTITY
+
+
+## This function recovers any 3D Cursor present in the scene if you reload
+## the project
+func _recover_cursor() -> void:
+	# This boolean ensures this function is run exactly once
+	cursor_set = true
+	# Gets the children of the active scenes root node
+	var root_children = EditorInterface.get_edited_scene_root().get_children()
+	# Checks whether there are any nodes of type [Cursor3D] in the list of
+	# children
+	if root_children.any(func(node): return node is Cursor3D):
+		# Get the first and probably only instance of [Cursor3D] and assign
+		# it to the cursor variable. Now the 3D Cursor is considered recovered
+		cursor = root_children.filter(func(node): return node is Cursor3D).front()
