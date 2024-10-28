@@ -14,6 +14,22 @@ This plugin implements a 3D Cursor in the Godot Engine, inspired by the 3D curso
   - An optional label can be shown alongside the cursor, with an option to scale the label in sync with the cursor or keep it at a fixed size.
   - The cursor can be scaled as needed.
 - **Scene Compatibility**: The cursor can be used across different scenes. When placed in a new scene, it is automatically removed from the previous scene.
+  
+https://github.com/user-attachments/assets/6b1ddf33-e0a3-4c5e-a93a-4a8efd5c4bda
+
+https://github.com/user-attachments/assets/36245057-8e32-407a-a68a-3c64bb359ad7
+
+https://github.com/user-attachments/assets/03a14673-6d34-4e10-a532-e245e8ee1697
+
+https://github.com/user-attachments/assets/791e785b-c6b1-42bc-8d98-925acd4d239c
+
+https://github.com/user-attachments/assets/58bc277c-64dc-4da4-ad82-67fe5f066db5
+
+![Alt Text](screenshots/3DCursor.png "The 3D Cursor")
+![Alt Text](screenshots/CommandPalette.png "Command Palette Actions")
+
+![Alt Text](screenshots/NodeTree.png "Node Tree")
+![Alt Text](screenshots/Inspector.png "Inspector")
 
 ## Installation
 
