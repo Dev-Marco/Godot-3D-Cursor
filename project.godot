@@ -16,7 +16,7 @@ config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/3d_cursor_like_blender/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_3d_cursor/plugin.cfg")
 
 [global_group]
 

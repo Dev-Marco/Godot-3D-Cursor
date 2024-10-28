@@ -38,7 +38,7 @@ func _enter_tree() -> void:
 	get_tree().connect("node_added", _on_node_added)
 
 	# Loading the 3D Cursor scene for later instancing
-	cursor_scene = preload("res://addons/3d_cursor_like_blender/3d_cursor.tscn")
+	cursor_scene = preload("res://addons/godot_3d_cursor/3d_cursor.tscn")
 
 	command_palette = EditorInterface.get_command_palette()
 	# Adding the previously mentioned actions
