@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dfpatff4d5okj"]
 
-[ext_resource type="Texture2D" uid="uid://b50uqk4jtkpb1" path="res://3d_cursor.png" id="1_g2ec1"]
+[ext_resource type="Texture2D" uid="uid://b50uqk4jtkpb1" path="res://addons/godot_3d_cursor/3d_cursor.png" id="2_mnq4l"]
 [ext_resource type="Script" path="res://addons/godot_3d_cursor/3d_cursor.gd" id="2_stis0"]
 
 [node name="3DCursor" type="Marker3D"]
@@ -10,7 +10,7 @@ script = ExtResource("2_stis0")
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
 billboard = 1
 no_depth_test = true
-texture = ExtResource("1_g2ec1")
+texture = ExtResource("2_mnq4l")
 
 [node name="Label3D" type="Label3D" parent="Sprite3D"]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 2.4, 0)
