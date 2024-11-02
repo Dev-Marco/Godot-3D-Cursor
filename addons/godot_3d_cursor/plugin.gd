@@ -15,10 +15,14 @@ var editor_viewport: SubViewport
 var editor_camera: Camera3D
 ## The root node of the active scene
 var edited_scene_root: Node
-## The instance of the 3D Cursor
-var cursor: Cursor3D
 ## The scene used to instantiate the 3D Cursor
 var cursor_scene: PackedScene
+## The instance of the 3D Cursor
+var cursor: Cursor3D
+## The scene used to instantiate the pie menu for the 3D Cursor
+var pie_menu_scene: PackedScene
+## The instance of the pie menu for the 3D Cursor
+var pie_menu: PieMenu
 ## A reference to the [EditorCommandPalette] singleton used to add
 ## some useful actions to the command palette such as '3D Cursor to Origin'
 ## or '3D Cursor to selected object' like in Blender
@@ -26,8 +30,11 @@ var command_palette: EditorCommandPalette
 ## The InputEvent holding the MouseButton event to trigger the
 ## set position function of the 3D Cursor
 var input_event_set_3d_cursor: InputEventMouseButton
+var input_event_show_pie_menu: InputEventKey
 ## The boolean that ensures the _recover_cursor function is executed once
 var cursor_set: bool = false
+## The instance of the Undo Redo class
+var undo_redo: EditorUndoRedoManager
 
 
 func _enter_tree() -> void:
@@ -41,16 +48,32 @@ func _enter_tree() -> void:
 
 	# Loading the 3D Cursor scene for later instancing
 	cursor_scene = preload("res://addons/godot_3d_cursor/3d_cursor.tscn")
+	pie_menu_scene = preload("res://addons/godot_3d_cursor/pie_menu.tscn")
 
 	command_palette = EditorInterface.get_command_palette()
 	# Adding the previously mentioned actions
 	command_palette.add_command("3D Cursor to Origin", "3D Cursor/3D Cursor to Origin", _3d_cursor_to_origin)
-	command_palette.add_command("3D Cursor to Selected Object", "3D Cursor/3D Cursor to Selected Object", _3d_cursor_to_selected_object)
+	command_palette.add_command("3D Cursor to Selected Object", "3D Cursor/3D Cursor to Selected Object", _3d_cursor_to_selected_objects)
+	command_palette.add_command("Selected Object to 3D Cursor", "3D Cursor/Selected Object to 3D Cursor", _selected_object_to_3d_cursor)
 	# Adding the remove 3D Cursor in Scene action
 	command_palette.add_command("Remove 3D Cursor from Scene", "3D Cursor/Remove 3D Cursor from Scene", _remove_3d_cursor_from_scene)
 
 	editor_viewport = EditorInterface.get_editor_viewport_3d()
 	editor_camera = editor_viewport.get_camera_3d()
+
+	# Get the reference to the UndoRedo instance of the editor
+	undo_redo = get_undo_redo()
+
+	# Instantiating the pie menu for the 3D Cursor commands
+	pie_menu = pie_menu_scene.instantiate()
+	pie_menu.hide()
+	# Connecting the button events from the pie menu to the corresponding function
+	pie_menu.connect("cursor_to_origin_pressed", _3d_cursor_to_origin)
+	pie_menu.connect("cursor_to_selected_objects_pressed", _3d_cursor_to_selected_objects)
+	pie_menu.connect("selected_object_to_cursor_pressed", _selected_object_to_3d_cursor)
+	pie_menu.connect("remove_cursor_from_scene_pressed", _remove_3d_cursor_from_scene)
+	add_child(pie_menu)
+
 
 	# Setting up the InputMap so that we can set the 3D Cursor
 	# by Shift + Right Click
@@ -60,22 +83,41 @@ func _enter_tree() -> void:
 		input_event_set_3d_cursor.button_index = MOUSE_BUTTON_RIGHT
 		InputMap.action_add_event("3d_cursor_set_location", input_event_set_3d_cursor)
 
+	# Adding the action that shows the pie menu for the 3D Cursor commands.
+	if not InputMap.has_action("3d_cursor_show_pie_menu"):
+		InputMap.add_action("3d_cursor_show_pie_menu")
+		input_event_show_pie_menu = InputEventKey.new()
+		input_event_show_pie_menu.keycode = KEY_S
+		InputMap.action_add_event("3d_cursor_show_pie_menu", input_event_show_pie_menu)
+
+
 
 func _exit_tree() -> void:
 	# Removing listeners
 	disconnect("main_screen_changed", _on_main_scene_changed)
 	get_tree().disconnect("node_added", _on_node_added)
 
+	pie_menu.disconnect("cursor_to_origin_pressed", _3d_cursor_to_origin)
+	pie_menu.disconnect("cursor_to_selected_objects_pressed", _3d_cursor_to_selected_objects)
+	pie_menu.disconnect("selected_object_to_cursor_pressed", _selected_object_to_3d_cursor)
+	pie_menu.disconnect("remove_cursor_from_scene_pressed", _remove_3d_cursor_from_scene)
+
 	# Removing the actions from the [EditorCommandPalette]
 	command_palette.remove_command("3D Cursor/3D Cursor to Origin")
 	command_palette.remove_command("3D Cursor/3D Cursor to Selected Object")
+	command_palette.remove_command("3D Cursor/Selected Object to 3D Cursor")
 	command_palette.remove_command("3D Cursor/Remove 3D Cursor from Scene")
 	command_palette = null
 
-	# Removing the Action from the InputMap
+	# Removing the '3D Cursor set Location' action from the InputMap
 	if InputMap.has_action("3d_cursor_set_location"):
 		InputMap.action_erase_event("3d_cursor_set_location", input_event_set_3d_cursor)
 		InputMap.erase_action("3d_cursor_set_location")
+
+	# Removing the 'Show Pie Menu' action from the InputMap
+	if InputMap.has_action("3d_cursor_show_pie_menu"):
+		InputMap.action_erase_event("3d_cursor_show_pie_menu", input_event_show_pie_menu)
+		InputMap.erase_action("3d_cursor_show_pie_menu")
 
 	# Removing and freeing the helper objects
 	if temp_camera != null and editor_viewport != null:
@@ -86,6 +128,11 @@ func _exit_tree() -> void:
 	if cursor != null:
 		cursor.queue_free()
 		cursor_scene = null
+
+	# Deleting the pie menu
+	if pie_menu != null:
+		pie_menu.queue_free()
+		pie_menu_scene = null
 
 
 func _process(delta: float) -> void:
@@ -101,6 +148,26 @@ func _process(delta: float) -> void:
 	if Input.is_key_pressed(KEY_SHIFT) and Input.is_action_just_pressed("3d_cursor_set_location"):
 		mouse_position = editor_viewport.get_mouse_position()
 		_get_selection()
+
+	if Input.is_key_pressed(KEY_SHIFT) and Input.is_action_just_pressed("3d_cursor_show_pie_menu"):
+		pie_menu.visible = not pie_menu.visible
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_released():
+		return
+
+	if not pie_menu.visible:
+		return
+
+	if pie_menu.hit_any_button():
+		return
+
+	if event is InputEventKey or event is InputEventMouseButton:
+		pie_menu.hide()
+		# CAUTION: Do not mess with this statement! It can render your editor
+		# responseless. If it happens remove the plugin and restart the engine.
+		editor_viewport.set_input_as_handled()
 
 
 ## Checks whether the current active tab is named '3D'
@@ -132,13 +199,18 @@ func _3d_cursor_to_origin() -> void:
 	if not _cursor_available():
 		return
 
-	cursor.global_position = Vector3.ZERO
+	_create_undo_redo_action(
+		cursor,
+		"global_position",
+		Vector3.ZERO,
+		"Move 3D Cursor to Origin",
+	)
 
 
 ## Set the position of the 3D Cursor to the selected object and if multiple
 ## Nodes are selected to the average of the positions of all selected nodes
 ## that inherit [Node3D]
-func _3d_cursor_to_selected_object() -> void:
+func _3d_cursor_to_selected_objects() -> void:
 	if not _cursor_available():
 		return
 
@@ -154,7 +226,12 @@ func _3d_cursor_to_selected_object() -> void:
 	# If only one Node is selected and it inherits Node3D set the position
 	# of the 3D Cursor to its position
 	if selected_nodes.size() == 1:
-		cursor.global_position = selected_nodes.front().global_position
+		_create_undo_redo_action(
+			cursor,
+			"global_position",
+			selected_nodes.front().global_position,
+			"Move 3D Cursor to selected Object",
+		)
 		return
 
 	# Introduce a count variable to keep track of the amount of valid positions
@@ -177,7 +254,42 @@ func _3d_cursor_to_selected_object() -> void:
 	# Calculate the average position for multiple selected Nodes and set
 	# the 3D Cursor to this position
 	var average_position = position_sum / count
+	_create_undo_redo_action(
+		cursor,
+		"global_position",
+		average_position,
+		"Move 3D Cursor to selected Objects",
+	)
 	cursor.global_position = average_position
+
+
+## Set the position of the selected object that inherits [Node3D]
+## to the position of the 3D Cursor. If multiple nodes are selected the first
+## valid node (i.e. a node that inherits [Node3D]) will be moved to
+## position of the 3D Cursor. This funcitonality is disabled if the cursor
+## is not set or hidden in the scene.
+func _selected_object_to_3d_cursor() -> void:
+	if not _cursor_available():
+		return
+
+	# Get the selection and through this the selected nodes as an Array of Nodes
+	var selection: EditorSelection = EditorInterface.get_selection()
+	var selected_nodes: Array[Node] = selection.get_selected_nodes()
+
+	if selected_nodes.is_empty():
+		return
+	if selected_nodes.size() == 1 and not selected_nodes.front() is Node3D:
+		return
+	selected_nodes = selected_nodes.filter(func(node): return node is Node3D and not node is Cursor3D)
+	if selected_nodes.is_empty():
+		return
+
+	_create_undo_redo_action(
+		selected_nodes.front(),
+		"global_position",
+		cursor.global_position,
+		"Move Object to 3D Cursor"
+	)
 
 
 ## Remove every 3D Cursor from the scene including the active one.
@@ -201,6 +313,9 @@ func _remove_3d_cursor_from_scene() -> void:
 ## should also disable its functionality. Therefore this function yields false
 ## if the cursor is hidden in the scene
 func _cursor_available() -> bool:
+	# CAUTION: Do not mess with this statement! It can render your editor
+	# responseless. If it happens remove the plugin and restart the engine.
+	editor_viewport.set_input_as_handled()
 	if cursor == null:
 		return false
 	if not cursor.is_inside_tree():
@@ -316,3 +431,17 @@ func _recover_cursor() -> void:
 		# Get the first and probably only instance of [Cursor3D] and assign
 		# it to the cursor variable. Now the 3D Cursor is considered recovered
 		cursor = root_children.filter(func(node): return node is Cursor3D).front()
+
+
+func _create_undo_redo_action(node: Node3D, property: String, value: Variant, action_name: String = "") -> void:
+	if node == null or property.is_empty() or value == null:
+		return
+
+	if action_name.is_empty():
+		action_name = "Set " + property + " for " + node.name
+
+	undo_redo.create_action(action_name)
+	var old_value: Vector3 = node.get(property)
+	undo_redo.add_do_property(node, "global_position", value)
+	undo_redo.add_undo_property(node, property, old_value)
+	undo_redo.commit_action()

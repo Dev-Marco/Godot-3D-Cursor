@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://igrlue2n5478"]
+
+[ext_resource type="Script" path="res://addons/godot_3d_cursor/pie_menu.gd" id="1_a7cko"]
+
+[node name="PieMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_a7cko")
+
+[node name="3DCursorToSelectedObjects" type="Button" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = -15.5
+offset_right = 347.0
+offset_bottom = 15.5
+text = "3D Cursor to Selected Object(s)"
+
+[node name="Remove3DCursorFromScene" type="Button" parent="."]
+layout_mode = 0
+offset_top = 84.5
+offset_right = 243.0
+offset_bottom = 115.5
+text = "Remove 3D Cursor from Scene"
+
+[node name="SelectedObjectTo3DCursor" type="Button" parent="."]
+layout_mode = 0
+offset_left = -329.0
+offset_top = -15.5
+offset_right = -100.0
+offset_bottom = 15.5
+text = "Selected Object to 3D Cursor"
+
+[node name="3DCursorToOrigin" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -157.0
+offset_top = -115.5
+offset_bottom = -84.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+text = "3D Cursor to Origin"
+
+[connection signal="pressed" from="3DCursorToSelectedObjects" to="." method="_on_3d_cursor_to_selected_objects_pressed"]
+[connection signal="pressed" from="Remove3DCursorFromScene" to="." method="_on_remove_3d_cursor_from_scene_pressed"]
+[connection signal="pressed" from="SelectedObjectTo3DCursor" to="." method="_on_selected_object_to_3d_cursor_pressed"]
+[connection signal="pressed" from="3DCursorToOrigin" to="." method="_on_3d_cursor_to_origin_pressed"]
