@@ -45,6 +45,7 @@ offset_left = 100.0
 offset_top = -15.5
 offset_right = 347.0
 offset_bottom = 15.5
+mouse_default_cursor_shape = 2
 text = "3D Cursor to Selected Object(s)"
 
 [node name="Remove3DCursorFromScene" type="Button" parent="."]
@@ -53,6 +54,7 @@ offset_left = 30.9017
 offset_top = 79.6054
 offset_right = 273.902
 offset_bottom = 110.606
+mouse_default_cursor_shape = 2
 text = "Remove 3D Cursor from Scene"
 
 [node name="SelectedObjectTo3DCursor" type="Button" parent="."]
@@ -61,6 +63,7 @@ offset_left = -309.902
 offset_top = 43.2785
 offset_right = -80.9017
 offset_bottom = 74.2785
+mouse_default_cursor_shape = 2
 text = "Selected Object to 3D Cursor"
 
 [node name="3DCursorToOrigin" type="Button" parent="."]
@@ -77,6 +80,7 @@ offset_bottom = -43.2785
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 0
+mouse_default_cursor_shape = 2
 text = "3D Cursor to Origin"
 
 [node name="Toggle3DCursor" type="Button" parent="."]
@@ -85,6 +89,7 @@ offset_left = 30.9017
 offset_top = -110.606
 offset_right = 176.902
 offset_bottom = -79.6055
+mouse_default_cursor_shape = 2
 text = "Disable 3D Cursor"
 
 [node name="SelectionRing" type="Sprite2D" parent="."]
