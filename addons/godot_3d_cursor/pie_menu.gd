@@ -86,7 +86,6 @@ func _input(event: InputEvent) -> void:
 		return
 
 	if event.is_released() and _hovered_button == null:
-		print("no button selected")
 		_show_menu_echo = false
 		return
 
@@ -227,4 +226,3 @@ func hit_any_button() -> bool:
 
 func change_toggle_label(visible: bool) -> void:
 	toggle_3d_cursor.text = ("Disable" if visible else "Enable") + " 3D Cursor"
-	print("changing label to: " + toggle_3d_cursor.text)
