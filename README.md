@@ -28,12 +28,29 @@ This plugin implements a 3D cursor in the Godot Engine, inspired by the 3D curso
   - **3D Cursor to Selected Object(s)**: Aligns the cursor with the selected object(s).
   - **Selected Object to 3D Cursor**: Aligns the selected object with the cursor.
   - **Remove 3D Cursor from Scene**: Removes the cursor from the scene and freeing it.
+- **New in v1.3.0:**
+  - **Pie Menu Improvement**: If you keep pressing the shortcut for the Pie Menu (Shift + S) you can hover over the desired command and release the keys to invoke the command similar to Blender.
+  - **Disable/Enable 3D Cursor**: A command was added that allows the user to disable/enable the 3D Cursor within the active scene.
 - **New in v1.2.0:**
   - **The Pie Menu**: This Pie Menu provides the same functionality as the command palette and is easier to reach. (Shift + S)
   - **Undo and Redo**: Undo/Redo works as expected.
 - **Customizing the Cursor**: Adjust the cursor’s size and enable or disable the optional label via the Inspector. You can also configure the label to either scale with the cursor or remain fixed.
 
-## Version 1.2: Pie Menu and Undo-Redo Update
+
+## Version 1.3.0: Pie Menu Improvements
+
+![Pie Menu](screenshots/PieMenu2.png "Pie Menu Selection Indicator")
+
+This update introduces some imrprovements for the pie menu as well as some additional functionality for the 3D Cursor.
+
+  - **Selection Indicator**: A new selection indicator in the pie menu that is pointing towards the mouse (purely aesthetic).
+  - **Pie Menu Background**: A background container was added for the pie menu to increase the overall contrast especially in bright scenes.
+  - **Disable/Enable 3D Cursor Command**: A new command was added in the pie menu as well as the command palette. This command allows to quickly toggle the 3D Cursor of the active scene on or off.
+  - **Undo/Redo for Cursor positioning**: If the user sets the position of the 3D Cursor via Shift + Right Click, this action can now be undone via Ctrl + Z.
+  - **Hover and Release to select**: If the user keeps pressing the shortcut for the pie menu (Shift + S) and then hovers over a button, he can then release the keys to select the hovered command (similar to Blender).
+  - **Tested and working in 4.2**: The plugin is now tested and usable in Godot 4.2 and above. Versions below are unsupported at the moment (Changes to the EditorPlugin class made in 4.2 are required).
+
+## Version 1.2.0: Pie Menu and Undo-Redo Update
 
 ![Pie Menu](screenshots/PieMenu.png "Pie Menu Options")
 
