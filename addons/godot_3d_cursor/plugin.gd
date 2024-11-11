@@ -57,6 +57,7 @@ func _enter_tree() -> void:
 	command_palette.add_command("Selected Object to 3D Cursor", "3D Cursor/Selected Object to 3D Cursor", _selected_object_to_3d_cursor)
 	# Adding the remove 3D Cursor in Scene action
 	command_palette.add_command("Remove 3D Cursor from Scene", "3D Cursor/Remove 3D Cursor from Scene", _remove_3d_cursor_from_scene)
+	command_palette.add_command("Toggle 3D Cursor", "3D Cursor/Toggle 3D Cursor", _toggle_3d_cursor)
 
 	editor_viewport = EditorInterface.get_editor_viewport_3d()
 	editor_camera = editor_viewport.get_camera_3d()
@@ -72,6 +73,7 @@ func _enter_tree() -> void:
 	pie_menu.connect("cursor_to_selected_objects_pressed", _3d_cursor_to_selected_objects)
 	pie_menu.connect("selected_object_to_cursor_pressed", _selected_object_to_3d_cursor)
 	pie_menu.connect("remove_cursor_from_scene_pressed", _remove_3d_cursor_from_scene)
+	pie_menu.connect("toggle_cursor_pressed", _toggle_3d_cursor)
 	add_child(pie_menu)
 
 
@@ -101,12 +103,14 @@ func _exit_tree() -> void:
 	pie_menu.disconnect("cursor_to_selected_objects_pressed", _3d_cursor_to_selected_objects)
 	pie_menu.disconnect("selected_object_to_cursor_pressed", _selected_object_to_3d_cursor)
 	pie_menu.disconnect("remove_cursor_from_scene_pressed", _remove_3d_cursor_from_scene)
+	pie_menu.disconnect("toggle_cursor_pressed", _toggle_3d_cursor)
 
 	# Removing the actions from the [EditorCommandPalette]
 	command_palette.remove_command("3D Cursor/3D Cursor to Origin")
 	command_palette.remove_command("3D Cursor/3D Cursor to Selected Object")
 	command_palette.remove_command("3D Cursor/Selected Object to 3D Cursor")
 	command_palette.remove_command("3D Cursor/Remove 3D Cursor from Scene")
+	command_palette.remove_command("3D Cursor/Toggle 3D Cursor")
 	command_palette = null
 
 	# Removing the '3D Cursor set Location' action from the InputMap
@@ -161,6 +165,9 @@ func _input(event: InputEvent) -> void:
 		return
 
 	if pie_menu.hit_any_button():
+		return
+
+	if event is InputEventKey and event.keycode == KEY_S and event.is_echo():
 		return
 
 	if event is InputEventKey or event is InputEventMouseButton:
@@ -292,6 +299,16 @@ func _selected_object_to_3d_cursor() -> void:
 	)
 
 
+## Disable the 3D Cursor to prevent the node placement at the position of
+## the 3D Cursor.
+func _toggle_3d_cursor() -> void:
+	if not _cursor_available(true):
+		return
+
+	cursor.visible = not cursor.visible
+	pie_menu.change_toggle_label(cursor.visible)
+
+
 ## Remove every 3D Cursor from the scene including the active one.
 func _remove_3d_cursor_from_scene() -> void:
 	if cursor == null:
@@ -312,7 +329,7 @@ func _remove_3d_cursor_from_scene() -> void:
 ## Check whether the 3D Cursor is set up and ready for use. A hidden 3D Cursor
 ## should also disable its functionality. Therefore this function yields false
 ## if the cursor is hidden in the scene
-func _cursor_available() -> bool:
+func _cursor_available(ignore_hidden = false) -> bool:
 	# CAUTION: Do not mess with this statement! It can render your editor
 	# responseless. If it happens remove the plugin and restart the engine.
 	editor_viewport.set_input_as_handled()
@@ -320,6 +337,8 @@ func _cursor_available() -> bool:
 		return false
 	if not cursor.is_inside_tree():
 		return false
+	if ignore_hidden and not cursor.is_visible_in_tree():
+		return true
 	if not cursor.is_visible_in_tree():
 		return false
 	return true
@@ -373,25 +392,38 @@ func _get_selection() -> void:
 	# Perform a raycast with the parameters above and store the result
 	var result = space_state.intersect_ray(PhysicsRayQueryParameters3D.create(ray_origin, ray_end))
 
+	var just_created: bool = false
+
 	# When the cursor is not yet created instantiate it, add it to the scene
 	# and position it at the collision detected by the raycast
 	if cursor == null:
 		cursor = cursor_scene.instantiate()
 		edited_scene_root.add_child(cursor)
 		cursor.owner = edited_scene_root
+		just_created = true
 
 	# If the cursor is not in the node tree at this point it means that the
 	# user probably deleted it. Then add it again
 	if not cursor.is_inside_tree():
 		edited_scene_root.add_child(cursor)
 		cursor.owner = edited_scene_root
+		just_created = true
 
 	# No collision means do nothing
 	if result.is_empty():
 		return
 
-	# Position the 3D Cursor to the position of the collision
-	cursor.global_transform.origin = result.position
+	if just_created:
+		# Position the 3D Cursor to the position of the collision
+		cursor.global_transform.origin = result.position
+		return
+
+	_create_undo_redo_action(
+		cursor,
+		"global_position",
+		result.position,
+		"Set Position for 3D Cursor"
+	)
 
 
 ## This function creates the temp_camera and sets it up so that it resembles
@@ -441,7 +473,7 @@ func _create_undo_redo_action(node: Node3D, property: String, value: Variant, ac
 		action_name = "Set " + property + " for " + node.name
 
 	undo_redo.create_action(action_name)
-	var old_value: Vector3 = node.get(property)
-	undo_redo.add_do_property(node, "global_position", value)
+	var old_value: Variant = node.get(property)
+	undo_redo.add_do_property(node, property, value)
 	undo_redo.add_undo_property(node, property, old_value)
 	undo_redo.commit_action()

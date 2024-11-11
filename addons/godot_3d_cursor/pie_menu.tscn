@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://igrlue2n5478"]
+[gd_scene load_steps=5 format=3 uid="uid://igrlue2n5478"]
 
 [ext_resource type="Script" path="res://addons/godot_3d_cursor/pie_menu.gd" id="1_a7cko"]
+[ext_resource type="Texture2D" uid="uid://dc2u0rq25spfl" path="res://addons/godot_3d_cursor/selection_ring.png" id="2_k5qvu"]
+[ext_resource type="Texture2D" uid="uid://c2sobkppmn52d" path="res://addons/godot_3d_cursor/selection_indicator.png" id="3_euipm"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s5fna"]
+bg_color = Color(0.145098, 0.145098, 0.145098, 0.258824)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
 [node name="PieMenu" type="Control"]
 layout_mode = 3
@@ -15,6 +24,21 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_a7cko")
 
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -347.5
+offset_top = -145.0
+offset_right = 379.5
+offset_bottom = 145.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_s5fna")
+
 [node name="3DCursorToSelectedObjects" type="Button" parent="."]
 layout_mode = 0
 offset_left = 100.0
@@ -25,17 +49,18 @@ text = "3D Cursor to Selected Object(s)"
 
 [node name="Remove3DCursorFromScene" type="Button" parent="."]
 layout_mode = 0
-offset_top = 84.5
-offset_right = 243.0
-offset_bottom = 115.5
+offset_left = 30.9017
+offset_top = 79.6054
+offset_right = 273.902
+offset_bottom = 110.606
 text = "Remove 3D Cursor from Scene"
 
 [node name="SelectedObjectTo3DCursor" type="Button" parent="."]
 layout_mode = 0
-offset_left = -329.0
-offset_top = -15.5
-offset_right = -100.0
-offset_bottom = 15.5
+offset_left = -309.902
+offset_top = 43.2785
+offset_right = -80.9017
+offset_bottom = 74.2785
 text = "Selected Object to 3D Cursor"
 
 [node name="3DCursorToOrigin" type="Button" parent="."]
@@ -45,15 +70,45 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -157.0
-offset_top = -115.5
-offset_bottom = -84.5
+offset_left = -237.902
+offset_top = -74.2785
+offset_right = -80.9017
+offset_bottom = -43.2785
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 0
 text = "3D Cursor to Origin"
 
+[node name="Toggle3DCursor" type="Button" parent="."]
+layout_mode = 0
+offset_left = 30.9017
+offset_top = -110.606
+offset_right = 176.902
+offset_bottom = -79.6055
+text = "Disable 3D Cursor"
+
+[node name="SelectionRing" type="Sprite2D" parent="."]
+modulate = Color(0.148438, 0.148438, 0.148438, 1)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_k5qvu")
+
+[node name="SelectionIndicator" type="Sprite2D" parent="."]
+modulate = Color(0.550781, 0.550781, 0.550781, 1)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_euipm")
+
+[connection signal="mouse_entered" from="3DCursorToSelectedObjects" to="." method="_on_3d_cursor_to_selected_objects_mouse_entered"]
+[connection signal="mouse_exited" from="3DCursorToSelectedObjects" to="." method="_on_3d_cursor_to_selected_objects_mouse_exited"]
 [connection signal="pressed" from="3DCursorToSelectedObjects" to="." method="_on_3d_cursor_to_selected_objects_pressed"]
+[connection signal="mouse_entered" from="Remove3DCursorFromScene" to="." method="_on_remove_3d_cursor_from_scene_mouse_entered"]
+[connection signal="mouse_exited" from="Remove3DCursorFromScene" to="." method="_on_remove_3d_cursor_from_scene_mouse_exited"]
 [connection signal="pressed" from="Remove3DCursorFromScene" to="." method="_on_remove_3d_cursor_from_scene_pressed"]
+[connection signal="mouse_entered" from="SelectedObjectTo3DCursor" to="." method="_on_selected_object_to_3d_cursor_mouse_entered"]
+[connection signal="mouse_exited" from="SelectedObjectTo3DCursor" to="." method="_on_selected_object_to_3d_cursor_mouse_exited"]
 [connection signal="pressed" from="SelectedObjectTo3DCursor" to="." method="_on_selected_object_to_3d_cursor_pressed"]
+[connection signal="mouse_entered" from="3DCursorToOrigin" to="." method="_on_3d_cursor_to_origin_mouse_entered"]
+[connection signal="mouse_exited" from="3DCursorToOrigin" to="." method="_on_3d_cursor_to_origin_mouse_exited"]
 [connection signal="pressed" from="3DCursorToOrigin" to="." method="_on_3d_cursor_to_origin_pressed"]
+[connection signal="mouse_entered" from="Toggle3DCursor" to="." method="_on_toggle_3d_cursor_mouse_entered"]
+[connection signal="mouse_exited" from="Toggle3DCursor" to="." method="_on_toggle_3d_cursor_mouse_exited"]
+[connection signal="pressed" from="Toggle3DCursor" to="." method="_on_toggle_3d_cursor_pressed"]
