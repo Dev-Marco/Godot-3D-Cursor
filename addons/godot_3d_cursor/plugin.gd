@@ -158,6 +158,7 @@ func _process(delta: float) -> void:
 
 	if Input.is_key_pressed(KEY_SHIFT) and Input.is_action_just_pressed("3d_cursor_show_pie_menu"):
 		pie_menu.visible = not pie_menu.visible
+		_set_visibility_toggle_label()
 
 
 func _input(event: InputEvent) -> void:
@@ -309,6 +310,11 @@ func _toggle_3d_cursor() -> void:
 		return
 
 	cursor.visible = not cursor.visible
+	_set_visibility_toggle_label()
+
+
+## Sets the correct label on the toggle visibility button in the pie menu
+func _set_visibility_toggle_label() -> void:
 	pie_menu.change_toggle_label(cursor.visible)
 
 
