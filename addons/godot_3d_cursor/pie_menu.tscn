@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://igrlue2n5478"]
 
-[ext_resource type="Script" path="res://addons/godot_3d_cursor/pie_menu.gd" id="1_a7cko"]
-[ext_resource type="Texture2D" uid="uid://dc2u0rq25spfl" path="res://addons/godot_3d_cursor/selection_ring.png" id="2_k5qvu"]
-[ext_resource type="Texture2D" uid="uid://c2sobkppmn52d" path="res://addons/godot_3d_cursor/selection_indicator.png" id="3_euipm"]
+[ext_resource type="Script" uid="uid://dul31m8bwxlxm" path="res://addons/godot_3d_cursor/pie_menu.gd" id="1_a7cko"]
+[ext_resource type="Texture2D" uid="uid://bhift5k0v2tga" path="res://addons/godot_3d_cursor/selection_ring.png" id="2_k5qvu"]
+[ext_resource type="Texture2D" uid="uid://bngw0w7d1nrgv" path="res://addons/godot_3d_cursor/selection_indicator.png" id="3_euipm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s5fna"]
 bg_color = Color(0.145098, 0.145098, 0.145098, 0.258824)
