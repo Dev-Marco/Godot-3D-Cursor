@@ -152,7 +152,7 @@ func _process(delta: float) -> void:
 	if Input.is_key_pressed(KEY_SHIFT) and Input.is_action_just_pressed("3d_cursor_set_location"):
 		mouse_position = editor_viewport.get_mouse_position()
 		_get_selection()
-		
+
 	if cursor == null or not cursor.is_inside_tree():
 		return
 
