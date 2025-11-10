@@ -393,7 +393,11 @@ func _get_selection() -> void:
 	var ray_length = 1000
 
 	if edited_scene_root == null:
-		edited_scene_root = EditorInterface.get_edited_scene_root()
+		edited_scene_root = _get_first_3d_root_node()
+
+	# Either there is no Node3D in the scene or the plugin failed to locate one
+	if edited_scene_root == null:
+		return
 
 	# The space state where the raycast should be performed in
 	var space_state = edited_scene_root.get_world_3d().direct_space_state
@@ -486,3 +490,73 @@ func _create_undo_redo_action(node: Node3D, property: String, value: Variant, ac
 	undo_redo.add_do_property(node, property, value)
 	undo_redo.add_undo_property(node, property, old_value)
 	undo_redo.commit_action()
+
+
+## This function searches for the first instance of a Node3D in the sceen tree.
+## If the root is not a Node3D, it will search recursively to find the Node3D
+## with the shortest path.
+func _get_first_3d_root_node() -> Node3D:
+	var root: Node = EditorInterface.get_edited_scene_root()
+	if root is Node3D:
+		return root
+	var found_root: Dictionary = _search_for_3d_root(root)
+	if found_root.is_empty():
+		push_warning("The plugin 'Godot 3D Cursor' was unable to locate a Node3D to base its calculation upon in your scene.")
+		return null
+	return found_root["node"]
+
+
+## This function searches recursively for Node3D through every path of nodes.
+## The Node3D with the shortest path is considered the root node and will be
+## returned at the end. It is important to use `Dictionary` as the return type
+## instead of `Dictionary[String, Variant]` because typed Dictionaries were
+## introduced in Godot 4.4 and would exclude older Godot versions that
+## this plugin could support.
+func _search_for_3d_root(current_node: Node, level: int = 0) -> Dictionary:
+	# This Array contains the first Node3Ds of any subpath from current_node
+	var results: Array[Dictionary] = []
+
+	# We iterate through every child of the current_node
+	for child in current_node.get_children():
+		# If a child is already a Node3D we return it in a Dictionary along with its depth (level)
+		if child is Node3D:
+			return { "level": level, "node": child }
+	# As we didn't leave the function early we go through the children again
+	for child in current_node.get_children():
+		# We invoke the method recursively with a deeper level
+		var result: Dictionary = _search_for_3d_root(child, level + 1)
+
+		# If there are Node3Ds found, we return them
+		if not result.is_empty():
+			results.append(result)
+
+	# If we haven't found any Node3Ds, we return an empty Dictionary
+	if results.is_empty():
+		return {}
+
+	# If we found exactly one Node3D we will return exactly this one
+	if results.size() == 1:
+		return results[0]
+
+	# This value represents the index of the Node3D in results with the shortest
+	# path (level). Initialized with -1 to show that nothing is found yet.
+	var lowest_index: int = -1
+	# This value represents the level this Node3D is found on. The bigger the
+	# deeper it is i. e. more nested in the tree. We want the lowest level.
+	# If two have the same level the first one is earlier in the tree, which we
+	# want. Initialized with -1 to show that nothing is found yet.
+	var lowest_level: int = -1
+
+	# We go through the results with a range to keep track of the current index.
+	for i in range(results.size()):
+		# If the value of level from the result is lower than the lowest_level
+		# this result is the better option so far.
+		if results[i]["level"] < lowest_level or lowest_level == -1:
+			# Reassign the lowest_index as it is the better choice.
+			lowest_index = i
+			# Reassign the lowest_level as it is the better choice.
+			lowest_level = results[i]["level"]
+
+	# At the end we return the Node3D with the shortest path in this instance
+	# of the recursive function call.
+	return results[lowest_index]
