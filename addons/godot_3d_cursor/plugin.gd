@@ -38,6 +38,16 @@ var undo_redo: EditorUndoRedoManager
 
 
 func _enter_tree() -> void:
+	if ProjectSettings.get_setting("physics/3d/run_on_separate_thread", false):
+		push_warning(
+			"At this point in time the plugin 'Godot 3D Cursor' does not support the 'Run on Separate Thread' project setting (physics/3d/run_on_separate_thread)."
+			+ "\n\t\tTo use this plugin:"
+			+ "\n\t\t1.\tDeactivate the project setting"
+			+ "\n\t\t2.\tDeactivate the plugin"
+			+ "\n\t\t3.\tRestart Godot."
+			+ "\n\t\t4.\tEnable the plugin again."
+		)
+
 	# Register the switching of tabs in the editor. We only want the
 	# 3D Cursor functionality within the 3D tab
 	connect("main_screen_changed", _on_main_scene_changed)
@@ -429,6 +439,10 @@ func _get_selection() -> void:
 	if just_created:
 		# Position the 3D Cursor to the position of the collision
 		cursor.global_transform.origin = result.position
+		return
+
+	# If the cursor is hidden don't set its position
+	if not _cursor_available():
 		return
 
 	_create_undo_redo_action(
