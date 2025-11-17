@@ -16,7 +16,7 @@ mono_crash.*.json
 
 
 *.svg
-*.import
+# *.import
 *.tmp
 dummy_data/
 test_ui/
