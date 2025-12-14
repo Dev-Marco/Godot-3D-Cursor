@@ -6,9 +6,6 @@ extends EditorPlugin
 var is_in_3d_tab: bool = false
 ## The position of the mouse used to raycast into the 3D world
 var mouse_position: Vector2
-## The camera used for raycasting to calculate the position
-## for the 3D cursor
-var temp_camera: Camera3D
 ## The Editor Viewport used to get the mouse position
 var editor_viewport: SubViewport
 ## The camera that displays what the user sees in the 3D editor tab
@@ -50,7 +47,7 @@ func _enter_tree() -> void:
 
 	# Register the switching of tabs in the editor. We only want the
 	# 3D Cursor functionality within the 3D tab
-	connect("main_screen_changed", _on_main_scene_changed)
+	connect("main_screen_changed", _on_main_screen_changed)
 	# We want to place newly added Nodes that inherit [Node3D] at
 	# the location of the 3D Cursor. Therefore we listen to the
 	# node_added event
@@ -106,7 +103,7 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	# Removing listeners
-	disconnect("main_screen_changed", _on_main_scene_changed)
+	disconnect("main_screen_changed", _on_main_screen_changed)
 	get_tree().disconnect("node_added", _on_node_added)
 
 	pie_menu.disconnect("cursor_to_origin_pressed", _3d_cursor_to_origin)
@@ -132,11 +129,6 @@ func _exit_tree() -> void:
 	if InputMap.has_action("3d_cursor_show_pie_menu"):
 		InputMap.action_erase_event("3d_cursor_show_pie_menu", input_event_show_pie_menu)
 		InputMap.erase_action("3d_cursor_show_pie_menu")
-
-	# Removing and freeing the helper objects
-	if temp_camera != null and editor_viewport != null:
-		editor_viewport.remove_child(temp_camera)
-		temp_camera.queue_free()
 
 	# Deleting the 3D Cursor
 	if cursor != null:
@@ -193,7 +185,7 @@ func _input(event: InputEvent) -> void:
 
 ## Checks whether the current active tab is named '3D'
 ## returns true if so, otherwise false
-func _on_main_scene_changed(screen_name: String) -> void:
+func _on_main_screen_changed(screen_name: String) -> void:
 	is_in_3d_tab = screen_name == "3D"
 
 
@@ -381,16 +373,8 @@ func _get_selection() -> void:
 	if not cursor_set:
 		_recover_cursor()
 
-	if temp_camera == null:
-		# Set up the temp_camera to resemble the one of the 3D Viewport
-		_create_temp_camera()
-
 	# Get the transform of the camera from the 3D Viewport
 	var editor_camera_transform = _get_editor_camera_transform()
-
-	# Position the temp_camera so that it is exactly where the 3D Viewport
-	# camera is located
-	temp_camera.global_transform = editor_camera_transform
 
 	# if the editor_camera_transform is Transform3D.IDENTITY that means
 	# that for some reason the editor_camera is null.
@@ -398,9 +382,10 @@ func _get_selection() -> void:
 		return
 
 	# Set up the raycast parameters
-	var ray_origin = temp_camera.project_ray_origin(mouse_position)
-	var ray_end = temp_camera.project_position(mouse_position, 1000)
 	var ray_length = 1000
+	var ray_origin = editor_camera.project_ray_origin(mouse_position)
+	var dir = editor_camera.project_ray_normal(mouse_position)
+	var ray_end = ray_origin + dir * (editor_camera.far if editor_camera.far > 0.0 else ray_length)
 
 	if edited_scene_root == null:
 		edited_scene_root = _get_first_3d_root_node()
@@ -451,23 +436,6 @@ func _get_selection() -> void:
 		result.position,
 		"Set Position for 3D Cursor"
 	)
-
-
-## This function creates the temp_camera and sets it up so that it resembles
-## the camera from 3D Tab itself
-func _create_temp_camera() -> void:
-	temp_camera = Camera3D.new()
-	temp_camera.hide()
-
-	# Add the temp_camera to the editor_viewport so that we can perform raycasts
-	# later on
-	editor_viewport.add_child(temp_camera)
-
-	# These are the most important settings the temp_camera needs to copy
-	# from the editor_camera so that their image is congruent
-	temp_camera.fov = editor_camera.fov
-	temp_camera.near = editor_camera.near
-	temp_camera.far = editor_camera.far
 
 
 ## This function returns the transform of the camera from the 3D Editor itself
