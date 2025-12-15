@@ -32,6 +32,8 @@ var input_event_show_pie_menu: InputEventKey
 var cursor_set: bool = false
 ## The instance of the Undo Redo class
 var undo_redo: EditorUndoRedoManager
+var physicsless_collision_finder: PhysicslessCollisionFinder
+var physics_collision_finder: PhysicsCollisionFinder
 
 
 func _enter_tree() -> void:
@@ -99,15 +101,9 @@ func _input(event: InputEvent) -> void:
 
 ## This function sets up all warnings connected to the 3D Cursor.
 func _provide_3d_cursor_warnings():
-	if ProjectSettings.get_setting("physics/3d/run_on_separate_thread", false):
-		push_warning(
-			"At this point in time the plugin 'Godot 3D Cursor' does not support the 'Run on Separate Thread' project setting (physics/3d/run_on_separate_thread)."
-			+ "\n\t\tTo use this plugin:"
-			+ "\n\t\t1.\tDeactivate the project setting"
-			+ "\n\t\t2.\tDeactivate the plugin"
-			+ "\n\t\t3.\tRestart Godot."
-			+ "\n\t\t4.\tEnable the plugin again."
-		)
+	#if condition_to_warn_about:
+		#push_warning("Warning to push to the user in the output")
+	pass
 
 
 ## This function sets up all events necessary for the 3D Cursor to work correctly.
@@ -146,6 +142,8 @@ func _setup_necessary_editor_components():
 
 	# Get the reference to the UndoRedo instance of the editor
 	undo_redo = get_undo_redo()
+	physicsless_collision_finder = PhysicslessCollisionFinder.new()
+	physics_collision_finder = PhysicsCollisionFinder.new()
 
 
 ## This function sets up the pie menu for the 3D Cursor.
@@ -448,10 +446,14 @@ func _get_click_location() -> void:
 		return
 
 	# The space state where the raycast should be performed in
-	var space_state = edited_scene_root.get_world_3d().direct_space_state
+	var space_state
 
 	# Perform a raycast with the parameters above and store the result
-	var result = space_state.intersect_ray(PhysicsRayQueryParameters3D.create(from, to))
+	var result
+	if ProjectSettings.get_setting("physics/3d/run_on_separate_thread", false):
+		result = physics_collision_finder.get_closest_collision(from, to, edited_scene_root.get_world_3d())
+
+	var hit: Dictionary = await physicsless_collision_finder.get_closest_collision(from, to, editor_camera)
 
 	var just_created: bool = false
 
@@ -471,12 +473,16 @@ func _get_click_location() -> void:
 		just_created = true
 
 	# No collision means do nothing
-	if result.is_empty():
+	#if result.is_empty():
+		#return
+
+	if hit.is_empty():
 		return
 
 	if just_created:
 		# Position the 3D Cursor to the position of the collision
-		cursor.global_transform.origin = result.position
+		#cursor.global_transform.origin = result.position
+		cursor.global_transform.origin = hit["position"]
 		return
 
 	# If the cursor is hidden don't set its position
@@ -486,7 +492,8 @@ func _get_click_location() -> void:
 	_create_undo_redo_action(
 		cursor,
 		"global_position",
-		result.position,
+		#result.position,
+		hit["position"],
 		"Set Position for 3D Cursor"
 	)
 
