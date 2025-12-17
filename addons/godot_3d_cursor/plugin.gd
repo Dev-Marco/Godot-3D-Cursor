@@ -1,5 +1,32 @@
 @tool
+
+class_name Plugin3DCursor
 extends EditorPlugin
+## This class implements a major part of the [i]Godot 3D Cursor[/i] plugin.
+##
+## It uses the [Cursor3D] class to visually display the [i]3D Cursor[/i] within a scene.
+## When installed and enabled, users can place a [i]3D Cursor[/i] by pressing
+## [code]Shift + Right Click[/code] on any mesh-based object in the scene.
+## Currently, the only officially supported third-party plugin is [Terrain3D]
+## by [i]TokisanGames[/i]. For additional third-party support, please refer to the
+## [url=https://github.com/Dev-Marco/Godot-3D-Cursor]GitHub repository[/url] and open an issue.
+
+## This Enum holds the values for the different modes of raycasting.
+enum RaycastMode {
+	## [br](Legacy) This mode uses physics-based raycasting, so the cursor can only be placed
+	## on objects with a collider.[br][br]
+	## The setting [code]physics/3d/run_on_separate_thread[/code] must be disabled for this
+	## mode to function correctly.[br][br]
+	## The [Terrain3D] plugin by [i]TokisanGames[/i] is partially supported. To enable
+	## compatibility, the [param Collision Mode] of the [Terrain3D] instance must be set
+	## to either [param Dynamic / Editor] or [param Full / Editor] in the inspector.[br]
+	PHYSICS,
+	## [br]This mode uses mesh-based raycasting, allowing the cursor to be placed on objects
+	## with a mesh or on [CSGShape3D] objects that can bake a mesh.[br][br] In addition, this mode
+	## supports the [Terrain3DExtension] for the [Terrain3D] plugin by [i]TokisanGames[/i].
+	## [b]Note[/b] that [Terrain3D] instances must be assigned to the [i]"Terrain3D"[/i] group.
+	PHYSICSLESS,
+}
 
 
 ## This variable indicates whether the active tab is 3D
@@ -32,8 +59,12 @@ var input_event_show_pie_menu: InputEventKey
 var cursor_set: bool = false
 ## The instance of the Undo Redo class
 var undo_redo: EditorUndoRedoManager
+## The collision finder object that searches for collisions using a mesh-based system.
 var physicsless_collision_finder: PhysicslessCollisionFinder
+## The collision finder object that searches for collisions using a physics-based system. (Legacy)
 var physics_collision_finder: PhysicsCollisionFinder
+## The currently active [enum RaycastMode] for the 3D Cursor
+var raycast_mode: RaycastMode = RaycastMode.PHYSICSLESS
 
 
 func _enter_tree() -> void:
@@ -180,12 +211,14 @@ func _setup_input_map_actions():
 
 ### --------------------------  Remove Functions  -------------------------- ###
 
+## This method disconnects the editor events.
 func _disconnect_editor_events():
 	# Removing listeners
 	disconnect("main_screen_changed", _on_main_screen_changed)
 	get_tree().disconnect("node_added", _on_node_added)
 
 
+## This method disconnects the events from the pie menu buttons.
 func _disconnect_pie_menu_events():
 	pie_menu.disconnect("cursor_to_origin_pressed", _3d_cursor_to_origin)
 	pie_menu.disconnect("cursor_to_selected_objects_pressed", _3d_cursor_to_selected_objects)
@@ -194,6 +227,8 @@ func _disconnect_pie_menu_events():
 	pie_menu.disconnect("toggle_cursor_pressed", _toggle_3d_cursor)
 
 
+## This method removes the actions from the command palette. It'll be invoked by
+## [code]_exit_tree[/code] which in turn will indirectly be invokes by disabling the plugin.
 func _remove_command_palette_actions():
 	# Removing the actions from the [EditorCommandPalette]
 	command_palette.remove_command("3D Cursor/3D Cursor to Origin")
@@ -204,6 +239,8 @@ func _remove_command_palette_actions():
 	command_palette = null
 
 
+## This method removes the input map actions. It'll be invoked by [code]_exit_tree[/code]
+## which in turn will indirectly be invokes by disabling the plugin.
 func _remove_input_map_actions():
 	# Removing the '3D Cursor set Location' action from the InputMap
 	if InputMap.has_action("3d_cursor_set_location"):
@@ -216,6 +253,7 @@ func _remove_input_map_actions():
 		InputMap.erase_action("3d_cursor_show_pie_menu")
 
 
+## This method will free the cursor and remove the reference to the [Cursor3D] scene.
 func _free_3d_cursor():
 	# Deleting the 3D Cursor
 	if cursor != null:
@@ -223,6 +261,7 @@ func _free_3d_cursor():
 		cursor_scene = null
 
 
+## This method will free the pie menu and remove the reference to the [PieMenu] scene.
 func _free_pie_menu():
 	# Deleting the pie menu
 	if pie_menu != null:
@@ -432,12 +471,7 @@ func _get_click_location() -> void:
 	if editor_camera_transform == Transform3D.IDENTITY:
 		return
 
-	# Set up the raycast parameters
-	var ray_length = 1000
-	var from = editor_camera.project_ray_origin(mouse_position)
-	var dir = editor_camera.project_ray_normal(mouse_position)
-	var to = from + dir * (editor_camera.far if editor_camera.far > 0.0 else ray_length)
-
+	# If there is no scene root set, try to get one
 	if edited_scene_root == null:
 		edited_scene_root = _get_first_3d_root_node()
 
@@ -447,14 +481,25 @@ func _get_click_location() -> void:
 
 	# The space state where the raycast should be performed in
 	var space_state
+		# Set up the raycast parameters
+	var ray_length = 1000
+	# The position from where to start raycasting
+	var from = editor_camera.project_ray_origin(mouse_position)
+	# The direction in which to raycast
+	var dir = editor_camera.project_ray_normal(mouse_position)
+	# The point to raycast to (dependent of ray_length and camera mode i.e. perspective/orthogonal)
+	var to = from + dir * (editor_camera.far if editor_camera.far > 0.0 else ray_length)
+	# The variable to store the raycast hit
+	var hit: Dictionary
 
-	# Perform a raycast with the parameters above and store the result
-	var result
-	if ProjectSettings.get_setting("physics/3d/run_on_separate_thread", false):
-		result = physics_collision_finder.get_closest_collision(from, to, edited_scene_root.get_world_3d())
+	# Choose the collision finder depending on the raycast mode
+	# Then perform a raycast with the parameters above and store the result in hit
+	if raycast_mode == RaycastMode.PHYSICSLESS:
+		hit = await physicsless_collision_finder.get_closest_collision(from, to, editor_camera)
+	elif raycast_mode == RaycastMode.PHYSICS:
+		hit = physics_collision_finder.get_closest_collision(from, to, edited_scene_root.get_world_3d())
 
-	var hit: Dictionary = await physicsless_collision_finder.get_closest_collision(from, to, editor_camera)
-
+	# This bool indicates whether the 3D cursor is just created
 	var just_created: bool = false
 
 	# When the cursor is not yet created instantiate it, add it to the scene
@@ -473,12 +518,10 @@ func _get_click_location() -> void:
 		just_created = true
 
 	# No collision means do nothing
-	#if result.is_empty():
-		#return
-
 	if hit.is_empty():
 		return
 
+	# If the cursor was just created
 	if just_created:
 		# Position the 3D Cursor to the position of the collision
 		#cursor.global_transform.origin = result.position
@@ -489,6 +532,7 @@ func _get_click_location() -> void:
 	if not _cursor_available():
 		return
 
+	# Make the action undoable/redoable
 	_create_undo_redo_action(
 		cursor,
 		"global_position",
