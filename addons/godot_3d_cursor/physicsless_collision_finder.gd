@@ -118,16 +118,17 @@ func get_closest_collision(from: Vector3, to: Vector3, editor_camera: Camera3D) 
 
 	var best_hit: Dictionary = {}
 	var best_dist: float = INF
-
 	for candidate in candidates:
 		var hit: Dictionary
 		if candidate is MeshInstance3D:
 			hit = _hit_mesh_segment(candidate, from, to)
 		elif candidate is CSGShape3D:
 			hit = await _hit_csg_segment(candidate, from, to)
-		else:
-			continue
-
+		if ClassDB.class_exists("Terrain3D"):
+			hit = Terrain3DExtension.get_closest_hit_point(
+				candidate.get_tree().get_nodes_in_group("Terrain3D"),
+				from, to
+			)
 		if hit.is_empty():
 			continue
 		var distance: float = from.distance_to(hit["position"])
