@@ -132,9 +132,13 @@ func _input(event: InputEvent) -> void:
 
 ## This function sets up all warnings connected to the 3D Cursor.
 func _provide_3d_cursor_warnings():
-	#if condition_to_warn_about:
-		#push_warning("Warning to push to the user in the output")
-	pass
+	if not _check_compatibility():
+		push_warning(
+			"Godot 3D Cursor 1.4.0 requires features introduced in Godot 4.5. "
+		 	+ "The plugin has reverted to legacy physics-based raycasting due to "
+			+ "missing engine functionality.\n\n"
+			+ "Upgrade to Godot 4.5 or newer to enable the full feature set."
+		)
 
 
 ## This function sets up all events necessary for the 3D Cursor to work correctly.
@@ -648,3 +652,13 @@ func _search_for_3d_root(current_node: Node, level: int = 0) -> Dictionary:
 	# At the end we return the Node3D with the shortest path in this instance
 	# of the recursive function call.
 	return results[lowest_index]
+
+
+func  _check_compatibility() -> bool:
+	if not CSGBox3D.new().has_method("bake_static_mesh"):
+		raycast_mode = RaycastMode.PHYSICS
+		return false
+	if not TriangleMesh.new().has_method("create_from_faces"):
+		raycast_mode = RaycastMode.PHYSICS
+		return false
+	return true
