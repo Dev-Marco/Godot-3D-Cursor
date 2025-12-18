@@ -1,5 +1,4 @@
 @tool
-
 class_name Plugin3DCursor
 extends EditorPlugin
 ## This class implements a major part of the [i]Godot 3D Cursor[/i] plugin.
@@ -28,6 +27,9 @@ enum RaycastMode {
 	PHYSICSLESS,
 }
 
+## The name of the group that every instance of [Cursor3D] is part of. Helps when dealing with
+## duplicates of the cursor.
+const CURSOR_GROUP = "Plugin3DCursor"
 
 ## This variable indicates whether the active tab is 3D
 var is_in_3d_tab: bool = false
@@ -416,11 +418,9 @@ func _set_visibility_toggle_label() -> void:
 
 ## Remove every 3D Cursor from the scene including the active one.
 func _remove_3d_cursor_from_scene() -> void:
-	if cursor == null:
-		return
-
-	# Remove the active 3D Cursor
-	cursor.queue_free()
+	# Get all cursors within the scene and remove them
+	for c: Cursor3D in _get_all_cursors():
+		c.queue_free()
 	cursor = null
 
 	# Get the root nodes children to filter for old instances of [Cursor3D]
@@ -453,6 +453,7 @@ func _cursor_available(ignore_hidden = false) -> bool:
 ## to set the position of the 3D Cursor. This means that it is necessary for
 ## the clicked on objects to have a collider the raycast can hit
 func _get_click_location() -> void:
+	print_debug(_get_all_cursors().size())
 	# If the scene is switched stop
 	if edited_scene_root != null and edited_scene_root != EditorInterface.get_edited_scene_root() and cursor != null:
 		# Reset scene root, viewport and camera for new scene
@@ -654,6 +655,8 @@ func _search_for_3d_root(current_node: Node, level: int = 0) -> Dictionary:
 	return results[lowest_index]
 
 
+## Checks the current Godot version for the abscence of methods required for
+## [i]Godot 3D Cursor[/i] v1.4.0+.
 func  _check_compatibility() -> bool:
 	if not CSGBox3D.new().has_method("bake_static_mesh"):
 		raycast_mode = RaycastMode.PHYSICS
@@ -662,3 +665,10 @@ func  _check_compatibility() -> bool:
 		raycast_mode = RaycastMode.PHYSICS
 		return false
 	return true
+
+
+## Returns all instances of a [Cursor3D] instance within a scene in an [code]Array[Cursor3D][/code]
+func _get_all_cursors() -> Array[Cursor3D]:
+	var out: Array[Cursor3D]
+	out.assign(get_tree().get_nodes_in_group(CURSOR_GROUP))
+	return out
