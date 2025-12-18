@@ -453,7 +453,6 @@ func _cursor_available(ignore_hidden = false) -> bool:
 ## to set the position of the 3D Cursor. This means that it is necessary for
 ## the clicked on objects to have a collider the raycast can hit
 func _get_click_location() -> void:
-	print_debug(_get_all_cursors().size())
 	# If the scene is switched stop
 	if edited_scene_root != null and edited_scene_root != EditorInterface.get_edited_scene_root() and cursor != null:
 		# Reset scene root, viewport and camera for new scene
