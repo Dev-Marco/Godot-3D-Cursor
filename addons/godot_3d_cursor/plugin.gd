@@ -155,8 +155,8 @@ func _setup_editor_events():
 ## This function preloads every scene for the 3D Cursor.
 func _preload_3d_cursor_components():
 	# Loading the 3D Cursor scene for later instancing
-	cursor_scene = preload("res://addons/godot_3d_cursor/3d_cursor.tscn")
-	pie_menu_scene = preload("res://addons/godot_3d_cursor/pie_menu.tscn")
+	cursor_scene = preload("uid://dfpatff4d5okj")
+	pie_menu_scene = preload("uid://igrlue2n5478")
 
 
 ## This function sets up every 3D Cursor action for the command palette.
