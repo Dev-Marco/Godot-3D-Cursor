@@ -3,21 +3,23 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dc2u0rq25spfl"
-path="res://.godot/imported/selection_ring.png-dfbd0ecaedb53139c0c4b6c57699fb8f.ctex"
+path="res://.godot/imported/selection_ring.png-d9839d4b992901860e3f2189c7e89296.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/godot_3d_cursor/selection_ring.png"
-dest_files=["res://.godot/imported/selection_ring.png-dfbd0ecaedb53139c0c4b6c57699fb8f.ctex"]
+source_file="res://addons/godot_3d_cursor/assets/selection_ring.png"
+dest_files=["res://.godot/imported/selection_ring.png-d9839d4b992901860e3f2189c7e89296.ctex"]
 
 [params]
 
 compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
+compress/uastc_level=0
+compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
@@ -25,6 +27,10 @@ mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
+process/channel_remap/red=0
+process/channel_remap/green=1
+process/channel_remap/blue=2
+process/channel_remap/alpha=3
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
