@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dt04kfvdc21nb" path="res://addons/godot_3d_cursor/scripts/3d_cursor.gd" id="1_22sio"]
 [ext_resource type="Texture2D" uid="uid://b50uqk4jtkpb1" path="res://addons/godot_3d_cursor/assets/3d_cursor.png" id="2_wdtam"]
 
-[node name="3DCursor" type="Marker3D"]
+[node name="3DCursor" type="Marker3D" groups=["Plugin3DCursor"]]
 script = ExtResource("1_22sio")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
