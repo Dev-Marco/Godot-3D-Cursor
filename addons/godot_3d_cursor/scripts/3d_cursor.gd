@@ -13,6 +13,8 @@ extends Marker3D
 ## of the 3D Cursor.
 @export var scale_affect_label: bool = false
 
+var plugin_context: Plugin3DCursor
+
 # The standard scale of the 3D Cursor. This size is chosen because of the
 # size of the .png used for the cursor. Please don't touch (private var)
 var _scale: float = 0.25
@@ -42,3 +44,15 @@ func _process(delta: float) -> void:
 	else:
 		var label_scale = 1 / (_scale * size_scale)
 		label_3d.scale = Vector3(label_scale, label_scale, label_scale)
+
+
+func _exit_tree() -> void:
+	if plugin_context == null:
+		return
+	if not plugin_context._is_in_3d_tab():
+		return
+	var root = EditorInterface.get_edited_scene_root()
+	if self != root and not root.is_ancestor_of(self):
+		return
+	plugin_context.cursor_deleted.emit(name)
+	plugin_context.unset_cursor()

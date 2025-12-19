@@ -10,6 +10,11 @@ extends EditorPlugin
 ## by [i]TokisanGames[/i]. For additional third-party support, please refer to the
 ## [url=https://github.com/Dev-Marco/Godot-3D-Cursor]GitHub repository[/url] and open an issue.
 
+## Emitted whenever a cursor is being deleted.
+signal cursor_deleted(name: String)
+## Emitted when a cursor is created or recovered.
+signal cursor_created(cursor: Cursor3D)
+
 ## This Enum holds the values for the different modes of raycasting.
 enum RaycastMode {
 	## [br](Legacy) This mode uses physics-based raycasting, so the cursor can only be placed
@@ -32,7 +37,7 @@ enum RaycastMode {
 const CURSOR_GROUP = "Plugin3DCursor"
 
 ## This variable indicates whether the active tab is 3D
-var is_in_3d_tab: bool = false
+var _main_screen: String = ""
 ## The position of the mouse used to raycast into the 3D world
 var mouse_position: Vector2
 ## The Editor Viewport used to get the mouse position
@@ -49,6 +54,10 @@ var cursor: Cursor3D
 var pie_menu_scene: PackedScene
 ## The instance of the pie menu for the 3D Cursor
 var pie_menu: PieMenu
+## The scene of the settings dock for the 3D Cursor
+var settings_dock_scene: PackedScene
+## The instance of the settings dock for the 3D Cursor
+var settings_dock: SettingsDock
 ## A reference to the [EditorCommandPalette] singleton used to add
 ## some useful actions to the command palette such as '3D Cursor to Origin'
 ## or '3D Cursor to selected object' like in Blender
@@ -77,6 +86,7 @@ func _enter_tree() -> void:
 	_setup_necessary_editor_components()
 	_setup_pie_menu()
 	_setup_input_map_actions()
+	_setup_settings_dock()
 
 
 func _exit_tree() -> void:
@@ -86,26 +96,30 @@ func _exit_tree() -> void:
 	_remove_input_map_actions()
 	_free_3d_cursor()
 	_free_pie_menu()
+	_free_settings_dock()
 
 
 func _process(delta: float) -> void:
-	# Only allow setting the 3D Cursors location in 3D tab
-	if not is_in_3d_tab:
-		return
-
 	# If the action is not yet set up: return
 	if not InputMap.has_action("3d_cursor_set_location"):
 		return
 
 	# Set the location of the 3D Cursor
-	if Input.is_key_pressed(KEY_SHIFT) and Input.is_action_just_pressed("3d_cursor_set_location"):
+	if not Input.is_key_pressed(KEY_SHIFT):
+		return
+
+	# Only allow setting the 3D Cursors location in 3D tab
+	if not _is_in_3d_tab():
+		return
+
+	if Input.is_action_just_pressed("3d_cursor_set_location"):
 		mouse_position = editor_viewport.get_mouse_position()
 		_get_click_location()
 
 	if cursor == null or not cursor.is_inside_tree():
 		return
 
-	if Input.is_key_pressed(KEY_SHIFT) and Input.is_action_just_pressed("3d_cursor_show_pie_menu"):
+	if Input.is_action_just_pressed("3d_cursor_show_pie_menu"):
 		pie_menu.visible = not pie_menu.visible
 		_set_visibility_toggle_label()
 
@@ -159,6 +173,7 @@ func _preload_3d_cursor_components():
 	# Loading the 3D Cursor scene for later instancing
 	cursor_scene = preload("uid://dfpatff4d5okj")
 	pie_menu_scene = preload("uid://igrlue2n5478")
+	settings_dock_scene = preload("uid://dt0ngqiwc0150")
 
 
 ## This function sets up every 3D Cursor action for the command palette.
@@ -195,6 +210,26 @@ func _setup_pie_menu():
 	pie_menu.connect("remove_cursor_from_scene_pressed", _remove_3d_cursor_from_scene)
 	pie_menu.connect("toggle_cursor_pressed", _toggle_3d_cursor)
 	add_child(pie_menu)
+
+
+## This function sets up the settings dock for the 3D Cursor.
+func _setup_settings_dock():
+	# Instantiating the settings dock
+	settings_dock = settings_dock_scene.instantiate()
+	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, settings_dock)
+	settings_dock.button.pressed.connect(_debug_button)
+	settings_dock.plugin_context = self
+	settings_dock.init_signals()
+
+
+func _debug_button() -> void:
+	var connections = settings_dock.button.pressed.get_connections()
+	connections.all(func(c): c.signal.disconnect(c.callable))
+	remove_control_from_docks(settings_dock)
+	settings_dock.queue_free()
+	settings_dock = settings_dock_scene.instantiate()
+	add_control_to_dock(DOCK_SLOT_LEFT_BR, settings_dock)
+	settings_dock.button.pressed.connect(_debug_button)
 
 
 ## This function sets up the input map actions for the 3D Cursor.
@@ -262,9 +297,8 @@ func _remove_input_map_actions():
 ## This method will free the cursor and remove the reference to the [Cursor3D] scene.
 func _free_3d_cursor():
 	# Deleting the 3D Cursor
-	if cursor != null:
-		cursor.queue_free()
-		cursor_scene = null
+	_remove_3d_cursor_from_scene()
+	cursor_scene = null
 
 
 ## This method will free the pie menu and remove the reference to the [PieMenu] scene.
@@ -272,7 +306,17 @@ func _free_pie_menu():
 	# Deleting the pie menu
 	if pie_menu != null:
 		pie_menu.queue_free()
-		pie_menu_scene = null
+	pie_menu_scene = null
+
+
+## This method will free the settings dock and remove the reference to the [SettingsDock] scene.
+func _free_settings_dock():
+	# Deleting the settings dock
+	if settings_dock != null:
+		remove_control_from_docks(settings_dock)
+		settings_dock.button.pressed.disconnect(_debug_button)
+		settings_dock.queue_free()
+	settings_dock_scene = null
 
 
 ### --------------------------  Editor Bindings  --------------------------- ###
@@ -280,7 +324,7 @@ func _free_pie_menu():
 ## Checks whether the current active tab is named '3D'
 ## returns true if so, otherwise false
 func _on_main_screen_changed(screen_name: String) -> void:
-	is_in_3d_tab = screen_name == "3D"
+	_main_screen = screen_name
 
 
 ## Connected to the node_added event of the get_tree()
@@ -418,17 +462,11 @@ func _set_visibility_toggle_label() -> void:
 
 ## Remove every 3D Cursor from the scene including the active one.
 func _remove_3d_cursor_from_scene() -> void:
+	cursor_deleted.emit(cursor.name)
 	# Get all cursors within the scene and remove them
 	for c: Cursor3D in _get_all_cursors():
 		c.queue_free()
 	cursor = null
-
-	# Get the root nodes children to filter for old instances of [Cursor3D]
-	var root_children = edited_scene_root.get_children()
-	if root_children.any(func(node): return node is Cursor3D):
-		# Iterate over all old instances and free them
-		for old_cursor: Cursor3D in root_children.filter(func(node): return node is Cursor3D):
-			old_cursor.queue_free()
 
 
 ## Check whether the 3D Cursor is set up and ready for use. A hidden 3D Cursor
@@ -510,8 +548,10 @@ func _get_click_location() -> void:
 	# and position it at the collision detected by the raycast
 	if cursor == null:
 		cursor = cursor_scene.instantiate()
+		cursor.plugin_context = self
 		edited_scene_root.add_child(cursor)
 		cursor.owner = edited_scene_root
+		cursor_created.emit(cursor)
 		just_created = true
 
 	# If the cursor is not in the node tree at this point it means that the
@@ -519,6 +559,7 @@ func _get_click_location() -> void:
 	if not cursor.is_inside_tree():
 		edited_scene_root.add_child(cursor)
 		cursor.owner = edited_scene_root
+		cursor_created.emit(cursor)
 		just_created = true
 
 	# No collision means do nothing
@@ -568,6 +609,7 @@ func _recover_cursor() -> void:
 		# Get the first and probably only instance of [Cursor3D] and assign
 		# it to the cursor variable. Now the 3D Cursor is considered recovered
 		cursor = root_children.filter(func(node): return node is Cursor3D).front()
+		cursor_created.emit(cursor)
 
 
 func _create_undo_redo_action(node: Node3D, property: String, value: Variant, action_name: String = "") -> void:
@@ -671,3 +713,30 @@ func _get_all_cursors() -> Array[Cursor3D]:
 	var out: Array[Cursor3D]
 	out.assign(get_tree().get_nodes_in_group(CURSOR_GROUP))
 	return out
+
+
+## Checks whether the active tab is 3D or not. If the user did not switch any tab since startup
+## or since enabling the plugin we fall back to a hacky solution trying find the active tab.
+func _is_in_3d_tab() -> bool:
+	# When the _main_screen variable is empty, this means the user has not switched tabs
+	# If it is not, we return whether it is "3D"
+	if not _main_screen.is_empty():
+		return _main_screen == "3D"
+
+	# WARNING: Hacky solution below
+	var editor_main_screen := EditorInterface.get_editor_main_screen()
+	var screen := editor_main_screen.get_children()[1]
+	if not screen is Node:
+		return false
+
+	return screen.is_visible_in_tree()
+
+
+func unset_cursor() -> void:
+	cursor_set = false
+	cursor = null
+
+
+func set_cursor(cursor: Cursor3D) -> void:
+	cursor_set = true
+	self.cursor = cursor

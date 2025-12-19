@@ -1,0 +1,252 @@
+[gd_scene load_steps=4 format=3 uid="uid://dt0ngqiwc0150"]
+
+[ext_resource type="Script" uid="uid://clrvn115vyp7s" path="res://addons/godot_3d_cursor/scripts/settings_dock.gd" id="1_fr25p"]
+[ext_resource type="Script" uid="uid://3gxixdbp5muq" path="res://addons/godot_3d_cursor/scripts/drag_and_drop_line_edit.gd" id="2_tussh"]
+[ext_resource type="Script" uid="uid://bgte2p0mg34yw" path="res://addons/godot_3d_cursor/scripts/drag_and_drop_item_list.gd" id="3_tussh"]
+
+[node name="SettingsDock" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fr25p")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "3D Cursor Settings"
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Debug Button"
+
+[node name="Scale" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Scale"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Scale"
+horizontal_alignment = 2
+
+[node name="SpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/Scale"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScaleAffectLabel" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScaleAffectLabel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Scale affect Label"
+horizontal_alignment = 2
+
+[node name="CheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/ScaleAffectLabel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "On"
+
+[node name="ShowLabel" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ShowLabel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Show Label"
+horizontal_alignment = 2
+
+[node name="CheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/ShowLabel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "On"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RaycastMode" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/RaycastMode"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Raycast Mode"
+horizontal_alignment = 2
+
+[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/RaycastMode"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 1
+item_count = 4
+popup/item_0/text = "Godot 4.5+"
+popup/item_0/id = 0
+popup/item_0/separator = true
+popup/item_1/text = "Physicsless"
+popup/item_1/id = 1
+popup/item_2/text = "Godot 4.2+"
+popup/item_2/id = 2
+popup/item_2/separator = true
+popup/item_3/text = "Physics (Legacy)"
+popup/item_3/id = 3
+
+[node name="ActiveCursor" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ActiveCursor"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+text = "Active Cursor"
+horizontal_alignment = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ActiveCursor"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DragAndDropLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Drag Node here"
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_enabled = false
+virtual_keyboard_show_on_focus = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+script = ExtResource("2_tussh")
+metadata/_custom_type_script = "uid://3gxixdbp5muq"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="DeselectButton" type="Button" parent="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Deselect"
+
+[node name="ClearButton" type="Button" parent="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Clear"
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="UseTerrain3D" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/UseTerrain3D"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Use Terrain3D"
+horizontal_alignment = 2
+
+[node name="CheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/UseTerrain3D"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "On"
+
+[node name="Terrain3DInstances" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Terrain3DInstances"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+text = "Terrain3D instances"
+horizontal_alignment = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Terrain3DInstances"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DragAndDropItemList" type="ItemList" parent="MarginContainer/VBoxContainer/Terrain3DInstances/VBoxContainer"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("3_tussh")
+metadata/_custom_type_script = "uid://bgte2p0mg34yw"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Terrain3DInstances/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DeleteSelectedItemsButton" type="Button" parent="MarginContainer/VBoxContainer/Terrain3DInstances/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Delete Selected"
+
+[node name="ClearItemListButton" type="Button" parent="MarginContainer/VBoxContainer/Terrain3DInstances/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Clear List"
+
+[node name="HSeparator3" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Actions"
+
+[node name="Actions" type="GridContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "3D Cursor to Origin"
+
+[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Selected Object to 3D Cursor"
+
+[node name="Button3" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "3D Cursor to Selected Object(s)"
+
+[node name="Button4" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Disable 3D Cursor"
+
+[node name="Button5" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Remove 3D Cursor from Scene"
+
+[connection signal="cursor_created" from="." to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_cursor_created"]
+[connection signal="cursor_deleted" from="." to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_cursor_deleted"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="cursor_deselected" from="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" to="." method="_on_line_edit_cursor_deselected"]
+[connection signal="cursor_selected" from="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" to="." method="_on_line_edit_cursor_selected"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/DeselectButton" to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_deselect_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/ClearButton" to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_clear_button_pressed"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/UseTerrain3D/CheckBox" to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_check_box_toggled"]
