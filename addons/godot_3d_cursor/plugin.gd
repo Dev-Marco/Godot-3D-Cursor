@@ -696,16 +696,10 @@ func _search_for_3d_root(current_node: Node, level: int = 0) -> Dictionary:
 	return results[lowest_index]
 
 
-## Checks the current Godot version for the abscence of methods required for
-## [i]Godot 3D Cursor[/i] v1.4.0+.
+## Checks whether the current Godot version is high enough to determine compabtibility
+## with newer [Cursor3D] features introduced in [i]Godot 3D Cursor[/i] v1.4.0+.
 func  _check_compatibility() -> bool:
-	if not CSGBox3D.new().has_method("bake_static_mesh"):
-		raycast_mode = RaycastMode.PHYSICS
-		return false
-	if not TriangleMesh.new().has_method("create_from_faces"):
-		raycast_mode = RaycastMode.PHYSICS
-		return false
-	return true
+	return Engine.get_version_info().hex >= 0x040500
 
 
 ## Returns all instances of a [Cursor3D] instance within a scene in an [code]Array[Cursor3D][/code]
