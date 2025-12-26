@@ -59,3 +59,11 @@ func _process(delta: float) -> void:
 ## Sets up the [member Cursor3D.plugin_context]
 func setup(plugin_context: Plugin3DCursor) -> void:
 	self.plugin_context = plugin_context
+
+
+func _on_visibility_changed() -> void:
+	if plugin_context == null:
+		return
+	if plugin_context.cursor != self:
+		return
+	plugin_context.settings_dock.toggle_action_buttons_for_disabled_cursor()
