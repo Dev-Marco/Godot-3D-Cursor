@@ -272,6 +272,12 @@ func _on_remove_active_cursor_from_scene_button_pressed() -> void:
 
 
 func _on_move_active_cursor_button_pressed() -> void:
+	select_node_for_move_to()
+
+
+func select_node_for_move_to() -> void:
+	if plugin_context.cursor == null:
+		return
 	EditorInterface.popup_node_selector(_on_node_for_move_to_selected, ["Node3D"])
 
 

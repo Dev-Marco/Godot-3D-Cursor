@@ -40,6 +40,10 @@ func _init(plugin_context: Plugin3DCursor) -> void:
 		"Toggle 3D Cursor", "3D Cursor/Toggle 3D Cursor",
 		func(): plugin_context.signal_hub.toggle_cursor.emit()
 	)
+	_command_palette.add_command(
+		"Move Active 3D Cursor to ...", "3D Cursor/Move Active 3D Cursor to",
+		func(): plugin_context.settings_dock.select_node_for_move_to()
+	)
 
 
 func _notification(what: int) -> void:
@@ -55,3 +59,4 @@ func _cleanup():
 	_command_palette.remove_command("3D Cursor/Remove Active 3D Cursor from Scene")
 	_command_palette.remove_command("3D Cursor/Remove All 3D Cursors from Scene")
 	_command_palette.remove_command("3D Cursor/Toggle 3D Cursor")
+	_command_palette.remove_command("3D Cursor/Move Active 3D Cursor to")
