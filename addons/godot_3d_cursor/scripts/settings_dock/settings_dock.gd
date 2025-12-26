@@ -145,6 +145,7 @@ func _on_active_cursor_deleted() -> void:
 func _on_cursor_recovered(cursor: Cursor3D) -> void:
 	if cursor == null:
 		active_cursor_line_edit.clear()
+		toggle_action_buttons()
 		return
 	_on_cursor_created(cursor)
 
