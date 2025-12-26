@@ -67,3 +67,4 @@ func _on_visibility_changed() -> void:
 	if plugin_context.cursor != self:
 		return
 	plugin_context.settings_dock.toggle_action_buttons_for_disabled_cursor()
+	plugin_context.settings_dock.set_toggle_cursor_button_label()
