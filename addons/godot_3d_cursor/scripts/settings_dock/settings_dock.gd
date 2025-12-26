@@ -81,6 +81,7 @@ func setup(plugin_context: Plugin3DCursor) -> void:
 	signal_hub.deselect_cursor_pressed.connect(_on_deselect_cursor_button_pressed)
 	signal_hub.cursor_created.connect(_on_cursor_created)
 	signal_hub.active_cursor_deleted.connect(_on_active_cursor_deleted)
+	signal_hub.remove_all_cursors_from_scene.connect(_on_all_cursors_removed_from_scene)
 	signal_hub.cursor_recovered.connect(_on_cursor_recovered)
 
 	# If the current version of Godot is not compatible, disable the
@@ -139,6 +140,10 @@ func _on_active_cursor_deleted() -> void:
 	active_cursor_line_edit.clear()
 	set_toggle_cursor_button_label()
 	reset_cursor_settings()
+	toggle_action_buttons()
+
+
+func _on_all_cursors_removed_from_scene() -> void:
 	toggle_action_buttons()
 
 

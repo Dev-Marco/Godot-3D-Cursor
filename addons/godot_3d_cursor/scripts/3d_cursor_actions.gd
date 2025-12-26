@@ -155,6 +155,9 @@ func remove_active_cursor_from_scene() -> void:
 	plugin_context.signal_hub.active_cursor_deleted.emit()
 	plugin_context.cursor.queue_free()
 	plugin_context.unset_cursor()
+	if plugin_context.get_all_cursors().size() == 1:
+		plugin_context.cursor_counter.get_or_add(plugin_context.current_scene_path, 0)
+		plugin_context.cursor_counter[plugin_context.current_scene_path] = 0
 
 
 ## Remove every 3D Cursor from the scene including the active one.
@@ -166,7 +169,8 @@ func remove_all_cursors_from_scene() -> void:
 	for cursor: Cursor3D in cursors:
 		cursor.queue_free()
 	plugin_context.unset_cursor()
-	plugin_context.cursor_counter = 0
+	plugin_context.cursor_counter.get_or_add(plugin_context.current_scene_path, 0)
+	plugin_context.cursor_counter[plugin_context.current_scene_path] = 0
 
 
 func move_active_cursor_to(position: Vector3) -> void:

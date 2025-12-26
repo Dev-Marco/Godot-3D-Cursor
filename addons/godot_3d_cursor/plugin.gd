@@ -55,7 +55,7 @@ var raycast_engine: Cursor3DRaycastEngine
 ## This variable holds the name of the currently active tab. It is useful to
 ## prevent triggering certain Inputs outside of the 3D tab.
 var _main_screen: String = ""
-var cursor_counter: int = 0
+var cursor_counter: Dictionary[String, int] = {}
 var current_scene_path: String:
 	get:
 		return EditorInterface.get_edited_scene_root().scene_file_path
@@ -307,7 +307,7 @@ func create_cursor() -> void:
 	cursor.setup(self)
 	raycast_engine.edited_scene_root.add_child(cursor)
 	cursor.owner = raycast_engine.true_edited_scene_root
-	if cursor_counter > 0:
+	if cursor_counter.get_or_add(current_scene_path, 0) > 0:
 		var separator: String = ""
 		match ProjectSettings.get_setting("editor/naming/node_name_num_separator"):
 			NodeNameNumSeparator.NONE:
@@ -321,10 +321,10 @@ func create_cursor() -> void:
 
 		cursor.name = "3DCursor{separator}{counter}".format({
 			"separator": separator,
-			"counter": cursor_counter,
+			"counter": cursor_counter.get(current_scene_path),
 		})
-	cursor.number_label.text = "#{0}".format([cursor_counter])
-	cursor_counter += 1
+	cursor.number_label.text = "#{0}".format([cursor_counter.get(current_scene_path)])
+	cursor_counter[current_scene_path] += 1
 	signal_hub.cursor_created.emit(cursor)
 
 
