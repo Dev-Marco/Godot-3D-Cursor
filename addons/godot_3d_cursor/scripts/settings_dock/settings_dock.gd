@@ -59,6 +59,7 @@ var signal_hub: Cursor3DSignalHub:
 @onready var action_buttons: GridContainer = %ActionButtons
 ## The button that removes all intances of [Cursor3D] from the current scene.
 @onready var remove_all_cursors_from_scene_button: Button = %RemoveAllCursorsFromSceneButton
+@onready var remove_active_cursor_from_scene_button: Button = %RemoveActiveCursorFromSceneButton
 
 
 ## Sets up the [member SettingsDock.plugin_context] and connects to multiple
@@ -106,6 +107,8 @@ func _assign_active_cursor(node_path: NodePath):
 	plugin_context.set_cursor(cursor)
 	get_settings_from_active_cursor()
 	set_toggle_cursor_button_label()
+	toggle_action_buttons(true)
+	toggle_action_buttons_for_disabled_cursor()
 
 
 ## Toggles the label of the [member SettingsDock.toggle_cursor_button] to be
@@ -129,11 +132,24 @@ func toggle_action_buttons(toggle_on: bool = false) -> void:
 		child.disabled = not toggle_on
 
 
+func toggle_action_buttons_for_disabled_cursor() -> void:
+	if plugin_context.cursor == null:
+		return
+	for child in action_buttons.get_children():
+		if not child is Button \
+			or child == remove_all_cursors_from_scene_button \
+			or child == remove_active_cursor_from_scene_button \
+			or child == toggle_cursor_button:
+				continue
+		child.disabled = not plugin_context.cursor.visible
+
+
 func _on_cursor_created(cursor: Cursor3D) -> void:
 	active_cursor_line_edit.text = cursor.name
 	set_toggle_cursor_button_label()
 	get_settings_from_active_cursor()
 	toggle_action_buttons(true)
+	toggle_action_buttons_for_disabled_cursor()
 
 
 func _on_active_cursor_deleted() -> void:

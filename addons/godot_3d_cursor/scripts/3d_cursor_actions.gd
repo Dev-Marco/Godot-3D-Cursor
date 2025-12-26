@@ -142,6 +142,7 @@ func toggle_cursor() -> void:
 	plugin_context.cursor.visible = not plugin_context.cursor.visible
 	plugin_context.pie_menu.set_visibility_toggle_label()
 	plugin_context.settings_dock.set_toggle_cursor_button_label()
+	plugin_context.settings_dock.toggle_action_buttons_for_disabled_cursor()
 
 
 ## Remove the active 3D Cursor from the scene.
