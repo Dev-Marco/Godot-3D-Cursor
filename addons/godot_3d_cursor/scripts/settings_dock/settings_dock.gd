@@ -160,7 +160,7 @@ func _on_active_cursor_deleted() -> void:
 
 
 func _on_all_cursors_removed_from_scene() -> void:
-	toggle_action_buttons()
+	_on_active_cursor_deleted()
 
 
 func _on_cursor_recovered(cursor: Cursor3D) -> void:
