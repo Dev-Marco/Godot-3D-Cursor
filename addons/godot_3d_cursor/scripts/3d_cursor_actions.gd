@@ -24,7 +24,7 @@ func _init(plugin_context: Plugin3DCursor, undo_redo: Cursor3DUndoRedoManager) -
 
 
 func place_cursor(position: Vector3) -> void:
-	if plugin_context.cursor == null:
+	if not plugin_context.cursor_available():
 		return
 
 	undo_redo.add_action(
@@ -37,12 +37,11 @@ func place_cursor(position: Vector3) -> void:
 
 ## Set the postion of the 3D Cursor to the origin (or [Vector3.ZERO])
 func cursor_to_origin() -> void:
-	var cursor: Cursor3D = plugin_context.available_cursor()
-	if cursor == null:
+	if not plugin_context.cursor_available():
 		return
 
 	undo_redo.add_action(
-		cursor,
+		plugin_context.cursor,
 		"global_position",
 		Vector3.ZERO,
 		"Move 3D Cursor to Origin",
@@ -53,8 +52,7 @@ func cursor_to_origin() -> void:
 ## Nodes are selected to the average of the positions of all selected nodes
 ## that inherit [Node3D]
 func cursor_to_selected_objects() -> void:
-	var cursor: Cursor3D = plugin_context.available_cursor()
-	if cursor == null:
+	if not plugin_context.cursor_available():
 		return
 
 	# Get the selection and through this the selected nodes as an Array of Nodes
@@ -70,7 +68,7 @@ func cursor_to_selected_objects() -> void:
 	# of the 3D Cursor to its position
 	if selected_nodes.size() == 1:
 		undo_redo.add_action(
-			cursor,
+			plugin_context.cursor,
 			"global_position",
 			selected_nodes.front().global_position,
 			"Move 3D Cursor to selected Object",
@@ -98,12 +96,12 @@ func cursor_to_selected_objects() -> void:
 	# the 3D Cursor to this position
 	var average_position = position_sum / count
 	undo_redo.add_action(
-		cursor,
+		plugin_context.cursor,
 		"global_position",
 		average_position,
 		"Move 3D Cursor to selected Objects",
 	)
-	cursor.global_position = average_position
+	plugin_context.cursor.global_position = average_position
 
 
 ## Set the position of the selected object that inherits [Node3D]
@@ -112,8 +110,7 @@ func cursor_to_selected_objects() -> void:
 ## position of the 3D Cursor. This funcitonality is disabled if the cursor
 ## is not set or hidden in the scene.
 func selected_object_to_cursor() -> void:
-	var cursor: Cursor3D = plugin_context.available_cursor()
-	if cursor == null:
+	if not plugin_context.cursor_available():
 		return
 
 	# Get the selection and through this the selected nodes as an Array of Nodes
@@ -131,7 +128,7 @@ func selected_object_to_cursor() -> void:
 	undo_redo.add_action(
 		selected_nodes.front(),
 		"global_position",
-		cursor.global_position,
+		plugin_context.cursor.global_position,
 		"Move Object to 3D Cursor"
 	)
 
@@ -139,11 +136,10 @@ func selected_object_to_cursor() -> void:
 ## Disable the 3D Cursor to prevent the node placement at the position of
 ## the 3D Cursor.
 func toggle_cursor() -> void:
-	var cursor: Cursor3D = plugin_context.available_cursor(true)
-	if cursor == null:
+	if not plugin_context.cursor_available(true):
 		return
 
-	cursor.visible = not cursor.visible
+	plugin_context.cursor.visible = not plugin_context.cursor.visible
 	plugin_context.pie_menu.set_visibility_toggle_label()
 	plugin_context.settings_dock.set_toggle_cursor_button_label()
 
@@ -174,4 +170,6 @@ func remove_all_cursors_from_scene() -> void:
 
 
 func move_active_cursor_to(position: Vector3) -> void:
+	if not plugin_context.cursor_available():
+		return
 	place_cursor(position)
