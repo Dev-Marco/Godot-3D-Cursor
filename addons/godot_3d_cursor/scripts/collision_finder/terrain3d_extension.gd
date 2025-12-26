@@ -1,6 +1,7 @@
-## This class implements a Terrain3D-specific extension for the 3D Cursor plugin.
-## It is used internally to provide Terrain3D compatibility and is not part of the public API.
 class_name Terrain3DExtension
+## This class implements a Terrain3D-specific extension for the 3D Cursor plugin.
+##
+## It is used internally to provide Terrain3D compatibility and is not part of the public API.
 
 ## This method relies on an exposed [Terrain3D] method ([method Terrain3D.get_intersection])
 ## to compute the closest hit point along a ray cast from the mouse position.

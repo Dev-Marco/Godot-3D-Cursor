@@ -1,4 +1,7 @@
-[gd_scene format=3 uid="uid://w64bhqccsgo8"]
+[gd_scene load_steps=3 format=3 uid="uid://w64bhqccsgo8"]
+
+[ext_resource type="PackedScene" uid="uid://dfpatff4d5okj" path="res://addons/godot_3d_cursor/scenes/3d_cursor.tscn" id="1_cvief"]
+[ext_resource type="Script" uid="uid://dt04kfvdc21nb" path="res://addons/godot_3d_cursor/scripts/3d_cursor.gd" id="2_veqji"]
 
 [node name="WorldEnvironment" type="WorldEnvironment"]
 
@@ -9,6 +12,70 @@
 [node name="Node2D" type="Node2D" parent="Node2D2/Node2D"]
 
 [node name="second" type="Node3D" parent="Node2D2/Node2D/Node2D"]
+
+[node name="3DCursor3" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9120642, -4.7683716e-07, 28.039509)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor1" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.287802, -4.7683716e-07, 23.408562)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor2" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8873684, 0, 22.610151)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor4" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7820616, 0, 30.309044)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor5" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.316946, 4.7683716e-07, 30.855118)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor6" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9376011, 0, 29.900852)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor7" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5322104, 0, 26.134495)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor8" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6133916, 4.7683716e-07, 10.526674)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor9" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9828057, 0, 27.38278)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor10" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6428294, 0, 30.503761)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor11" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0534992, 0, 32.11274)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor12" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.850944, 0, 29.620693)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor13" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5323443, -4.7683716e-07, 28.961292)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor14" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.396497, 4.7683716e-07, 22.097368)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor15" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.67701644, 0, 18.062342)
+script = ExtResource("2_veqji")
+
+[node name="3DCursor16" type="Marker3D" parent="Node2D2/Node2D/Node2D/second" groups=["Plugin3DCursor"] instance=ExtResource("1_cvief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4834367, 4.7683716e-07, 25.351513)
+script = ExtResource("2_veqji")
 
 [node name="Node3D2" type="Node3D" parent="Node2D2/Node2D/Node2D"]
 

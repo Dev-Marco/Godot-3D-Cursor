@@ -6,14 +6,22 @@
 [node name="3DCursor" type="Marker3D" groups=["Plugin3DCursor"]]
 script = ExtResource("1_22sio")
 
-[node name="Sprite3D" type="Sprite3D" parent="."]
+[node name="Sprite3D" type="Sprite3D" parent="." groups=["Plugin3DCursorComponent"]]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
 billboard = 1
 no_depth_test = true
 texture = ExtResource("2_wdtam")
 
-[node name="Label3D" type="Label3D" parent="Sprite3D"]
+[node name="TitleLabel" type="Label3D" parent="Sprite3D" groups=["Plugin3DCursorComponent"]]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 2.4, 0)
 billboard = 1
 no_depth_test = true
 text = "3D Cursor"
+
+[node name="NumberLabel" type="Label3D" parent="Sprite3D" groups=["Plugin3DCursorComponent"]]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 3.2, 0)
+billboard = 1
+no_depth_test = true
+modulate = Color(0.8513751, 0.7096352, 0, 1)
+text = "#"
+font_size = 24

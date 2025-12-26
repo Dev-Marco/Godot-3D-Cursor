@@ -2,17 +2,6 @@
 class_name PieMenu
 extends Control
 
-## Emitted when the "3D Cursor to Origin" command is invoked through the [PieMenu]
-signal cursor_to_origin_pressed
-## Emitted when the "3D Cursor to Selected Object(s)" command is invoked through the [PieMenu]
-signal cursor_to_selected_objects_pressed
-## Emitted when the "Selected Object to 3D Cursor" command is invoked through the [PieMenu]
-signal selected_object_to_cursor_pressed
-## Emitted when the "Remove 3D Cursor from Scene" command is invoked through the [PieMenu]
-signal remove_cursor_from_scene_pressed
-## Emitted when the "Toggle 3D Cursor" command is invoked through the [PieMenu]
-signal toggle_cursor_pressed
-
 ## The dimmed color for the selection indicator that is used if no button is hovered
 const _dimmed_selection_indicator_color: Color = Color("8c8c8cFF")
 
@@ -25,6 +14,8 @@ var slide_end: int = 100
 var menu_radius: int = slide_start
 ## The buttons that are "loaded"
 var buttons: Array[Button] = []
+var plugin_context: Plugin3DCursor
+
 
 var _hovered_button: Button
 var _show_menu_echo: bool = false
@@ -33,10 +24,16 @@ var _show_menu_echo: bool = false
 @onready var toggle_3d_cursor: Button = $Toggle3DCursor
 
 
-func _process(delta: float) -> void:
-	#var viewport_height: int = get_viewport().size.y
-	#var viewport_width: int = get_viewport().size.x
+func setup(plugin_context: Plugin3DCursor) -> void:
+	if plugin_context == null:
+		push_error("The pie menu requires a valid instance of Plugin3DCursor"
+			+ "and must not be null."
+		)
+		return
+	self.plugin_context = plugin_context
 
+
+func _process(delta: float) -> void:
 	# If the menu is shown animate the buttons
 	if visible:
 		menu_radius = lerp(menu_radius, slide_end, 20 * delta)
@@ -102,10 +99,10 @@ func _is_button(child: Node) -> bool:
 ## This method aligns the available buttons in a circular menu by using
 ## some [sin] and [cos] magic
 func _align_buttons() -> void:
-	var button_count: int = len(buttons)
-	for i in range(button_count):
-		var button: Button = buttons[i]
-		var theta: float = (i / float(button_count)) * TAU
+	var visible_buttons: Array = buttons.filter(func(button: Button): return button.visible)
+	for i in range(visible_buttons.size()):
+		var button: Button = visible_buttons[i]
+		var theta: float = (i / float(visible_buttons.size())) * TAU
 		var x: float = (menu_radius * cos(theta))
 		var y: float = (menu_radius * sin(theta)) - button.size.y / 2.0
 		x = x - button.size.x if x < 0 else x
@@ -117,7 +114,9 @@ func _align_buttons() -> void:
 ## instance
 func _on_3d_cursor_to_origin_pressed() -> void:
 	hide()
-	cursor_to_origin_pressed.emit()
+	if plugin_context == null:
+		return
+	plugin_context.signal_hub.cursor_to_origin.emit()
 
 ## Executes when the "3D Cursor to Origin" button is hovered
 func _on_3d_cursor_to_origin_mouse_entered() -> void:
@@ -135,12 +134,16 @@ func _on_3d_cursor_to_origin_mouse_exited() -> void:
 ## instance
 func _on_3d_cursor_to_selected_objects_pressed() -> void:
 	hide()
-	cursor_to_selected_objects_pressed.emit()
+	if plugin_context == null:
+		return
+	plugin_context.signal_hub.cursor_to_selected_objects.emit()
+
 
 ## Executes when the "3D Cursor to Selected Object(s)" button is hovered
 func _on_3d_cursor_to_selected_objects_mouse_entered() -> void:
 	_hovered_button = $"3DCursorToSelectedObjects"
 	_on_mouse_entered_button()
+
 
 ## Executes when the "3D Cursor to Selected Object(s)" button is no longer hovered
 func _on_3d_cursor_to_selected_objects_mouse_exited() -> void:
@@ -153,12 +156,16 @@ func _on_3d_cursor_to_selected_objects_mouse_exited() -> void:
 ## instance
 func _on_selected_object_to_3d_cursor_pressed() -> void:
 	hide()
-	selected_object_to_cursor_pressed.emit()
+	if plugin_context == null:
+		return
+	plugin_context.signal_hub.selected_object_to_cursor.emit()
+
 
 ## Executes when the "Selected Object to 3D Cursor" button is hovered
 func _on_selected_object_to_3d_cursor_mouse_entered() -> void:
 	_hovered_button = $SelectedObjectTo3DCursor
 	_on_mouse_entered_button()
+
 
 ## Executes when the "Selected Object to 3D Cursor" button is no longer hovered
 func _on_selected_object_to_3d_cursor_mouse_exited() -> void:
@@ -169,17 +176,36 @@ func _on_selected_object_to_3d_cursor_mouse_exited() -> void:
 ## Connected to the corresponding UI button this method acts as a repeater
 ## by emitting the corresponding signal classes can listen to via a [PieMenu]
 ## instance
-func _on_remove_3d_cursor_from_scene_pressed() -> void:
+func _on_remove_active_3d_cursor_from_scene_pressed() -> void:
 	hide()
-	remove_cursor_from_scene_pressed.emit()
+	if plugin_context == null:
+		return
+	plugin_context.signal_hub.remove_active_cursor_from_scene.emit()
 
 ## Executes when the "Remove 3D Cursor" button is hovered
-func _on_remove_3d_cursor_from_scene_mouse_entered() -> void:
-	_hovered_button = $Remove3DCursorFromScene
+func _on_remove_active_3d_cursor_from_scene_mouse_entered() -> void:
+	_hovered_button = $RemoveActive3DCursorFromScene
 	_on_mouse_entered_button()
 
 ## Executes when the "Remove 3D Cursor" button is no longer hovered
-func _on_remove_3d_cursor_from_scene_mouse_exited() -> void:
+func _on_remove_active_3d_cursor_from_scene_mouse_exited() -> void:
+	_hovered_button = null
+	_on_mouse_exited_button()
+
+
+func _on_remove_all_3d_cursors_from_scene_pressed() -> void:
+	hide()
+	if plugin_context == null:
+		return
+	plugin_context.signal_hub.remove_all_cursors_from_scene.emit()
+
+
+func _on_remove_all_3d_cursors_from_scene_mouse_entered() -> void:
+	_hovered_button = $RemoveAll3DCursorsFromScene
+	_on_mouse_entered_button()
+
+
+func _on_remove_all_3d_cursors_from_scene_mouse_exited() -> void:
 	_hovered_button = null
 	_on_mouse_exited_button()
 
@@ -189,12 +215,16 @@ func _on_remove_3d_cursor_from_scene_mouse_exited() -> void:
 ## instance
 func _on_toggle_3d_cursor_pressed() -> void:
 	hide()
-	toggle_cursor_pressed.emit()
+	if plugin_context == null:
+		return
+	plugin_context.signal_hub.toggle_cursor.emit()
+
 
 ## Executes when the "Disable/Enable 3D Cursor" button is hovered
 func _on_toggle_3d_cursor_mouse_entered() -> void:
 	_hovered_button = toggle_3d_cursor
 	_on_mouse_entered_button()
+
 
 ## Executes when the "Disable/Enable 3D Cursor" button is hovered
 func _on_toggle_3d_cursor_mouse_exited() -> void:
@@ -206,6 +236,7 @@ func _on_toggle_3d_cursor_mouse_exited() -> void:
 ## the color of the selection indicator when a button is hovered.
 func _on_mouse_entered_button() -> void:
 	selection_indicator.modulate = Color.WHITE
+
 
 ## This method is executed by every button of the [PieMenu]. It dims the color
 ## of the selection indicator when a button is no longer hovered
@@ -226,3 +257,15 @@ func hit_any_button() -> bool:
 
 func change_toggle_label(visible: bool) -> void:
 	toggle_3d_cursor.text = ("Disable" if visible else "Enable") + " 3D Cursor"
+	## Sets the correct label on the toggle visibility button in the pie menu
+
+
+func set_visibility_toggle_label() -> void:
+	change_toggle_label(plugin_context.cursor.visible)
+
+
+func display() -> void:
+	set_visibility_toggle_label()
+	$RemoveAll3DCursorsFromScene.visible = plugin_context.get_all_cursors().size() > 1
+	_align_buttons()
+	visible = true

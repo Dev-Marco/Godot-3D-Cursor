@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://dt0ngqiwc0150"]
+[gd_scene load_steps=5 format=3 uid="uid://dt0ngqiwc0150"]
 
-[ext_resource type="Script" uid="uid://clrvn115vyp7s" path="res://addons/godot_3d_cursor/scripts/settings_dock.gd" id="1_fr25p"]
-[ext_resource type="Script" uid="uid://3gxixdbp5muq" path="res://addons/godot_3d_cursor/scripts/drag_and_drop_line_edit.gd" id="2_tussh"]
-[ext_resource type="Script" uid="uid://bgte2p0mg34yw" path="res://addons/godot_3d_cursor/scripts/drag_and_drop_item_list.gd" id="3_tussh"]
+[ext_resource type="Script" uid="uid://clrvn115vyp7s" path="res://addons/godot_3d_cursor/scripts/settings_dock/settings_dock.gd" id="1_fr25p"]
+[ext_resource type="Script" uid="uid://3gxixdbp5muq" path="res://addons/godot_3d_cursor/scripts/settings_dock/drag_and_drop_line_edit.gd" id="2_tussh"]
+[ext_resource type="Script" uid="uid://dva2usm5j2sgf" path="res://addons/godot_3d_cursor/scripts/settings_dock/move_active_cursor_button.gd" id="3_tussh"]
+[ext_resource type="Script" uid="uid://dyn712dfnrqm0" path="res://addons/godot_3d_cursor/scripts/settings_dock/move_action_coordinates.gd" id="4_6ifjp"]
 
 [node name="SettingsDock" type="Control"]
 layout_mode = 3
@@ -13,13 +14,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_fr25p")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer"]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_left = 4
@@ -27,75 +31,96 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "3D Cursor Settings"
 
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Debug Button"
-
-[node name="Scale" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="Scale" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Scale"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Scale"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Scale"
 horizontal_alignment = 2
 
-[node name="SpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/Scale"]
+[node name="ScaleSpinBox" type="SpinBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Scale"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+min_value = 0.1
+step = 0.1
+value = 1.0
 
-[node name="ScaleAffectLabel" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ScaleAffectLabels" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScaleAffectLabel"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ScaleAffectLabels"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Scale affect Label"
 horizontal_alignment = 2
 
-[node name="CheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/ScaleAffectLabel"]
+[node name="ScaleAffectLabelsCheckBox" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/ScaleAffectLabels"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+button_pressed = true
 text = "On"
 
-[node name="ShowLabel" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ShowTitleLabel" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ShowLabel"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ShowTitleLabel"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Show Label"
+text = "Show Title Label"
 horizontal_alignment = 2
 
-[node name="CheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/ShowLabel"]
+[node name="ShowTitleLabelCheckBox" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/ShowTitleLabel"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+button_pressed = true
 text = "On"
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="ShowNumberLabel" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ShowNumberLabel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Show Number Label"
+horizontal_alignment = 2
+
+[node name="ShowNumberLabelCheckBox" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/ShowNumberLabel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+button_pressed = true
+text = "On"
+
+[node name="HSeparator" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="RaycastMode" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="RaycastMode" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/RaycastMode"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/RaycastMode"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Raycast Mode"
 horizontal_alignment = 2
 
-[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/RaycastMode"]
+[node name="RaycastModeOptionButton" type="OptionButton" parent="ScrollContainer/MarginContainer/VBoxContainer/RaycastMode"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 selected = 1
@@ -111,21 +136,22 @@ popup/item_2/separator = true
 popup/item_3/text = "Physics (Legacy)"
 popup/item_3/id = 3
 
-[node name="ActiveCursor" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ActiveCursor" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ActiveCursor"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 text = "Active Cursor"
 horizontal_alignment = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ActiveCursor"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DragAndDropLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer"]
+[node name="ActiveCursorLineEdit" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Drag Node here"
@@ -140,113 +166,167 @@ selecting_enabled = false
 script = ExtResource("2_tussh")
 metadata/_custom_type_script = "uid://3gxixdbp5muq"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer"]
 layout_mode = 2
 alignment = 2
 
-[node name="DeselectButton" type="Button" parent="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer"]
+[node name="DeselectCursorButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Deselect"
 
-[node name="ClearButton" type="Button" parent="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer"]
+[node name="ClearButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Clear"
 
-[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="UseTerrain3D" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="UseTerrain3D" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/UseTerrain3D"]
+[node name="UseTerrain3DLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/UseTerrain3D"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Use Terrain3D"
 horizontal_alignment = 2
 
-[node name="CheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/UseTerrain3D"]
+[node name="UseTerrain3DCheckBox" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/UseTerrain3D"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "On"
 
-[node name="Terrain3DInstances" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="AddRemoveTerrain3DGroup" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Terrain3DInstances"]
+[node name="AddTerrain3DGroupButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/AddRemoveTerrain3DGroup"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 0
-text = "Terrain3D instances"
-horizontal_alignment = 2
+text = "Add 'Terrain3D' Group
+to Instances"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Terrain3DInstances"]
+[node name="RemoveTerrain3DGroupButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/AddRemoveTerrain3DGroup"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "Remove 'Terrain3D' Group
+from Instances"
 
-[node name="DragAndDropItemList" type="ItemList" parent="MarginContainer/VBoxContainer/Terrain3DInstances/VBoxContainer"]
-custom_minimum_size = Vector2(0, 80)
-layout_mode = 2
-size_flags_vertical = 3
-script = ExtResource("3_tussh")
-metadata/_custom_type_script = "uid://bgte2p0mg34yw"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Terrain3DInstances/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="DeleteSelectedItemsButton" type="Button" parent="MarginContainer/VBoxContainer/Terrain3DInstances/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Delete Selected"
-
-[node name="ClearItemListButton" type="Button" parent="MarginContainer/VBoxContainer/Terrain3DInstances/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Clear List"
-
-[node name="HSeparator3" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="HSeparator3" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="ActionsLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Actions"
 
-[node name="Actions" type="GridContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ActionButtons" type="GridContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 columns = 2
 
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+[node name="CursorToOriginButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "3D Cursor to Origin"
 
-[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+[node name="SelectedObjectToCursorButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "Selected Object to 3D Cursor"
 
-[node name="Button3" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+[node name="CursorToSelectedObjectsButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "3D Cursor to Selected Object(s)"
 
-[node name="Button4" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+[node name="ToggleCursorButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "Disable 3D Cursor"
 
-[node name="Button5" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+[node name="RemoveActiveCursorFromSceneButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Remove 3D Cursor from Scene"
+disabled = true
+text = "Remove Active 3D Cursor from Scene"
 
-[connection signal="cursor_created" from="." to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_cursor_created"]
-[connection signal="cursor_deleted" from="." to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_cursor_deleted"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
-[connection signal="cursor_deselected" from="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" to="." method="_on_line_edit_cursor_deselected"]
-[connection signal="cursor_selected" from="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" to="." method="_on_line_edit_cursor_selected"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/DeselectButton" to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_deselect_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/ClearButton" to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_clear_button_pressed"]
-[connection signal="toggled" from="MarginContainer/VBoxContainer/UseTerrain3D/CheckBox" to="MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/DragAndDropLineEdit" method="_on_check_box_toggled"]
+[node name="MoveActiveCursorButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Move Active 3D Cursor to ..."
+script = ExtResource("3_tussh")
+
+[node name="RemoveAllCursorsFromSceneButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Remove All 3D Cursors From Scene"
+
+[node name="MoveActionCoordinates" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+script = ExtResource("4_6ifjp")
+
+[node name="XLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/MoveActionCoordinates"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+text = "X:"
+horizontal_alignment = 2
+
+[node name="XLineEdit" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/MoveActionCoordinates"]
+layout_mode = 2
+size_flags_horizontal = 3
+editable = false
+
+[node name="LabeYl" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/MoveActionCoordinates"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+text = "Y:"
+horizontal_alignment = 2
+
+[node name="YLineEdit" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/MoveActionCoordinates"]
+layout_mode = 2
+size_flags_horizontal = 3
+editable = false
+
+[node name="ZLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/MoveActionCoordinates"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+text = "Z:"
+horizontal_alignment = 2
+
+[node name="ZLineEdit" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/MoveActionCoordinates"]
+layout_mode = 2
+size_flags_horizontal = 3
+editable = false
+
+[connection signal="value_changed" from="ScrollContainer/MarginContainer/VBoxContainer/Scale/ScaleSpinBox" to="." method="_on_scale_spin_box_value_changed"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ScaleAffectLabels/ScaleAffectLabelsCheckBox" to="." method="_on_scale_affect_labels_check_box_toggled"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ShowTitleLabel/ShowTitleLabelCheckBox" to="." method="_on_show_title_label_check_box_toggled"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ShowNumberLabel/ShowNumberLabelCheckBox" to="." method="_on_show_number_label_check_box_toggled"]
+[connection signal="item_selected" from="ScrollContainer/MarginContainer/VBoxContainer/RaycastMode/RaycastModeOptionButton" to="." method="_on_raycast_mode_option_button_item_selected"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/DeselectCursorButton" to="." method="_on_deselect_cursor_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/UseTerrain3D/UseTerrain3DCheckBox" to="." method="_on_use_terrain_3d_check_box_toggled"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/AddRemoveTerrain3DGroup/AddTerrain3DGroupButton" to="." method="_on_add_terrain_3d_group_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/AddRemoveTerrain3DGroup/RemoveTerrain3DGroupButton" to="." method="_on_remove_terrain_3d_group_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/CursorToOriginButton" to="." method="_on_cursor_to_origin_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/SelectedObjectToCursorButton" to="." method="_on_selected_object_to_cursor_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/CursorToSelectedObjectsButton" to="." method="_on_cursor_to_selected_objects_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/ToggleCursorButton" to="." method="_on_toggle_cursor_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/RemoveActiveCursorFromSceneButton" to="." method="_on_remove_active_cursor_from_scene_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/MoveActiveCursorButton" to="." method="_on_move_active_cursor_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/RemoveAllCursorsFromSceneButton" to="." method="_on_remove_all_cursors_from_scene_button_pressed"]

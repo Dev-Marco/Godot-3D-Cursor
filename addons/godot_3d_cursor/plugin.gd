@@ -10,145 +10,98 @@ extends EditorPlugin
 ## by [i]TokisanGames[/i]. For additional third-party support, please refer to the
 ## [url=https://github.com/Dev-Marco/Godot-3D-Cursor]GitHub repository[/url] and open an issue.
 
-## Emitted whenever a cursor is being deleted.
-signal cursor_deleted(name: String)
-## Emitted when a cursor is created or recovered.
-signal cursor_created(cursor: Cursor3D)
-
-## This Enum holds the values for the different modes of raycasting.
-enum RaycastMode {
-	## [br](Legacy) This mode uses physics-based raycasting, so the cursor can only be placed
-	## on objects with a collider.[br][br]
-	## The setting [code]physics/3d/run_on_separate_thread[/code] must be disabled for this
-	## mode to function correctly.[br][br]
-	## The [Terrain3D] plugin by [i]TokisanGames[/i] is partially supported. To enable
-	## compatibility, the [param Collision Mode] of the [Terrain3D] instance must be set
-	## to either [param Dynamic / Editor] or [param Full / Editor] in the inspector.[br]
-	PHYSICS,
-	## [br]This mode uses mesh-based raycasting, allowing the cursor to be placed on objects
-	## with a mesh or on [CSGShape3D] objects that can bake a mesh.[br][br] In addition, this mode
-	## supports the [Terrain3DExtension] for the [Terrain3D] plugin by [i]TokisanGames[/i].
-	## [b]Note[/b] that [Terrain3D] instances must be assigned to the [i]"Terrain3D"[/i] group.
-	PHYSICSLESS,
+enum NodeNameNumSeparator {
+	NONE,
+	SPACE,
+	UNDERSCORE,
+	DASH,
 }
 
 ## The name of the group that every instance of [Cursor3D] is part of. Helps when dealing with
 ## duplicates of the cursor.
 const CURSOR_GROUP = "Plugin3DCursor"
+const CURSOR_COMPONENT_GROUP = "Plugin3DCursorComponent"
 
-## This variable indicates whether the active tab is 3D
-var _main_screen: String = ""
-## The position of the mouse used to raycast into the 3D world
-var mouse_position: Vector2
-## The Editor Viewport used to get the mouse position
-var editor_viewport: SubViewport
-## The camera that displays what the user sees in the 3D editor tab
-var editor_camera: Camera3D
-## The root node of the active scene
-var edited_scene_root: Node
 ## The scene used to instantiate the 3D Cursor
 var cursor_scene: PackedScene
-## The instance of the 3D Cursor
-var cursor: Cursor3D
 ## The scene used to instantiate the pie menu for the 3D Cursor
 var pie_menu_scene: PackedScene
-## The instance of the pie menu for the 3D Cursor
-var pie_menu: PieMenu
 ## The scene of the settings dock for the 3D Cursor
 var settings_dock_scene: PackedScene
+
+## The instance of the active 3D Cursor
+var cursor: Cursor3D:
+	set(value):
+		cursor = value
+		_last_active_cursors_by_scene[current_scene_path] = value
+var _last_active_cursors_by_scene: Dictionary[String, Cursor3D] = {}
+var last_active_cursor: Cursor3D:
+	get:
+		if _last_active_cursors_by_scene.has(current_scene_path) and _last_active_cursors_by_scene.get(current_scene_path) == null:
+			return null
+		return _last_active_cursors_by_scene.get(current_scene_path)
+## The instance of the pie menu for the 3D Cursor
+var pie_menu: PieMenu
 ## The instance of the settings dock for the 3D Cursor
 var settings_dock: SettingsDock
-## A reference to the [EditorCommandPalette] singleton used to add
-## some useful actions to the command palette such as '3D Cursor to Origin'
-## or '3D Cursor to selected object' like in Blender
-var command_palette: EditorCommandPalette
-## The InputEvent holding the MouseButton event to trigger the
-## set position function of the 3D Cursor
-var input_event_set_3d_cursor: InputEventMouseButton
-var input_event_show_pie_menu: InputEventKey
-## The boolean that ensures the _recover_cursor function is executed once
-var cursor_set: bool = false
-## The instance of the Undo Redo class
-var undo_redo: EditorUndoRedoManager
-## The collision finder object that searches for collisions using a mesh-based system.
-var physicsless_collision_finder: PhysicslessCollisionFinder
-## The collision finder object that searches for collisions using a physics-based system. (Legacy)
-var physics_collision_finder: PhysicsCollisionFinder
-## The currently active [enum RaycastMode] for the 3D Cursor
-var raycast_mode: RaycastMode = RaycastMode.PHYSICSLESS
+
+var signal_hub: Cursor3DSignalHub
+var undo_redo_manager: Cursor3DUndoRedoManager
+var cursor_actions: Cursor3DActions
+var command_palette_manager: Cursor3DCommandPaletteManager
+var input_manager: Cursor3DInputManager
+var raycast_engine: Cursor3DRaycastEngine
+
+## This variable holds the name of the currently active tab. It is useful to
+## prevent triggering certain Inputs outside of the 3D tab.
+var _main_screen: String = ""
+var cursor_counter: int = 0
+var current_scene_path: String:
+	get:
+		return EditorInterface.get_edited_scene_root().scene_file_path
 
 
 func _enter_tree() -> void:
+	signal_hub = Cursor3DSignalHub.new()
+	add_child(signal_hub)
+	signal_hub.clear_cursor_pressed.connect(unset_cursor)
+	signal_hub.cursor_recovered.connect(set_cursor)
+	undo_redo_manager = Cursor3DUndoRedoManager.new(self)
+	add_child(undo_redo_manager)
+	cursor_actions = Cursor3DActions.new(self, undo_redo_manager)
+	add_child(cursor_actions)
+	command_palette_manager = Cursor3DCommandPaletteManager.new(self)
+	add_child(command_palette_manager)
+	input_manager = Cursor3DInputManager.new(self)
+	add_child(input_manager)
+	raycast_engine = Cursor3DRaycastEngine.new(self)
+	add_child(raycast_engine)
 	_provide_3d_cursor_warnings()
 	_setup_editor_events()
-	_preload_3d_cursor_components()
-	_setup_command_palette()
-	_setup_necessary_editor_components()
+	_preload_3d_cursor_ui_components()
 	_setup_pie_menu()
-	_setup_input_map_actions()
 	_setup_settings_dock()
 
 
 func _exit_tree() -> void:
 	_disconnect_editor_events()
-	_disconnect_pie_menu_events()
-	_remove_command_palette_actions()
-	_remove_input_map_actions()
 	_free_3d_cursor()
+	_free_all_3d_cursors()
 	_free_pie_menu()
 	_free_settings_dock()
-
-
-func _process(delta: float) -> void:
-	# If the action is not yet set up: return
-	if not InputMap.has_action("3d_cursor_set_location"):
-		return
-
-	# Set the location of the 3D Cursor
-	if not Input.is_key_pressed(KEY_SHIFT):
-		return
-
-	# Only allow setting the 3D Cursors location in 3D tab
-	if not _is_in_3d_tab():
-		return
-
-	if Input.is_action_just_pressed("3d_cursor_set_location"):
-		mouse_position = editor_viewport.get_mouse_position()
-		_get_click_location()
-
-	if cursor == null or not cursor.is_inside_tree():
-		return
-
-	if Input.is_action_just_pressed("3d_cursor_show_pie_menu"):
-		pie_menu.visible = not pie_menu.visible
-		_set_visibility_toggle_label()
-
-
-func _input(event: InputEvent) -> void:
-	if event.is_released():
-		return
-
-	if not pie_menu.visible:
-		return
-
-	if pie_menu.hit_any_button():
-		return
-
-	if event is InputEventKey and event.keycode == KEY_S and event.is_echo():
-		return
-
-	if event is InputEventKey or event is InputEventMouseButton:
-		pie_menu.hide()
-		# CAUTION: Do not mess with this statement! It can render your editor
-		# responseless. If it happens remove the plugin and restart the engine.
-		editor_viewport.set_input_as_handled()
+	signal_hub.queue_free()
+	undo_redo_manager.queue_free()
+	cursor_actions.queue_free()
+	command_palette_manager.queue_free()
+	input_manager.queue_free()
+	raycast_engine.queue_free()
 
 
 ### --------------------------  Setup Functions  --------------------------- ###
 
 ## This function sets up all warnings connected to the 3D Cursor.
 func _provide_3d_cursor_warnings():
-	if not _check_compatibility():
+	if not Cursor3DRaycastEngine.check_compatibility():
 		push_warning(
 			"Godot 3D Cursor 1.4.0 requires features introduced in Godot 4.5. "
 		 	+ "The plugin has reverted to legacy physics-based raycasting due to "
@@ -161,41 +114,20 @@ func _provide_3d_cursor_warnings():
 func _setup_editor_events():
 	# Register the switching of tabs in the editor. We only want the
 	# 3D Cursor functionality within the 3D tab
-	connect("main_screen_changed", _on_main_screen_changed)
+	main_screen_changed.connect(_on_main_screen_changed)
+	scene_changed.connect(_on_scene_changed)
 	# We want to place newly added Nodes that inherit [Node3D] at
 	# the location of the 3D Cursor. Therefore we listen to the
 	# node_added event
-	get_tree().connect("node_added", _on_node_added)
+	get_tree().node_added.connect(_on_node_added)
 
 
 ## This function preloads every scene for the 3D Cursor.
-func _preload_3d_cursor_components():
+func _preload_3d_cursor_ui_components():
 	# Loading the 3D Cursor scene for later instancing
 	cursor_scene = preload("uid://dfpatff4d5okj")
 	pie_menu_scene = preload("uid://igrlue2n5478")
 	settings_dock_scene = preload("uid://dt0ngqiwc0150")
-
-
-## This function sets up every 3D Cursor action for the command palette.
-func _setup_command_palette():
-	command_palette = EditorInterface.get_command_palette()
-	# Adding the previously mentioned actions
-	command_palette.add_command("3D Cursor to Origin", "3D Cursor/3D Cursor to Origin", _3d_cursor_to_origin)
-	command_palette.add_command("3D Cursor to Selected Object", "3D Cursor/3D Cursor to Selected Object", _3d_cursor_to_selected_objects)
-	command_palette.add_command("Selected Object to 3D Cursor", "3D Cursor/Selected Object to 3D Cursor", _selected_object_to_3d_cursor)
-	# Adding the remove 3D Cursor in Scene action
-	command_palette.add_command("Remove 3D Cursor from Scene", "3D Cursor/Remove 3D Cursor from Scene", _remove_3d_cursor_from_scene)
-	command_palette.add_command("Toggle 3D Cursor", "3D Cursor/Toggle 3D Cursor", _toggle_3d_cursor)
-
-
-func _setup_necessary_editor_components():
-	editor_viewport = EditorInterface.get_editor_viewport_3d()
-	editor_camera = editor_viewport.get_camera_3d()
-
-	# Get the reference to the UndoRedo instance of the editor
-	undo_redo = get_undo_redo()
-	physicsless_collision_finder = PhysicslessCollisionFinder.new()
-	physics_collision_finder = PhysicsCollisionFinder.new()
 
 
 ## This function sets up the pie menu for the 3D Cursor.
@@ -203,13 +135,8 @@ func _setup_pie_menu():
 	# Instantiating the pie menu for the 3D Cursor commands
 	pie_menu = pie_menu_scene.instantiate()
 	pie_menu.hide()
-	# Connecting the button events from the pie menu to the corresponding function
-	pie_menu.connect("cursor_to_origin_pressed", _3d_cursor_to_origin)
-	pie_menu.connect("cursor_to_selected_objects_pressed", _3d_cursor_to_selected_objects)
-	pie_menu.connect("selected_object_to_cursor_pressed", _selected_object_to_3d_cursor)
-	pie_menu.connect("remove_cursor_from_scene_pressed", _remove_3d_cursor_from_scene)
-	pie_menu.connect("toggle_cursor_pressed", _toggle_3d_cursor)
 	add_child(pie_menu)
+	pie_menu.setup(self)
 
 
 ## This function sets up the settings dock for the 3D Cursor.
@@ -217,37 +144,7 @@ func _setup_settings_dock():
 	# Instantiating the settings dock
 	settings_dock = settings_dock_scene.instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, settings_dock)
-	settings_dock.button.pressed.connect(_debug_button)
-	settings_dock.plugin_context = self
-	settings_dock.init_signals()
-
-
-func _debug_button() -> void:
-	var connections = settings_dock.button.pressed.get_connections()
-	connections.all(func(c): c.signal.disconnect(c.callable))
-	remove_control_from_docks(settings_dock)
-	settings_dock.queue_free()
-	settings_dock = settings_dock_scene.instantiate()
-	add_control_to_dock(DOCK_SLOT_LEFT_BR, settings_dock)
-	settings_dock.button.pressed.connect(_debug_button)
-
-
-## This function sets up the input map actions for the 3D Cursor.
-func _setup_input_map_actions():
-	# Setting up the InputMap so that we can set the 3D Cursor
-	# by Shift + Right Click
-	if not InputMap.has_action("3d_cursor_set_location"):
-		InputMap.add_action("3d_cursor_set_location")
-		input_event_set_3d_cursor = InputEventMouseButton.new()
-		input_event_set_3d_cursor.button_index = MOUSE_BUTTON_RIGHT
-		InputMap.action_add_event("3d_cursor_set_location", input_event_set_3d_cursor)
-
-	# Adding the action that shows the pie menu for the 3D Cursor commands.
-	if not InputMap.has_action("3d_cursor_show_pie_menu"):
-		InputMap.add_action("3d_cursor_show_pie_menu")
-		input_event_show_pie_menu = InputEventKey.new()
-		input_event_show_pie_menu.keycode = KEY_S
-		InputMap.action_add_event("3d_cursor_show_pie_menu", input_event_show_pie_menu)
+	settings_dock.setup(self)
 
 
 ### --------------------------  Remove Functions  -------------------------- ###
@@ -255,50 +152,21 @@ func _setup_input_map_actions():
 ## This method disconnects the editor events.
 func _disconnect_editor_events():
 	# Removing listeners
-	disconnect("main_screen_changed", _on_main_screen_changed)
-	get_tree().disconnect("node_added", _on_node_added)
-
-
-## This method disconnects the events from the pie menu buttons.
-func _disconnect_pie_menu_events():
-	pie_menu.disconnect("cursor_to_origin_pressed", _3d_cursor_to_origin)
-	pie_menu.disconnect("cursor_to_selected_objects_pressed", _3d_cursor_to_selected_objects)
-	pie_menu.disconnect("selected_object_to_cursor_pressed", _selected_object_to_3d_cursor)
-	pie_menu.disconnect("remove_cursor_from_scene_pressed", _remove_3d_cursor_from_scene)
-	pie_menu.disconnect("toggle_cursor_pressed", _toggle_3d_cursor)
-
-
-## This method removes the actions from the command palette. It'll be invoked by
-## [code]_exit_tree[/code] which in turn will indirectly be invokes by disabling the plugin.
-func _remove_command_palette_actions():
-	# Removing the actions from the [EditorCommandPalette]
-	command_palette.remove_command("3D Cursor/3D Cursor to Origin")
-	command_palette.remove_command("3D Cursor/3D Cursor to Selected Object")
-	command_palette.remove_command("3D Cursor/Selected Object to 3D Cursor")
-	command_palette.remove_command("3D Cursor/Remove 3D Cursor from Scene")
-	command_palette.remove_command("3D Cursor/Toggle 3D Cursor")
-	command_palette = null
-
-
-## This method removes the input map actions. It'll be invoked by [code]_exit_tree[/code]
-## which in turn will indirectly be invokes by disabling the plugin.
-func _remove_input_map_actions():
-	# Removing the '3D Cursor set Location' action from the InputMap
-	if InputMap.has_action("3d_cursor_set_location"):
-		InputMap.action_erase_event("3d_cursor_set_location", input_event_set_3d_cursor)
-		InputMap.erase_action("3d_cursor_set_location")
-
-	# Removing the 'Show Pie Menu' action from the InputMap
-	if InputMap.has_action("3d_cursor_show_pie_menu"):
-		InputMap.action_erase_event("3d_cursor_show_pie_menu", input_event_show_pie_menu)
-		InputMap.erase_action("3d_cursor_show_pie_menu")
+	main_screen_changed.disconnect(_on_main_screen_changed)
+	scene_changed.disconnect(_on_scene_changed)
+	get_tree().node_added.disconnect(_on_node_added)
 
 
 ## This method will free the cursor and remove the reference to the [Cursor3D] scene.
 func _free_3d_cursor():
 	# Deleting the 3D Cursor
-	_remove_3d_cursor_from_scene()
+	free_cursor()
 	cursor_scene = null
+
+
+func _free_all_3d_cursors():
+	for cursor: Cursor3D in get_all_cursors():
+		cursor.queue_free()
 
 
 ## This method will free the pie menu and remove the reference to the [PieMenu] scene.
@@ -314,7 +182,6 @@ func _free_settings_dock():
 	# Deleting the settings dock
 	if settings_dock != null:
 		remove_control_from_docks(settings_dock)
-		settings_dock.button.pressed.disconnect(_debug_button)
 		settings_dock.queue_free()
 	settings_dock_scene = null
 
@@ -327,9 +194,13 @@ func _on_main_screen_changed(screen_name: String) -> void:
 	_main_screen = screen_name
 
 
+func _on_scene_changed(scene_root: Node) -> void:
+	signal_hub.cursor_recovered.emit(last_active_cursor)
+
+
 ## Connected to the node_added event of the get_tree()
 func _on_node_added(node: Node) -> void:
-	if not _cursor_available():
+	if not cursor_available():
 		return
 	if EditorInterface.get_edited_scene_root() != cursor.owner:
 		return
@@ -339,6 +210,8 @@ func _on_node_added(node: Node) -> void:
 		return
 	if not node is Node3D:
 		return
+	if node.is_in_group(CURSOR_COMPONENT_GROUP):
+		return
 	# Apply the position of the new node to the 3D Cursors position if the
 	# 3D cursor is available, the node is not the 3D cursor itself, the node
 	# is no descendant of the 3D Cursor and the node inherits [Node3D]
@@ -347,371 +220,56 @@ func _on_node_added(node: Node) -> void:
 
 ### -------------------------  3D Cursor Actions  -------------------------- ###
 
-## Set the postion of the 3D Cursor to the origin (or [Vector3.ZERO])
-func _3d_cursor_to_origin() -> void:
-	if not _cursor_available():
-		return
-
-	_create_undo_redo_action(
-		cursor,
-		"global_position",
-		Vector3.ZERO,
-		"Move 3D Cursor to Origin",
-	)
-
-
-## Set the position of the 3D Cursor to the selected object and if multiple
-## Nodes are selected to the average of the positions of all selected nodes
-## that inherit [Node3D]
-func _3d_cursor_to_selected_objects() -> void:
-	if not _cursor_available():
-		return
-
-	# Get the selection and through this the selected nodes as an Array of Nodes
-	var selection: EditorSelection = EditorInterface.get_selection()
-	var selected_nodes: Array[Node] = selection.get_selected_nodes()
-
-	if selected_nodes.is_empty():
-		return
-	if selected_nodes.size() == 1 and not selected_nodes.front() is Node3D:
-		return
-
-	# If only one Node is selected and it inherits Node3D set the position
-	# of the 3D Cursor to its position
-	if selected_nodes.size() == 1:
-		_create_undo_redo_action(
-			cursor,
-			"global_position",
-			selected_nodes.front().global_position,
-			"Move 3D Cursor to selected Object",
-		)
-		return
-
-	# Introduce a count variable to keep track of the amount of valid positions
-	# to calculate the average position later
-	var count = 0
-	var position_sum: Vector3 = Vector3.ZERO
-
-	for node in selected_nodes:
-		if not (node is Node3D or node is Cursor3D):
-			continue
-
-		# If the node is a valid object increment count and add the position
-		# to position_sum
-		count += 1
-		position_sum += node.global_position
-
-	if count == 0:
-		return
-
-	# Calculate the average position for multiple selected Nodes and set
-	# the 3D Cursor to this position
-	var average_position = position_sum / count
-	_create_undo_redo_action(
-		cursor,
-		"global_position",
-		average_position,
-		"Move 3D Cursor to selected Objects",
-	)
-	cursor.global_position = average_position
-
-
-## Set the position of the selected object that inherits [Node3D]
-## to the position of the 3D Cursor. If multiple nodes are selected the first
-## valid node (i.e. a node that inherits [Node3D]) will be moved to
-## position of the 3D Cursor. This funcitonality is disabled if the cursor
-## is not set or hidden in the scene.
-func _selected_object_to_3d_cursor() -> void:
-	if not _cursor_available():
-		return
-
-	# Get the selection and through this the selected nodes as an Array of Nodes
-	var selection: EditorSelection = EditorInterface.get_selection()
-	var selected_nodes: Array[Node] = selection.get_selected_nodes()
-
-	if selected_nodes.is_empty():
-		return
-	if selected_nodes.size() == 1 and not selected_nodes.front() is Node3D:
-		return
-	selected_nodes = selected_nodes.filter(func(node): return node is Node3D and not node is Cursor3D)
-	if selected_nodes.is_empty():
-		return
-
-	_create_undo_redo_action(
-		selected_nodes.front(),
-		"global_position",
-		cursor.global_position,
-		"Move Object to 3D Cursor"
-	)
-
-
-## Disable the 3D Cursor to prevent the node placement at the position of
-## the 3D Cursor.
-func _toggle_3d_cursor() -> void:
-	if not _cursor_available(true):
-		return
-
-	cursor.visible = not cursor.visible
-	_set_visibility_toggle_label()
-
-
 ## Sets the correct label on the toggle visibility button in the pie menu
 func _set_visibility_toggle_label() -> void:
 	pie_menu.change_toggle_label(cursor.visible)
 
 
-## Remove every 3D Cursor from the scene including the active one.
-func _remove_3d_cursor_from_scene() -> void:
-	cursor_deleted.emit(cursor.name)
-	# Get all cursors within the scene and remove them
-	for c: Cursor3D in _get_all_cursors():
-		c.queue_free()
-	cursor = null
+## A wrapper for [member Plugin3DCursor.available_cursor] for an easy boolean
+## check to see if an instance of [Cursor3D] is set up in the current scene.
+func cursor_available(ignore_hidden = false) -> bool:
+	return available_cursor(ignore_hidden) != null
 
 
 ## Check whether the 3D Cursor is set up and ready for use. A hidden 3D Cursor
-## should also disable its functionality. Therefore this function yields false
-## if the cursor is hidden in the scene
-func _cursor_available(ignore_hidden = false) -> bool:
+## should also disable its functionality. Therefore this function yields [code]null[/code]
+## if the cursor is hidden in the scene unless [param ignore_hidden] is set to
+## [code]true[/code], then it yields the available [Cursor3D] instance.
+func available_cursor(ignore_hidden: bool = false) -> Cursor3D:
 	# CAUTION: Do not mess with this statement! It can render your editor
 	# responseless. If it happens remove the plugin and restart the engine.
-	editor_viewport.set_input_as_handled()
+	raycast_engine.editor_viewport.set_input_as_handled()
 	if cursor == null:
-		return false
+		return null
 	if not cursor.is_inside_tree():
-		return false
+		return null
 	if ignore_hidden and not cursor.is_visible_in_tree():
-		return true
+		return cursor
 	if not cursor.is_visible_in_tree():
-		return false
-	return true
-
-
-## This function uses raycasting to determine the position of the mouse click
-## to set the position of the 3D Cursor. This means that it is necessary for
-## the clicked on objects to have a collider the raycast can hit
-func _get_click_location() -> void:
-	# If the scene is switched stop
-	if edited_scene_root != null and edited_scene_root != EditorInterface.get_edited_scene_root() and cursor != null:
-		# Reset scene root, viewport and camera for new scene
-		edited_scene_root = null
-		editor_viewport = EditorInterface.get_editor_viewport_3d()
-		editor_camera = editor_viewport.get_camera_3d()
-
-		# Clear the 3D Cursor on the old screen.
-		cursor.queue_free()
-		cursor = null
-
-	if not cursor_set:
-		_recover_cursor()
-
-	# Get the transform of the camera from the 3D Viewport
-	var editor_camera_transform = _get_editor_camera_transform()
-
-	# if the editor_camera_transform is Transform3D.IDENTITY that means
-	# that for some reason the editor_camera is null.
-	if editor_camera_transform == Transform3D.IDENTITY:
-		return
-
-	# If there is no scene root set, try to get one
-	if edited_scene_root == null:
-		edited_scene_root = _get_first_3d_root_node()
-
-	# Either there is no Node3D in the scene or the plugin failed to locate one
-	if edited_scene_root == null:
-		return
-
-	# The space state where the raycast should be performed in
-	var space_state
-		# Set up the raycast parameters
-	var ray_length = 1000
-	# The position from where to start raycasting
-	var from = editor_camera.project_ray_origin(mouse_position)
-	# The direction in which to raycast
-	var dir = editor_camera.project_ray_normal(mouse_position)
-	# The point to raycast to (dependent of ray_length and camera mode i.e. perspective/orthogonal)
-	var to = from + dir * (editor_camera.far if editor_camera.far > 0.0 else ray_length)
-	# The variable to store the raycast hit
-	var hit: Dictionary
-
-	# Choose the collision finder depending on the raycast mode
-	# Then perform a raycast with the parameters above and store the result in hit
-	if raycast_mode == RaycastMode.PHYSICSLESS:
-		hit = await physicsless_collision_finder.get_closest_collision(from, to, editor_camera)
-	elif raycast_mode == RaycastMode.PHYSICS:
-		hit = physics_collision_finder.get_closest_collision(from, to, edited_scene_root.get_world_3d())
-
-	# This bool indicates whether the 3D cursor is just created
-	var just_created: bool = false
-
-	# When the cursor is not yet created instantiate it, add it to the scene
-	# and position it at the collision detected by the raycast
-	if cursor == null:
-		cursor = cursor_scene.instantiate()
-		cursor.plugin_context = self
-		edited_scene_root.add_child(cursor)
-		cursor.owner = edited_scene_root
-		cursor_created.emit(cursor)
-		just_created = true
-
-	# If the cursor is not in the node tree at this point it means that the
-	# user probably deleted it. Then add it again
-	if not cursor.is_inside_tree():
-		edited_scene_root.add_child(cursor)
-		cursor.owner = edited_scene_root
-		cursor_created.emit(cursor)
-		just_created = true
-
-	# No collision means do nothing
-	if hit.is_empty():
-		return
-
-	# If the cursor was just created
-	if just_created:
-		# Position the 3D Cursor to the position of the collision
-		#cursor.global_transform.origin = result.position
-		cursor.global_transform.origin = hit["position"]
-		return
-
-	# If the cursor is hidden don't set its position
-	if not _cursor_available():
-		return
-
-	# Make the action undoable/redoable
-	_create_undo_redo_action(
-		cursor,
-		"global_position",
-		#result.position,
-		hit["position"],
-		"Set Position for 3D Cursor"
-	)
+		return null
+	return cursor
 
 
 ### ------------------------------  Utility  ------------------------------- ###
 
-## This function returns the transform of the camera from the 3D Editor itself
-func _get_editor_camera_transform() -> Transform3D:
-	if editor_camera != null:
-		return editor_camera.get_camera_transform()
-	return Transform3D.IDENTITY
-
-
-## This function recovers any 3D Cursor present in the scene if you reload
-## the project
-func _recover_cursor() -> void:
-	# This boolean ensures this function is run exactly once
-	cursor_set = true
-	# Gets the children of the active scenes root node
-	var root_children = EditorInterface.get_edited_scene_root().get_children()
-	# Checks whether there are any nodes of type [Cursor3D] in the list of
-	# children
-	if root_children.any(func(node): return node is Cursor3D):
-		# Get the first and probably only instance of [Cursor3D] and assign
-		# it to the cursor variable. Now the 3D Cursor is considered recovered
-		cursor = root_children.filter(func(node): return node is Cursor3D).front()
-		cursor_created.emit(cursor)
-
-
-func _create_undo_redo_action(node: Node3D, property: String, value: Variant, action_name: String = "") -> void:
-	if node == null or property.is_empty() or value == null:
-		return
-
-	if action_name.is_empty():
-		action_name = "Set " + property + " for " + node.name
-
-	undo_redo.create_action(action_name)
-	var old_value: Variant = node.get(property)
-	undo_redo.add_do_property(node, property, value)
-	undo_redo.add_undo_property(node, property, old_value)
-	undo_redo.commit_action()
-
-
-## This function searches for the first instance of a Node3D in the sceen tree.
-## If the root is not a Node3D, it will search recursively to find the Node3D
-## with the shortest path.
-func _get_first_3d_root_node() -> Node3D:
-	var root: Node = EditorInterface.get_edited_scene_root()
-	if root is Node3D:
-		return root
-	var found_root: Dictionary = _search_for_3d_root(root)
-	if found_root.is_empty():
-		push_warning("The plugin 'Godot 3D Cursor' was unable to locate a Node3D to base its calculation upon in your scene.")
-		return null
-	return found_root["node"]
-
-
-## This function searches recursively for Node3D through every path of nodes.
-## The Node3D with the shortest path is considered the root node and will be
-## returned at the end. It is important to use `Dictionary` as the return type
-## instead of `Dictionary[String, Variant]` because typed Dictionaries were
-## introduced in Godot 4.4 and would exclude older Godot versions that
-## this plugin could support.
-func _search_for_3d_root(current_node: Node, level: int = 0) -> Dictionary:
-	# This Array contains the first Node3Ds of any subpath from current_node
-	var results: Array[Dictionary] = []
-
-	# We iterate through every child of the current_node
-	for child in current_node.get_children():
-		# If a child is already a Node3D we return it in a Dictionary along with its depth (level)
-		if child is Node3D:
-			return { "level": level, "node": child }
-	# As we didn't leave the function early we go through the children again
-	for child in current_node.get_children():
-		# We invoke the method recursively with a deeper level
-		var result: Dictionary = _search_for_3d_root(child, level + 1)
-
-		# If there are Node3Ds found, we return them
-		if not result.is_empty():
-			results.append(result)
-
-	# If we haven't found any Node3Ds, we return an empty Dictionary
-	if results.is_empty():
-		return {}
-
-	# If we found exactly one Node3D we will return exactly this one
-	if results.size() == 1:
-		return results[0]
-
-	# This value represents the index of the Node3D in results with the shortest
-	# path (level). Initialized with -1 to show that nothing is found yet.
-	var lowest_index: int = -1
-	# This value represents the level this Node3D is found on. The bigger the
-	# deeper it is i. e. more nested in the tree. We want the lowest level.
-	# If two have the same level the first one is earlier in the tree, which we
-	# want. Initialized with -1 to show that nothing is found yet.
-	var lowest_level: int = -1
-
-	# We go through the results with a range to keep track of the current index.
-	for i in range(results.size()):
-		# If the value of level from the result is lower than the lowest_level
-		# this result is the better option so far.
-		if results[i]["level"] < lowest_level or lowest_level == -1:
-			# Reassign the lowest_index as it is the better choice.
-			lowest_index = i
-			# Reassign the lowest_level as it is the better choice.
-			lowest_level = results[i]["level"]
-
-	# At the end we return the Node3D with the shortest path in this instance
-	# of the recursive function call.
-	return results[lowest_index]
-
-
-## Checks whether the current Godot version is high enough to determine compabtibility
-## with newer [Cursor3D] features introduced in [i]Godot 3D Cursor[/i] v1.4.0+.
-func  _check_compatibility() -> bool:
-	return Engine.get_version_info().hex >= 0x040500
-
-
 ## Returns all instances of a [Cursor3D] instance within a scene in an [code]Array[Cursor3D][/code]
-func _get_all_cursors() -> Array[Cursor3D]:
-	var out: Array[Cursor3D]
+func get_all_cursors() -> Array[Cursor3D]:
+	var out: Array[Cursor3D] = []
 	out.assign(get_tree().get_nodes_in_group(CURSOR_GROUP))
+	out.sort_custom(func(a: Node, b: Node): return a.name.naturalnocasecmp_to(b.name) < 0)
 	return out
+
+
+func get_newest_cursor() -> Cursor3D:
+	var cursors: Array[Cursor3D] = get_all_cursors()
+	if cursors.is_empty():
+		return null
+	return cursors.back()
 
 
 ## Checks whether the active tab is 3D or not. If the user did not switch any tab since startup
 ## or since enabling the plugin we fall back to a hacky solution trying find the active tab.
-func _is_in_3d_tab() -> bool:
+func is_in_3d_tab() -> bool:
 	# When the _main_screen variable is empty, this means the user has not switched tabs
 	# If it is not, we return whether it is "3D"
 	if not _main_screen.is_empty():
@@ -727,10 +285,52 @@ func _is_in_3d_tab() -> bool:
 
 
 func unset_cursor() -> void:
-	cursor_set = false
+	if cursor == null:
+		return
+	_last_active_cursors_by_scene.erase(current_scene_path)
 	cursor = null
 
 
 func set_cursor(cursor: Cursor3D) -> void:
-	cursor_set = true
 	self.cursor = cursor
+
+
+func free_cursor() -> void:
+	if cursor == null:
+		return
+	cursor.queue_free()
+	cursor = null
+
+
+func create_cursor() -> void:
+	cursor = cursor_scene.instantiate()
+	cursor.setup(self)
+	raycast_engine.edited_scene_root.add_child(cursor)
+	cursor.owner = raycast_engine.true_edited_scene_root
+	if cursor_counter > 0:
+		var separator: String = ""
+		match ProjectSettings.get_setting("editor/naming/node_name_num_separator"):
+			NodeNameNumSeparator.NONE:
+				pass
+			NodeNameNumSeparator.SPACE:
+				separator = " "
+			NodeNameNumSeparator.UNDERSCORE:
+				separator = "_"
+			NodeNameNumSeparator.DASH:
+				separator = "-"
+
+		cursor.name = "3DCursor{separator}{counter}".format({
+			"separator": separator,
+			"counter": cursor_counter,
+		})
+	cursor.number_label.text = "#{0}".format([cursor_counter])
+	cursor_counter += 1
+	signal_hub.cursor_created.emit(cursor)
+
+
+func add_cursor_to_tree() -> void:
+	if cursor == null:
+		return
+	raycast_engine.edited_scene_root.add_child(cursor)
+	cursor.owner = raycast_engine.edited_scene_root
+	signal_hub.cursor_created.emit(cursor)
