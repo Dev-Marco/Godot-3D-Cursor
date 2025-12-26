@@ -110,6 +110,11 @@ text = "On"
 layout_mode = 2
 theme_override_constants/separation = 8
 
+[node name="ActiveCursorLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Active Cursor"
+
 [node name="RaycastMode" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -181,6 +186,11 @@ text = "Clear"
 
 [node name="HSeparator2" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="ExtensionsLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Extensions"
 
 [node name="UseTerrain3D" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
