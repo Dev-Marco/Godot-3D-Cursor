@@ -200,6 +200,7 @@ func _on_main_screen_changed(screen_name: String) -> void:
 
 func _on_scene_changed(scene_root: Node) -> void:
 	signal_hub.cursor_recovered.emit(last_active_cursor)
+	cursor_counter[current_scene_path] = get_all_cursors().size()
 
 
 ## Connected to the node_added event of the get_tree()
@@ -308,14 +309,14 @@ func free_cursor() -> void:
 
 func create_cursor() -> void:
 	cursor = cursor_scene.instantiate()
-	cursor.setup(self)
-	raycast_engine.edited_scene_root.add_child(cursor)
-	cursor.owner = raycast_engine.true_edited_scene_root
 	# [COMPATIBILITY WITH 4.2] Dictionary.get_or_add not available
 	# if cursor_counter.get_or_add(current_scene_path, 0) > 0:
 	if not cursor_counter.has(current_scene_path):
 		cursor_counter[current_scene_path] = 0
-	if cursor_counter.get(current_scene_path, 0) > 0:
+	cursor.setup(self, cursor_counter.get(current_scene_path))
+	raycast_engine.edited_scene_root.add_child(cursor)
+	cursor.owner = raycast_engine.true_edited_scene_root
+	if cursor_counter.get(current_scene_path) > 0:
 		var separator: String = ""
 		match ProjectSettings.get_setting("editor/naming/node_name_num_separator"):
 			NodeNameNumSeparator.NONE:
@@ -331,7 +332,6 @@ func create_cursor() -> void:
 			"separator": separator,
 			"counter": cursor_counter.get(current_scene_path),
 		})
-	cursor.number_label.text = "#{0}".format([cursor_counter.get(current_scene_path)])
 	cursor_counter[current_scene_path] += 1
 	signal_hub.cursor_created.emit(cursor)
 

@@ -25,5 +25,3 @@ no_depth_test = true
 modulate = Color(0.8513751, 0.7096352, 0, 1)
 text = "#"
 font_size = 24
-
-[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
