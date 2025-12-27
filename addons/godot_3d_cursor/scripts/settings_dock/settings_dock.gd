@@ -196,14 +196,8 @@ func _on_line_edit_cursor_selected(cursor: Cursor3D) -> void:
 
 func _active_cursor_line_edit_clicked(double_click: bool = false) -> void:
 	if Input.is_key_pressed(KEY_ALT) or active_cursor_line_edit.text.is_empty():
-
-		# [COMPATIBILITY WITH 4.2]
-		#EditorInterface.popup_node_selector(_assign_active_cursor, ["Cursor3D"])
-		#signal_hub.active_cursor_line_edit_cursor_selected.emit(plugin_context.cursor)
-		if EditorInterface.has_method("popup_node_selector"):
-			EditorInterface.call("popup_node_selector", _assign_active_cursor, ["Cursor3D"])
-			signal_hub.active_cursor_line_edit_cursor_selected.emit(plugin_context.cursor)
-
+		EditorInterface.popup_node_selector(_assign_active_cursor, ["Cursor3D"])
+		signal_hub.active_cursor_line_edit_cursor_selected.emit(plugin_context.cursor)
 		return
 	if plugin_context.cursor == null:
 		return
@@ -300,11 +294,8 @@ func _on_move_active_cursor_button_pressed() -> void:
 func select_node_for_move_to() -> void:
 	if plugin_context.cursor == null:
 		return
+	EditorInterface.popup_node_selector(_on_node_for_move_to_selected, ["Node3D"])
 
-	# [COMPATIBILITY WITH 4.2]
-	#EditorInterface.popup_node_selector(_on_node_for_move_to_selected, ["Node3D"])
-	if EditorInterface.has_method("popup_node_selector"):
-		EditorInterface.call("popup_node_selector", _on_node_for_move_to_selected, ["Node3D"])
 
 
 func _on_node_for_move_to_selected(node_path: NodePath) -> void:

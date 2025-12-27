@@ -34,9 +34,7 @@ var cursor: Cursor3D:
 	set(value):
 		cursor = value
 		_last_active_cursors_by_scene[current_scene_path] = value
-# [COMPATIBILITY WITH 4.2] Typed Dictionary
-#var _last_active_cursors_by_scene: Dictionary[String, Cursor3D = {}
-var _last_active_cursors_by_scene: Dictionary = {}
+var _last_active_cursors_by_scene: Dictionary[String, Cursor3D] = {}
 var last_active_cursor: Cursor3D:
 	get:
 		if _last_active_cursors_by_scene.has(current_scene_path) and _last_active_cursors_by_scene.get(current_scene_path) == null:
@@ -57,9 +55,7 @@ var raycast_engine: Cursor3DRaycastEngine
 ## This variable holds the name of the currently active tab. It is useful to
 ## prevent triggering certain Inputs outside of the 3D tab.
 var _main_screen: String = ""
-# [COMPATIBILITY WITH 4.2] Typed Dictionary
-#var cursor_counter: Dictionary[String, int] = {}
-var cursor_counter: Dictionary = {}
+var cursor_counter: Dictionary[String, int] = {}
 var current_scene_path: String:
 	get:
 		return EditorInterface.get_edited_scene_root().scene_file_path
@@ -309,11 +305,7 @@ func free_cursor() -> void:
 
 func create_cursor() -> void:
 	cursor = cursor_scene.instantiate()
-	# [COMPATIBILITY WITH 4.2] Dictionary.get_or_add not available
-	# if cursor_counter.get_or_add(current_scene_path, 0) > 0:
-	if not cursor_counter.has(current_scene_path):
-		cursor_counter[current_scene_path] = 0
-	cursor.setup(self, cursor_counter.get(current_scene_path))
+	cursor.setup(self, cursor_counter.get_or_add(current_scene_path, 0))
 	raycast_engine.edited_scene_root.add_child(cursor)
 	cursor.owner = raycast_engine.true_edited_scene_root
 	if cursor_counter.get(current_scene_path) > 0:

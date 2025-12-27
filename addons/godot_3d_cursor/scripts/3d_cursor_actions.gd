@@ -152,12 +152,8 @@ func remove_active_cursor_from_scene() -> void:
 	plugin_context.signal_hub.active_cursor_deleted.emit()
 	plugin_context.cursor.queue_free()
 	plugin_context.unset_cursor()
-	if not plugin_context.cursor_counter.has(plugin_context.current_scene_path):
-		plugin_context.cursor_counter[plugin_context.current_scene_path] = 0
 	if plugin_context.get_all_cursors().size() == 1:
-		# [COMPATIBILITY WITH 4.2]
-		#plugin_context.cursor_counter.get_or_add(plugin_context.current_scene_path, 0)
-		plugin_context.cursor_counter.get(plugin_context.current_scene_path)
+		plugin_context.cursor_counter.get_or_add(plugin_context.current_scene_path, 0)
 		plugin_context.cursor_counter[plugin_context.current_scene_path] = 0
 
 
@@ -170,11 +166,7 @@ func remove_all_cursors_from_scene() -> void:
 	for cursor: Cursor3D in cursors:
 		cursor.queue_free()
 	plugin_context.unset_cursor()
-	if not plugin_context.cursor_counter.has(plugin_context.current_scene_path):
-		plugin_context.cursor_counter[plugin_context.current_scene_path] = 0
-	# [COMPATIBILITY WITH 4.2]
-	#plugin_context.cursor_counter.get_or_add(plugin_context.current_scene_path, 0)
-	plugin_context.cursor_counter.get(plugin_context.current_scene_path)
+	plugin_context.cursor_counter.get_or_add(plugin_context.current_scene_path, 0)
 	plugin_context.cursor_counter[plugin_context.current_scene_path] = 0
 
 

@@ -112,9 +112,7 @@ func is_valid_drop_type(value: Variant) -> bool:
 	if value is PackedVector3Array and not value.is_empty():
 		set_coordinates(value[0].x, value[0].y, value[0].z)
 		return true
-	# [COMPATIBILITY WITH 4.2]
-	# if value is PackedVector4Array and not value.is_empty():
-	if type_string(typeof(value)) == "PackedVector4Array" and not value.is_empty():
+	if value is PackedVector4Array and not value.is_empty():
 		set_coordinates(value[0].x, value[0].y, value[0].z)
 		return true
 	if value is Transform2D:
