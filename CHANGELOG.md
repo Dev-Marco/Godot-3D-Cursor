@@ -8,8 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > [!info]
 > Changelog entries are fully maintained starting with version **1.5.0**.
 > Earlier releases are included on a best-effort basis and may be incomplete.
+>
+> **Version support policy:** The plugin is maintained in two tracks:
+> - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
+> - **1.5.x** supports **Godot 4.5+** and receives new features and improvements.
 
-## [1.5.0] - 2025-12-26
+## [1.5.0] - 2025-12-29
 
 ### Added
 
@@ -88,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **1.5.x:** Raised the minimum supported Godot version to 4.5+ (Godot 4.2.x, 4.3.x, 4.4.x is no longer supported on this track)
 - Major refactor of the whole plugin.
 - Reorganized scripts, assets, and scenes for improved maintainability.
 - Replaced scene file paths with UIDs.
