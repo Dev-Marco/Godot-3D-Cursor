@@ -6,14 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 > [!info]
-> Changelog entries are fully maintained starting with version **1.5.0**.
+> Changelog entries are fully maintained starting with version **2.0.0**.
 > Earlier releases are included on a best-effort basis and may be incomplete.
 >
 > **Version support policy:** The plugin is maintained in two tracks:
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
-> - **1.5.x** supports **Godot 4.5+** and receives new features and improvements.
+> - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
-## [1.5.0] - 2025-12-29
+## [2.0.0] - 2025-12-29
 
 ### Added
 

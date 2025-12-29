@@ -38,7 +38,7 @@ text = "Godot 3D Cursor Plugin"
 
 [node name="Label2" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Version 1.5.0"
+text = "Version 2.0.0"
 
 [node name="Label3" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
