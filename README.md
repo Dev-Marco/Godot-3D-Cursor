@@ -1,90 +1,132 @@
-# 3D Cursor Plugin for Godot Engine
+# Godot 3D Cursor Plugin
 
-This plugin implements a 3D cursor in the Godot Engine, inspired by the 3D cursor functionality in Blender. It provides an intuitive way to place and position new nodes within a 3D scene, along with additional positioning tools.
+This plugin implements a *3D Cursor* in the Godot Engine, inspired by Blender’s 3D cursor functionality.
+It provides an intuitive and precise way to place and position nodes within a 3D scene, improving the overall workflow for 3D level design.
 
 ## Features
+- Intuitive *3D Cursor* placement directly in the editor
+- Precise node placement for all `Node3D`-based nodes
+- Multiple cursor actions via *Pie Menu*, *Command Palette* and *Settings Dock*
+- Customizable cursor appearance and behavior
+- Multiple independent *3D Cursor* instances per scene
+- Editor-only functionality (no runtime impact)
 
-- **3D Cursor Placement**: Use `Shift + Right Click` to place the 3D cursor in a 3D scene. The cursor appears only when clicking on a surface with a collider, ensuring accurate placement on interactable objects.
-- **Node Placement at Cursor**: New nodes inheriting from `Node3D` are automatically positioned at the cursor’s location instead of the scene or parent node’s origin. If the cursor is hidden, this functionality is disabled.
-- **Cursor Persistence**: If the cursor is deleted, it can be restored by pressing `Shift + Right Click` again. The cursor can also be manually adjusted using Godot's standard gizmos.
-- **Additional Commands in the Command Palette**:
-  - **3D Cursor to Origin**: Resets the cursor's position to the scene origin.
-  - **3D Cursor to Selected Object**: Moves the cursor to the position of a selected object or to the average position if multiple objects are selected.
+## 3D Cursor
+- **3D Cursor Placement**: Use `Shift + Right Click` to place the *3D Cursor* in a 3D scene. The cursor can be placed on `CSGShape3D` nodes as well as any mesh-based nodes. Compatible with Godot’s standard editor gizmos.
+- **Node Placement at Cursor**: New nodes inheriting from `Node3D` are automatically positioned at the active cursor's location instead of the scene or parent node's origin. If the active cursor is hidden or disabled via an action, this functionality is disabled.
+- **Additional Commands**: Multiple cursor actions are accessible through the *Pie Menu* (`Shift + S`), the *Command Palette* (`Ctrl + Shift + P`) and the *Settings Dock*.
 - **Customizable Appearance**:
-  - An optional label can be displayed with the cursor, with settings to scale it along with the cursor or keep it fixed.
-  - The cursor itself is scalable to fit different scene requirements.
-- **Scene Compatibility**: The cursor remains functional across different scenes. When placed in a new scene, it will be automatically removed from the previous one.
+	- By default, two labels are displayed on every cursor, with options to scale them together with the cursor or keep them fixed.
+	- The cursor itself is scalable to fit different scene requirements.
+	- Settings are stored per *3D Cursor* instance and saved internally.
+- **Scene Compatibility**: The *3D Cursor* can be placed independently across multiple scenes without limitations. If the plugin is disabled, opening a scene containing *3D Cursor* instances will cause them to free themselves.
+- **Editor Exclusive**: *3D Cursor* instances are editor-only and will not be displayed in-game.
 
-## Activation Instructions
+![Placing Cursor](videos/placing_cursor.gif)
 
-**Note:** Due to certain engine limitations, you must switch to a tab other than the 3D view (e.g., 2D, Script, or AssetLib) and then back to the 3D view once after enabling the plugin or upon engine startup to ensure full functionality.
+## Cursor Actions
 
-## Usage
+| **Action**                             | **Description**                                                                                                                                                                                                                                                                 | **Accessible through**                         | **Undo** |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | :------: |
+| **3D Cursor to Origin**                | Resets the active cursor's position to the scene origin.<br><br>![3D Cursor to Origin](videos/cursor_to_origin.gif)                                                                                                                                                             | *Pie Menu*, *Command Palette*, *Settings Dock* |    ✅     |
+| **3D Cursor to Selected Object(s)**    | Moves the active cursor to the position of a selected object or to the average position if multiple objects are selected.<br><br>![3D Cursor to Selected Object](videos/cursor_to_selected.gif)<br><br>![3D Cursor to Selected Objects](videos/cursor_to_multiple_selected.gif) | *Pie Menu*, *Command Palette*, *Settings Dock* |    ✅     |
+| **Selected Object to 3D Cursor**       | Moves the selected object to the position of the active cursor.<br><br>![Selected Object to 3D Cursor](videos/selected_to_cursor.gif)                                                                                                                                           | *Pie Menu*, *Command Palette*, *Settings Dock* |    ✅     |
+| **Disable / Enable 3D Cursor**         | Either hides the active cursor and disables its functionality or shows it and enables its functionality.                                                                                                                                                                        | *Pie Menu*, *Command Palette*, *Settings Dock* |    ❌     |
+| **Remove Active 3D Cursor from Scene** | Removes the active cursor from the scene and frees it.                                                                                                                                                                                                                          | *Pie Menu*, *Command Palette*, *Settings Dock* |    ❌     |
+| **Remove All 3D Cursors from Scene**   | Removes all cursors from the scene.                                                                                                                                                                                                                                             | *Pie Menu*, *Command Palette*, *Settings Dock* |    ❌     |
+| **Move Active 3D Cursor to ...**       | Moves the active cursor to either a selected `Node3D` or to coordinates extracted from dragged object properties.                                                                                                                                                               | *Command Palette*, *Settings Dock*             |    ✅     |
 
-- **Placing the Cursor**: Press `Shift + Right Click` within a 3D scene to place the cursor on a collider surface. The cursor appears in the Node Tree and can be toggled visible or hidden.
-- **Node Placement**: When adding a new `Node3D`, it will be positioned at the cursor’s location if the cursor is visible.
-- **Moving the Cursor**: Use the following commands from the Command Palette (Ctrl + Shift + P):
-  - **3D Cursor to Origin**: Resets the cursor to the origin of the scene.
-  - **3D Cursor to Selected Object(s)**: Aligns the cursor with the selected object(s).
-  - **Selected Object to 3D Cursor**: Aligns the selected object with the cursor.
-  - **Remove 3D Cursor from Scene**: Removes the cursor from the scene and freeing it.
-- **New in v1.3.0:**
-  - **Pie Menu Improvement**: If you keep pressing the shortcut for the Pie Menu (Shift + S) you can hover over the desired command and release the keys to invoke the command similar to Blender.
-  - **Disable/Enable 3D Cursor**: A command was added that allows the user to disable/enable the 3D Cursor within the active scene.
-- **New in v1.2.0:**
-  - **The Pie Menu**: This Pie Menu provides the same functionality as the command palette and is easier to reach. (Shift + S)
-  - **Undo and Redo**: Undo/Redo works as expected.
-- **Customizing the Cursor**: Adjust the cursor’s size and enable or disable the optional label via the Inspector. You can also configure the label to either scale with the cursor or remain fixed.
+## Pie Menu
+The *Pie Menu* provides quick access to common *3D Cursor* actions directly within the editor.
 
+- Access the *Pie Menu* via `Shift + S` when a *3D Cursor* instance is present in the current scene and assigned as the active cursor.
+- Either hold `Shift + S`, hover over the desired action and release the shortcut to invoke it, or simply click the desired action.
 
-## Version 1.3.0: Pie Menu Improvements
+![Pie Menu](screenshots/pie_menu.jpg)
 
-![Pie Menu](screenshots/PieMenu2.png "Pie Menu Selection Indicator")
+## Settings Dock
 
-This update introduces some imrprovements for the pie menu as well as some additional functionality for the 3D Cursor.
+![Settings Dock](screenshots/settings_dock.jpg)
 
-  - **Selection Indicator**: A new selection indicator in the pie menu that is pointing towards the mouse (purely aesthetic).
-  - **Pie Menu Background**: A background container was added for the pie menu to increase the overall contrast especially in bright scenes.
-  - **Disable/Enable 3D Cursor Command**: A new command was added in the pie menu as well as the command palette. This command allows to quickly toggle the 3D Cursor of the active scene on or off.
-  - **Undo/Redo for Cursor positioning**: If the user sets the position of the 3D Cursor via Shift + Right Click, this action can now be undone via Ctrl + Z.
-  - **Hover and Release to select**: If the user keeps pressing the shortcut for the pie menu (Shift + S) and then hovers over a button, he can then release the keys to select the hovered command (similar to Blender).
-  - **Tested and working in 4.2**: The plugin is now tested and usable in Godot 4.2 and above. Versions below are unsupported at the moment (Changes to the EditorPlugin class made in 4.2 are required).
+### Raycast Mode
+- **Physicsless**: Does not require collision shapes to calculate the mouse click position, allowing physics to run on another thread. Compatible with **Terrain3D** by *TokisanGames*.
+- **Physics** *(Legacy)*: Requires collision shapes to calculate the mouse click position. Physics must not run on another thread. Partially compatible with **Terrain3D** by *TokisanGames* (see issue #6).
 
-## Version 1.2.0: Pie Menu and Undo-Redo Update
+![Raycast Mode](screenshots/settings_dock_raycast_mode.jpg)
 
-![Pie Menu](screenshots/PieMenu.png "Pie Menu Options")
+### Active Cursor
+- The active cursor is always the most recently created cursor unless cleared manually or removed.
+- Clicking the active cursor field in the *Settings Dock* or dragging a *3D Cursor* instance onto it will set a new active cursor.
+- `Left Click` selects the active cursor in both the scene tree and the editor.
+- `Double Left Click` turns the camera towards the active cursor.
+- `Ctrl + Left Click` selects the active cursor, turns the camera towards it and zooms in.
+- `Alt + Left Click` opens a node selector window to choose a *3D Cursor* instance as the new active cursor.
 
-This update introduces a **Pie Menu** similar to Blender's, accessible via `Shift + S`. This menu provides quicker access to commands also found in the Command Palette, allowing for a faster workflow.
+![Drag 3D Cursor on Active](videos/drag_cursor_on_active.gif)
 
-Additionally, **Undo and Redo** functionality has been added, allowing most cursor actions to be undone/redone. The exception is the `Remove 3D Cursor from Scene` command, as it frees the cursor object itself and thus cannot be undone.
+![Click Active Cursor](videos/click_active_cursor.gif)
+
+![Active Cursor Node Selector](screenshots/active_cursor_node_selector.jpg)
+
+### Terrain3D Compatibility
+To work with **Terrain3D** by *TokisanGames*, enable the extension in the *Settings Dock* and add the required group to each **Terrain3D** instance in the scene using the provided button.
+
+![Settings Dock Terrain3D Toggled](screenshots/settings_dock_terrain3d_toggled.jpg)
+
+### Action Buttons
+- All cursor actions are also accessible via dedicated buttons in the *Settings Dock*.
+- The **Move Active 3D Cursor to ...** button is special:
+	- It can open a node selector window to choose any `Node3D`
+	- Or accept dragged nodes or object properties
+
+Allowed object property types:
+- `PackedVector2Array`, `PackedVector3Array`, `PackedVector4Array`
+	- Only the first element is used
+	- Default mapping: `x → x`, `y → y`, `0 → z`
+	- Hold `Shift` to use: `x → x`, `0 → y`, `y → z`
+- `Transform2D`, `Transform3D`
+- `Vector2`, `Vector2i`
+	- Default mapping: `x → x`, `y → y`, `0 → z`
+	- Hold `Shift` to use: `x → x`, `0 → y`, `y → z`
+- `Vector3`, `Vector3i`
+	- Mapping: `x → x`, `y → y`, `z → z`
+- `Vector4`, `Vector4i`
+	- Mapping: `x → x`, `y → y`, `z → z` (`w` is discarded)
+- Specially structured `Dictionary`
+	- Must contain keys `x`, `y` and `z` (case-insensitive)
+	- Values must be of type `float` or `int`
+
+Dragging a valid node or object property onto the button reveals the extracted target position below it.
+
+![Move Active 3D Cursor to](videos/drag_node_on_move_button.gif)
+
+## Quick Start
+- Enable the plugin
+- Within a 3D scene, use `Shift + Right Click` on any mesh-based node or node inheriting from `CSGShape3D` to place a *3D Cursor*
+- Use `Shift + S` to open the *Pie Menu* and access *3D Cursor* actions
+- Use `Ctrl + Shift + Right Click` to place additional *3D Cursors*
+- Assign different *3D Cursors* as active by dragging them into the active cursor field in the *Settings Dock*
+
+## Requirements
+- **Godot 4.2** or newer
+- 3D projects
 
 ## Installation
 
-1. Download or clone the repository into your Godot project’s `addons` folder or download the plugin via the AssetLib in the engine.
-2. Enable the 3D Cursor Plugin in **Project > Project Settings > Plugins**.
+### Godot Asset Library
+1. Open the *Asset Library* in the Godot editor
+2. Search for "**Godot 3D Cursor**" by *Marco-*
+3. Download and enable the plugin in Project Settings → Plugins
 
----
+### Manual Installation
+1. Download or clone this repository
+2. Copy the `addons` folder into your project
+3. Enable the plugin in Project Settings → Plugins
 
-![3D Cursor](screenshots/3DCursor.png "3D Cursor in Scene")
-![Command Palette Actions](screenshots/CommandPalette.png "Command Palette Actions")
-
-![Node Tree](screenshots/NodeTree.png "3D Cursor in Node Tree")
-![Inspector](screenshots/Inspector.png "3D Cursor Inspector Settings")
-
-https://github.com/user-attachments/assets/6b1ddf33-e0a3-4c5e-a93a-4a8efd5c4bda
-
-https://github.com/user-attachments/assets/36245057-8e32-407a-a68a-3c64bb359ad7
-
-https://github.com/user-attachments/assets/03a14673-6d34-4e10-a532-e245e8ee1697
-
-https://github.com/user-attachments/assets/791e785b-c6b1-42bc-8d98-925acd4d239c
-
-https://github.com/user-attachments/assets/58bc277c-64dc-4da4-ad82-67fe5f066db5
-
-## Feedback and Contributions
-
-I welcome feedback, bug reports, and contributions to improve the 3D Cursor Plugin and ensure it meets the needs of the Godot community. 
+## Feedback
+Feedback, bug reports, and contributions are very welcome.
+Feel free to open an issue or pull request.
 
 ## License
-
-This plugin is open-source and licensed under the MIT License. See the LICENSE file for more details.
+This plugin is open-source and licensed under the **ISC License**.
+See [LICENSE](LICENSE) for more details.
