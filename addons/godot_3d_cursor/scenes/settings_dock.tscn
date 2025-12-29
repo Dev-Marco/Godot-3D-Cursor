@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://dt0ngqiwc0150"]
+[gd_scene load_steps=7 format=3 uid="uid://dt0ngqiwc0150"]
 
 [ext_resource type="Script" uid="uid://clrvn115vyp7s" path="res://addons/godot_3d_cursor/scripts/settings_dock/settings_dock.gd" id="1_fr25p"]
 [ext_resource type="Script" uid="uid://3gxixdbp5muq" path="res://addons/godot_3d_cursor/scripts/settings_dock/drag_and_drop_line_edit.gd" id="2_tussh"]
 [ext_resource type="Script" uid="uid://dva2usm5j2sgf" path="res://addons/godot_3d_cursor/scripts/settings_dock/move_active_cursor_button.gd" id="3_tussh"]
 [ext_resource type="Script" uid="uid://dyn712dfnrqm0" path="res://addons/godot_3d_cursor/scripts/settings_dock/move_action_coordinates.gd" id="4_6ifjp"]
+[ext_resource type="PackedScene" uid="uid://dl45jxaskf0e6" path="res://addons/godot_3d_cursor/scenes/info_dialog.tscn" id="5_haihr"]
+
+[sub_resource type="SystemFont" id="SystemFont_6ifjp"]
 
 [node name="SettingsDock" type="Control"]
 layout_mode = 3
@@ -36,10 +39,25 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "3D Cursor Settings"
+
+[node name="InfoButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_6ifjp")
+theme_override_font_sizes/font_size = 10
+text = "info"
+
+[node name="HSeparator4" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
 
 [node name="Scale" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -324,6 +342,9 @@ layout_mode = 2
 size_flags_horizontal = 3
 editable = false
 
+[node name="InfoDialog" parent="." instance=ExtResource("5_haihr")]
+
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer/InfoButton" to="." method="_on_info_button_pressed"]
 [connection signal="value_changed" from="ScrollContainer/MarginContainer/VBoxContainer/Scale/ScaleSpinBox" to="." method="_on_scale_spin_box_value_changed"]
 [connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ScaleAffectLabels/ScaleAffectLabelsCheckBox" to="." method="_on_scale_affect_labels_check_box_toggled"]
 [connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ShowTitleLabel/ShowTitleLabelCheckBox" to="." method="_on_show_title_label_check_box_toggled"]

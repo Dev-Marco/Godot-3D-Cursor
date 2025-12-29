@@ -339,3 +339,7 @@ func _on_raycast_mode_option_button_item_selected(index: int) -> void:
 			signal_hub.raycast_mode_changed.emit(Cursor3DRaycastEngine.RaycastMode.PHYSICS)
 		_:
 			pass
+
+
+func _on_info_button_pressed() -> void:
+	$InfoDialog.show()

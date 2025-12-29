@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://dl45jxaskf0e6"]
+
+[ext_resource type="Script" uid="uid://kdw4ca5g12qd" path="res://addons/godot_3d_cursor/scripts/info_dialog.gd" id="1_rch62"]
+
+[node name="InfoDialog" type="Window"]
+oversampling_override = 1.0
+title = "Info"
+initial_position = 2
+size = Vector2i(253, 190)
+visible = false
+wrap_controls = true
+exclusive = true
+unresizable = true
+always_on_top = true
+minimize_disabled = true
+maximize_disabled = true
+script = ExtResource("1_rch62")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Godot 3D Cursor Plugin"
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Version 1.5.0"
+
+[node name="Label3" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Copyright © 2024 Dev-Marco"
+
+[node name="GitHubButton" type="LinkButton" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "GitHub Repository"
+uri = "https://github.com/Dev-Marco/Godot-3D-Cursor"
+
+[node name="Label4" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Want to support this plugin?"
+
+[node name="KofiButton" type="LinkButton" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Support me on Ko-fi"
+uri = "https://ko-fi.com/marco63728"
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
