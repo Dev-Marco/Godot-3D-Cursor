@@ -58,6 +58,8 @@ var _main_screen: String = ""
 var cursor_counter: Dictionary[String, int] = {}
 var current_scene_path: String:
 	get:
+		if EditorInterface.get_edited_scene_root() == null:
+			return ""
 		return EditorInterface.get_edited_scene_root().scene_file_path
 
 
