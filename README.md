@@ -50,7 +50,7 @@ The *Pie Menu* provides quick access to common *3D Cursor* actions directly with
 
 ### Raycast Mode
 - **Physicsless**: Does not require collision shapes to calculate the mouse click position, allowing physics to run on another thread. Compatible with **Terrain3D** by *TokisanGames*.
-- **Physics** *(Legacy)*: Requires collision shapes to calculate the mouse click position. Physics must not run on another thread. Partially compatible with **Terrain3D** by *TokisanGames* (see issue #6).
+- **Physics** *(Legacy)*: Requires collision shapes to calculate the mouse click position. Physics must not run on another thread. Partially compatible with **Terrain3D** by *TokisanGames* (see issue ![#3](https://github.com/Dev-Marco/Godot-3D-Cursor/issues/6)).
 
 ![Raycast Mode](screenshots/settings_dock_raycast_mode.jpg)
 
@@ -107,6 +107,14 @@ Dragging a valid node or object property onto the button reveals the extracted t
 - Use `Ctrl + Shift + Right Click` to place additional *3D Cursors*
 - Assign different *3D Cursors* as active by dragging them into the active cursor field in the *Settings Dock*
 
+## Known Issues
+- After using `Ctrl + Left Click` on the active cursor field (selecting the cursor, rotating the camera and zooming in),
+  the editor may keep the previous navigation distance internally if the camera was zoomed out beforehand.
+  This can result in an excessively high panning speed.
+
+  **Workaround:** Press `F` to reset the editor focus and restore the expected navigation behavior.
+- A more robust solution is being investigated, but this behavior is currently caused by editor-internal state handling.
+
 ## Requirements
 - **Godot 4.2** or newer
 - 3D projects
@@ -130,3 +138,11 @@ Feel free to open an issue or pull request.
 ## License
 This plugin is open-source and licensed under the **ISC License**.
 See [LICENSE](LICENSE) for more details.
+
+---
+
+<br>
+
+If you find this plugin useful and would like to support my work, you can do so on Ko-fi:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L4L31NYWZS)
