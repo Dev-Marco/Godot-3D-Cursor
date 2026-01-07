@@ -1,12 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://dl45jxaskf0e6"]
+[gd_scene load_steps=3 format=3 uid="uid://dl45jxaskf0e6"]
 
 [ext_resource type="Script" uid="uid://kdw4ca5g12qd" path="res://addons/godot_3d_cursor/scripts/info_dialog.gd" id="1_rch62"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rch62"]
 
 [node name="InfoDialog" type="Window"]
 oversampling_override = 1.0
 title = "Info"
 initial_position = 2
-size = Vector2i(253, 190)
+size = Vector2i(500, 400)
 visible = false
 wrap_controls = true
 exclusive = true
@@ -14,16 +16,15 @@ unresizable = true
 always_on_top = true
 minimize_disabled = true
 maximize_disabled = true
+min_size = Vector2i(500, 400)
+max_size = Vector2i(500, 400)
 script = ExtResource("1_rch62")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 500.0
+offset_bottom = 427.0
 size_flags_horizontal = 3
-size_flags_vertical = 3
+size_flags_vertical = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -31,33 +32,83 @@ theme_override_constants/margin_bottom = 16
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+size_flags_vertical = 0
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Title" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Godot 3D Cursor Plugin"
+theme_override_font_sizes/bold_font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxEmpty_rch62")
+bbcode_enabled = true
+text = "[b]Godot 3D Cursor Plugin[/b]"
+fit_content = true
 
-[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Version" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Version 2.0.0"
+theme_override_colors/default_color = Color(1, 1, 1, 0.7058824)
+theme_override_font_sizes/bold_font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxEmpty_rch62")
+bbcode_enabled = true
+text = "Version [version]"
+fit_content = true
 
-[node name="Label3" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Copyright" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/default_color = Color(1, 1, 1, 0.7058824)
+theme_override_font_sizes/bold_font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxEmpty_rch62")
+bbcode_enabled = true
 text = "Copyright © 2024 Dev-Marco"
+fit_content = true
 
-[node name="GitHubButton" type="LinkButton" parent="MarginContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "GitHub Repository"
-uri = "https://github.com/Dev-Marco/Godot-3D-Cursor"
 
-[node name="Label4" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="HSeparatorWhiteSpace" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
 layout_mode = 2
-size_flags_vertical = 8
-text = "Want to support this plugin?"
+theme_override_constants/separation = 24
 
-[node name="KofiButton" type="LinkButton" parent="MarginContainer/VBoxContainer"]
+[node name="SupportGodot" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 8
-text = "Support me on Ko-fi"
-uri = "https://ko-fi.com/marco63728"
+theme_override_styles/normal = SubResource("StyleBoxEmpty_rch62")
+bbcode_enabled = true
+text = "❤️ [b]Support the Godot Engine[/b]
+Help fund the free and open-source engine that makes this plugin possible.
+[hint=https://fund.godotengine.org/][color=f0b751][url=https://fund.godotengine.org/]Donate to Godot[/url][/color][/hint]"
+fit_content = true
+
+[node name="WhiteSpace" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="SupportPlugin" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_rch62")
+bbcode_enabled = true
+text = "☕ Support this plugin
+If this plugin saves you time or improves your workflow, you can support its development.
+[hint=https://ko-fi.com/marco63728][color=ffffffaa][url=https://ko-fi.com/marco63728]Support me on Ko-fi[/url][/color][/hint]"
+fit_content = true
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HSeparator2WhiteSpace" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Repository" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_rch62")
+bbcode_enabled = true
+text = "[hint=https://github.com/Dev-Marco/Godot-3D-Cursor][url=https://github.com/Dev-Marco/Godot-3D-Cursor]GitHub Repository[/url][/hint]"
+fit_content = true
 
 [connection signal="close_requested" from="." to="." method="_on_close_requested"]
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="meta_clicked" from="MarginContainer/VBoxContainer/SupportGodot" to="." method="_open_link_in_browser"]
+[connection signal="meta_clicked" from="MarginContainer/VBoxContainer/SupportPlugin" to="." method="_open_link_in_browser"]
+[connection signal="meta_clicked" from="MarginContainer/VBoxContainer/Repository" to="." method="_open_link_in_browser"]

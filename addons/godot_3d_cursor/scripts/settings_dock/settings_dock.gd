@@ -320,14 +320,20 @@ func _on_scale_spin_box_value_changed(value: float) -> void:
 
 
 func _on_scale_affect_labels_check_box_toggled(toggled_on: bool) -> void:
+	if plugin_context.cursor == null:
+		return
 	plugin_context.cursor.scale_affect_labels = toggled_on
 
 
 func _on_show_title_label_check_box_toggled(toggled_on: bool) -> void:
+	if plugin_context.cursor == null:
+		return
 	plugin_context.cursor.show_title_label = toggled_on
 
 
 func _on_show_number_label_check_box_toggled(toggled_on: bool) -> void:
+	if plugin_context.cursor == null:
+		return
 	plugin_context.cursor.show_number_label = toggled_on
 
 
