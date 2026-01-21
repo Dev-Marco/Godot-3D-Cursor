@@ -61,6 +61,13 @@ var current_scene_path: String:
 		if EditorInterface.get_edited_scene_root() == null:
 			return ""
 		return EditorInterface.get_edited_scene_root().scene_file_path
+var editor_selection: EditorSelection:
+	get:
+		if EditorInterface.get_edited_scene_root() == null:
+			return null
+		return EditorInterface.get_selection()
+var active_path_3d: Path3D
+var active_path_3d_point_count: int = 0
 
 
 func _enter_tree() -> void:
@@ -122,6 +129,9 @@ func _setup_editor_events():
 	# the location of the 3D Cursor. Therefore we listen to the
 	# node_added event
 	get_tree().node_added.connect(_on_node_added)
+	# We want to know when the user might select a Path3D node so we have to
+	# listen to any changes on the editor selection.
+	editor_selection.selection_changed.connect(_on_selection_changed)
 
 
 ## This function preloads every scene for the 3D Cursor.
@@ -157,6 +167,7 @@ func _disconnect_editor_events():
 	main_screen_changed.disconnect(_on_main_screen_changed)
 	scene_changed.disconnect(_on_scene_changed)
 	get_tree().node_added.disconnect(_on_node_added)
+	editor_selection.selection_changed.disconnect(_on_selection_changed)
 
 
 ## This method will free the cursor and remove the reference to the [Cursor3D] scene.
@@ -336,3 +347,51 @@ func add_cursor_to_tree() -> void:
 	raycast_engine.edited_scene_root.add_child(cursor)
 	cursor.owner = raycast_engine.edited_scene_root
 	signal_hub.cursor_created.emit(cursor)
+
+
+func _on_selection_changed() -> void:
+	# Get the selected nodes in the editor selection
+	var selection: Array[Node] = editor_selection.get_selected_nodes()
+	# The user is required to have exactly one node selected.
+	if selection.size() != 1:
+		active_path_3d = null
+		return
+	# The one selected node has to be of type Path3D
+	if not selection[0] is Path3D:
+		active_path_3d = null
+		return
+	# Set the currently active (selected) Path3D
+	active_path_3d = selection[0]
+	# To catch the creation of a new point in the Path3D's curve we save its
+	# point count upon selecting it.
+	active_path_3d_point_count = active_path_3d.curve.point_count
+	# If the curve_changed signal is already connected to the callback we do nothing.
+	if active_path_3d.curve_changed.is_connected(_on_path_3d_curve_changed):
+		return
+	# Connect the curve_changed signal to the callback.
+	active_path_3d.curve_changed.connect(_on_path_3d_curve_changed)
+
+
+func _on_path_3d_curve_changed() -> void:
+	# If there is no selected Path3D -> return
+	if active_path_3d == null:
+		return
+	# If there is no active cursor -> return
+	if cursor == null:
+		return
+	# Get the current point count of the Path3D's curve.
+	var point_count: int = active_path_3d.curve.point_count
+	# If the point count has not increased, the user has either manipulated or deleted
+	# an existing point. We update the global point count for the selected Path3D.
+	if active_path_3d_point_count >= point_count:
+		active_path_3d_point_count = point_count
+		return
+	# CAUTION: This blocks the curve of the active Path3D from emitting a signal when we
+	# manipulate a new points position. Otherwise this would result in recursive callbacks
+	# that might crash the engine.
+	active_path_3d.curve.set_block_signals(true)
+	# Set the position of the latest point to the active cursors position
+	active_path_3d.curve.set_point_position(point_count - 1, active_path_3d.to_local(cursor.global_position))
+	# CAUTION: This allows the curve of the active Path3D to emit signals again. Without this
+	# line, the functinoality around Path3D would cease to work.
+	active_path_3d.curve.set_block_signals(false)
