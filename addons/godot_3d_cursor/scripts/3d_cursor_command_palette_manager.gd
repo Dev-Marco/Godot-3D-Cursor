@@ -44,6 +44,10 @@ func _init(plugin_context: Plugin3DCursor) -> void:
 		"Move Active 3D Cursor to ...", "3D Cursor/Move Active 3D Cursor to",
 		func(): plugin_context.settings_dock.select_node_for_move_to()
 	)
+	_command_palette.add_command(
+		"Create Path3D From Cursors", "3D Cursor/Create Path3D From Cursors",
+		func(): plugin_context.settings_dock._on_create_path_3d_from_cursors_button_pressed()
+	)
 
 
 func _notification(what: int) -> void:
@@ -60,3 +64,4 @@ func _cleanup():
 	_command_palette.remove_command("3D Cursor/Remove All 3D Cursors from Scene")
 	_command_palette.remove_command("3D Cursor/Toggle 3D Cursor")
 	_command_palette.remove_command("3D Cursor/Move Active 3D Cursor to")
+	_command_palette.remove_command("3D Cursor/Create Path3D From Cursors")
