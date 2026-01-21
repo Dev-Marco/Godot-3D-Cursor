@@ -316,6 +316,9 @@ func _on_create_path_3d_from_cursors_button_pressed() -> void:
 	if plugin_context.get_all_cursors().is_empty():
 		return
 	EditorInterface.popup_node_selector(_create_path_3d_from_cursors, ["Node3D"])
+	var controls: Array = EditorInterface.get_base_control().find_children("*", "SceneTreeDialog", true, false)
+	if not controls.is_empty():
+		controls.back().title = "Select a parent for the new Path3D"
 
 
 func _create_path_3d_from_cursors(node_path: NodePath) -> void:
