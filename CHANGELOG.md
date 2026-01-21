@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.1.0] - 2026-01-22
+
+### Added
+
+- **Compatibility with `Path3D`**
+	- When a `Path3D` node is selected in the scene tree, adding a new point to its curve will place the point at the position of the active 3D Cursor. This requires exactly one selected node and an active 3D Cursor.
+	- When a single `Path3D` node is selected, additional points can be added directly to its curve by placing extra cursors using `Shift + Ctrl + Right Click`. New points are always appended to the end of the curve.
+
+- **Create Path3D From Cursors**
+	- Added a *Create Path3D From Cursors* button to the settings dock.
+	- Added a *Create Path3D From Cursors* action to the command palette.
+	- Clicking the button opens a node selector to choose a parent node.
+	- A new `Path3D` node is created as a child of the selected node. Its curve is built from all 3D Cursor positions in the active scene, ordered alphabetically.
+
 ## [2.0.1] - 2026-01-07
 
 ### Fixed

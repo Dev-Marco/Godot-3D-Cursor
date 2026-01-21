@@ -6,6 +6,7 @@ It provides an intuitive and precise way to place and position nodes within a 3D
 ## Features
 - Intuitive *3D Cursor* placement directly in the editor
 - Precise node placement for all `Node3D`-based nodes
+- Precise placement for points of a `Path3D`s curve
 - Multiple cursor actions via *Pie Menu*, *Command Palette* and *Settings Dock*
 - Customizable cursor appearance and behavior
 - Multiple independent *3D Cursor* instances per scene
@@ -35,6 +36,7 @@ It provides an intuitive and precise way to place and position nodes within a 3D
 | **Remove Active 3D Cursor from Scene** | Removes the active cursor from the scene and frees it.                                                                                                                                                                                                                          | *Pie Menu*, *Command Palette*, *Settings Dock* |    ❌     |
 | **Remove All 3D Cursors from Scene**   | Removes all cursors from the scene.                                                                                                                                                                                                                                             | *Pie Menu*, *Command Palette*, *Settings Dock* |    ❌     |
 | **Move Active 3D Cursor to ...**       | Moves the active cursor to either a selected `Node3D` or to coordinates extracted from dragged object properties.                                                                                                                                                               | *Command Palette*, *Settings Dock*             |    ✅     |
+| **Create Path3D From Cursors**         | Creates a new `Path3D` node as a child of a selected `Node3D`. Its curve is built from all 3D Cursor positions in the active scene, ordered alphabetically.<br><br>![Create Path3D From All Cursors](videos/path_3d_from_all_cursors.gif)                                       | *Command Palette*, *Settings Dock*             |    ❌     |
 
 ## Pie Menu
 The *Pie Menu* provides quick access to common *3D Cursor* actions directly within the editor.
@@ -50,7 +52,7 @@ The *Pie Menu* provides quick access to common *3D Cursor* actions directly with
 
 ### Raycast Mode
 - **Physicsless**: Does not require collision shapes to calculate the mouse click position, allowing physics to run on another thread. Compatible with **Terrain3D** by *TokisanGames*.
-- **Physics** *(Legacy)*: Requires collision shapes to calculate the mouse click position. Physics must not run on another thread. Partially compatible with **Terrain3D** by *TokisanGames* (see issue ![#3](https://github.com/Dev-Marco/Godot-3D-Cursor/issues/6)).
+- **Physics** *(Legacy)*: Requires collision shapes to calculate the mouse click position. Physics must not run on another thread. Partially compatible with **Terrain3D** by *TokisanGames* (see issue [#3]).
 
 ![Raycast Mode](screenshots/settings_dock_raycast_mode.jpg)
 
@@ -100,6 +102,15 @@ Dragging a valid node or object property onto the button reveals the extracted t
 
 ![Move Active 3D Cursor to](videos/drag_node_on_move_button.gif)
 
+### Path3D Compatibility
+When a `Path3D` node is selected in the scene tree, adding a new point to its curve will place the point at the position of the active 3D Cursor. This requires exactly one selected node and an active 3D Cursor.
+
+![Path3D Point to Cursor](videos/path_3d_point_to_cursor.gif)
+
+When a single `Path3D` node is selected, additional points can be added directly to its curve by placing extra cursors using `Shift + Ctrl + Right Click`. New points are always appended to the end of the curve.
+
+![Path3D Point on New Cursor](videos/path_3d_point_on_new_cursor.gif)
+
 ## Quick Start
 - Enable the plugin
 - Within a 3D scene, use `Shift + Right Click` on any mesh-based node or node inheriting from `CSGShape3D` to place a *3D Cursor*
@@ -114,6 +125,10 @@ Dragging a valid node or object property onto the button reveals the extracted t
 
   **Workaround:** Press `F` to reset the editor focus and restore the expected navigation behavior.
 - A more robust solution is being investigated, but this behavior is currently caused by editor-internal state handling.
+
+### Plugin Compatibility
+If you are developing a Godot plugin or addon and believe compatibility with this plugin would be useful, feel free to reach out.
+Compatibility and integration are handled on this plugin’s side where possible.
 
 ## Requirements
 - **Godot 4.2** or newer
