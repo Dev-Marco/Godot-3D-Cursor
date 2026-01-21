@@ -63,8 +63,6 @@ var current_scene_path: String:
 		return EditorInterface.get_edited_scene_root().scene_file_path
 var editor_selection: EditorSelection:
 	get:
-		if EditorInterface.get_edited_scene_root() == null:
-			return null
 		return EditorInterface.get_selection()
 var active_path_3d: Path3D
 var active_path_3d_point_count: int = 0
@@ -377,7 +375,7 @@ func _on_path_3d_curve_changed() -> void:
 	if active_path_3d == null:
 		return
 	# If there is no active cursor -> return
-	if cursor == null:
+	if not cursor_available():
 		return
 	# Get the current point count of the Path3D's curve.
 	var point_count: int = active_path_3d.curve.point_count
@@ -391,7 +389,29 @@ func _on_path_3d_curve_changed() -> void:
 	# that might crash the engine.
 	active_path_3d.curve.set_block_signals(true)
 	# Set the position of the latest point to the active cursors position
-	active_path_3d.curve.set_point_position(point_count - 1, active_path_3d.to_local(cursor.global_position))
+	active_path_3d.curve.set_point_position(
+		point_count - 1, active_path_3d.to_local(available_cursor().global_position)
+	)
 	# CAUTION: This allows the curve of the active Path3D to emit signals again. Without this
 	# line, the functinoality around Path3D would cease to work.
 	active_path_3d.curve.set_block_signals(false)
+	active_path_3d_point_count = point_count
+
+
+## Adds a new point to the active [Path3D]'s [member Path3D.curve]. The position is that of the
+## currently active [Cursor3D]
+func add_point_to_curve() -> void:
+	if active_path_3d == null:
+		return
+	if not cursor_available():
+		return
+	# CAUTION: This blocks the curve of the active Path3D from emitting a signal when we
+	# manipulate a new points position. Otherwise this would result in recursive callbacks
+	# that might crash the engine.
+	active_path_3d.curve.set_block_signals(true)
+	# Set the position of the latest point to the active cursors position
+	active_path_3d.curve.add_point(active_path_3d.to_local(available_cursor().global_position))
+	# CAUTION: This allows the curve of the active Path3D to emit signals again. Without this
+	# line, the functinoality around Path3D would cease to work.
+	active_path_3d.curve.set_block_signals(false)
+	active_path_3d.curve.notify_property_list_changed()

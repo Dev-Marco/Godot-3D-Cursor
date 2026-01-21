@@ -176,6 +176,9 @@ func _get_click_location(create_new_cursor: bool = false, recover_cursor: bool =
 		# Position the 3D Cursor to the position of the collision
 		#cursor.global_transform.origin = result.position
 		cursor.global_transform.origin = hit["position"]
+	if create_new_cursor and plugin_context.active_path_3d != null:
+		plugin_context.add_point_to_curve()
+	if just_created:
 		return
 
 	# If the cursor is hidden don't set its position

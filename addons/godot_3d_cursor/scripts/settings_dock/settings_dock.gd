@@ -297,7 +297,6 @@ func select_node_for_move_to() -> void:
 	EditorInterface.popup_node_selector(_on_node_for_move_to_selected, ["Node3D"])
 
 
-
 func _on_node_for_move_to_selected(node_path: NodePath) -> void:
 	if node_path.is_empty():
 		return
@@ -311,6 +310,28 @@ func _on_node_for_move_to_selected(node_path: NodePath) -> void:
 
 func _on_remove_all_cursors_from_scene_button_pressed() -> void:
 	signal_hub.remove_all_cursors_from_scene.emit()
+
+
+func _on_create_path_3d_from_cursors_button_pressed() -> void:
+	if plugin_context.get_all_cursors().is_empty():
+		return
+	EditorInterface.popup_node_selector(_create_path_3d_from_cursors, ["Node3D"])
+
+
+func _create_path_3d_from_cursors(node_path: NodePath) -> void:
+	if node_path == null or node_path.is_empty():
+		return
+	# Get the node from the NodePath
+	var selected_root: Node3D = EditorInterface.get_edited_scene_root().get_node_or_null(node_path)
+	if selected_root == null:
+		return
+	var path_3d: Path3D = Path3D.new()
+	selected_root.add_child(path_3d)
+	path_3d.owner = EditorInterface.get_edited_scene_root()
+	path_3d.curve = Curve3D.new()
+	for cursor: Cursor3D in plugin_context.get_all_cursors():
+		path_3d.curve.add_point(path_3d.to_local(cursor.global_position))
+
 
 
 func _on_scale_spin_box_value_changed(value: float) -> void:

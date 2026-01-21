@@ -301,6 +301,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Remove All 3D Cursors From Scene"
 
+[node name="CreatePath3DFromCursors" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Create Path3D From Cursors"
+
 [node name="MoveActionCoordinates" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons"]
 unique_name_in_owner = true
 visible = false
@@ -363,3 +369,4 @@ editable = false
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/RemoveActiveCursorFromSceneButton" to="." method="_on_remove_active_cursor_from_scene_button_pressed"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/MoveActiveCursorButton" to="." method="_on_move_active_cursor_button_pressed"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/RemoveAllCursorsFromSceneButton" to="." method="_on_remove_all_cursors_from_scene_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActionButtons/CreatePath3DFromCursors" to="." method="_on_create_path_3d_from_cursors_button_pressed"]
