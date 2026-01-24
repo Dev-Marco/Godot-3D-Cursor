@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.1.1] - 2026-01-24
+
+## Fixed
+- The coordinate preview is not displayed correctly while dragging a valid node onto the *Move Active 3D Cursor to ...* button.
+
 ## [2.1.0] - 2026-01-22
 
 ### Added

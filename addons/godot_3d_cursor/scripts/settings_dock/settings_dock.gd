@@ -60,6 +60,7 @@ var signal_hub: Cursor3DSignalHub:
 ## The button that removes all intances of [Cursor3D] from the current scene.
 @onready var remove_all_cursors_from_scene_button: Button = %RemoveAllCursorsFromSceneButton
 @onready var remove_active_cursor_from_scene_button: Button = %RemoveActiveCursorFromSceneButton
+@onready var grid_spacer: Control = %GridSpacer
 
 
 ## Sets up the [member SettingsDock.plugin_context] and connects to multiple
@@ -373,3 +374,7 @@ func _on_raycast_mode_option_button_item_selected(index: int) -> void:
 
 func _on_info_button_pressed() -> void:
 	$InfoDialog.show()
+
+
+func _on_move_action_coordinates_visibility_changed() -> void:
+	grid_spacer.visible = move_action_coordinates.visible
