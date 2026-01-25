@@ -10,6 +10,7 @@ It provides an intuitive and precise way to place and position nodes within a 3D
 - Multiple cursor actions via *Pie Menu*, *Command Palette* and *Settings Dock*
 - Customizable cursor appearance and behavior
 - Multiple independent *3D Cursor* instances per scene
+- Create `Path3D` nodes along the alphabetically sorted list of *3D Cursor* instances
 - Editor-only functionality (no runtime impact)
 
 ## 3D Cursor
