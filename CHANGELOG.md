@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.1.2] - 2026-01-25
+
+## Fixed
+- Running the game with at least one 3D cursor in the scene will throw an `Invalid call`-error (Issue #8).
+
 ## [2.1.1] - 2026-01-24
 
 ## Fixed
