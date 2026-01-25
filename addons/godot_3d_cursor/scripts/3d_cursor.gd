@@ -59,7 +59,7 @@ func _process(delta: float) -> void:
 	if not Engine.is_editor_hint():
 		hide()
 	# If the plugin is disabled remove the cursor
-	if not EditorInterface.is_plugin_enabled("godot_3d_cursor"):
+	if Engine.is_editor_hint() and not EditorInterface.is_plugin_enabled("godot_3d_cursor"):
 		queue_free()
 
 	# No manual user input allowed on rotation and scale;
