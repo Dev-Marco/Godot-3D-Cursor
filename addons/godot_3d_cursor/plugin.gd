@@ -208,6 +208,12 @@ func _on_main_screen_changed(screen_name: String) -> void:
 func _on_scene_changed(scene_root: Node) -> void:
 	signal_hub.cursor_recovered.emit(last_active_cursor)
 	cursor_counter[current_scene_path] = get_all_cursors().size()
+	# If a scene with cursors in it is loaded after restarting the engine the reference to the
+	# plugin_context might be lost. We reassign the plugin_context to every cursor without an
+	# active reference.
+	for c: Cursor3D in get_all_cursors():
+		if c.plugin_context == null:
+			c.plugin_context = self
 
 
 ## Connected to the node_added event of the get_tree()

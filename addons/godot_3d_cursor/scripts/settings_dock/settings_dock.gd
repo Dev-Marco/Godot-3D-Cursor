@@ -29,6 +29,25 @@ var signal_hub: Cursor3DSignalHub:
 	get:
 		return plugin_context.signal_hub
 
+var default_normal_color: Color = Color.hex(0xd9b500ff)
+var default_active_color: Color = Color.hex(0xff8c00ff)
+var default_selected_color: Color = Color.hex(0x00f2ffff)
+var cursor_normal_color: Color:
+	get:
+		if normal_color_picker_button == null:
+			return default_normal_color
+		return normal_color_picker_button.color
+var cursor_active_color: Color:
+	get:
+		if active_color_picker_button == null:
+			return default_active_color
+		return active_color_picker_button.color
+var cursor_selected_color: Color:
+	get:
+		if selected_color_picker_button == null:
+			return default_selected_color
+		return selected_color_picker_button.color
+
 ## The container that holds the buttons that add/remove the 'Terrain3D' group
 ## from [Terrain3D] instances.
 @onready var add_remove_terrain_3d_group: HBoxContainer = %AddRemoveTerrain3DGroup
@@ -55,12 +74,19 @@ var signal_hub: Cursor3DSignalHub:
 @onready var show_number_label_check_box: CheckBox = %ShowNumberLabelCheckBox
 ## The dropdown menu that allows the user to select the raycast mode.
 @onready var raycast_mode_option_button: OptionButton = %RaycastModeOptionButton
+## The Setting that toggles whether the newest [Cursor3D] is automatically recovered
+## if no active cursor is set. The same action as if the user uses
+## [code]Shift + Ctrl + Right Click[/code].
+@onready var auto_recover_check_box: CheckBox = %AutoRecoverCheckBox
 ## The container that holds all action buttons from the settings dock.
 @onready var action_buttons: GridContainer = %ActionButtons
 ## The button that removes all intances of [Cursor3D] from the current scene.
 @onready var remove_all_cursors_from_scene_button: Button = %RemoveAllCursorsFromSceneButton
 @onready var remove_active_cursor_from_scene_button: Button = %RemoveActiveCursorFromSceneButton
 @onready var grid_spacer: Control = %GridSpacer
+@onready var normal_color_picker_button: ColorPickerButton = %NormalColorPickerButton
+@onready var active_color_picker_button: ColorPickerButton = %ActiveColorPickerButton
+@onready var selected_color_picker_button: ColorPickerButton = %SelectedColorPickerButton
 
 
 ## Sets up the [member SettingsDock.plugin_context] and connects to multiple
@@ -378,3 +404,30 @@ func _on_info_button_pressed() -> void:
 
 func _on_move_action_coordinates_visibility_changed() -> void:
 	grid_spacer.visible = move_action_coordinates.visible
+
+
+func _on_normal_color_picker_button_color_changed(color: Color) -> void:
+	plugin_context.signal_hub.cursor_normal_color_changed.emit(color)
+
+
+func _on_active_color_picker_button_color_changed(color: Color) -> void:
+	plugin_context.signal_hub.cursor_active_color_changed.emit(color)
+
+
+func _on_selected_color_picker_button_color_changed(color: Color) -> void:
+	plugin_context.signal_hub.cursor_selected_color_changed.emit(color)
+
+
+func _on_reset_normal_color_button_pressed() -> void:
+	normal_color_picker_button.color = default_normal_color
+	normal_color_picker_button.color_changed.emit(default_normal_color)
+
+
+func _on_reset_active_color_button_pressed() -> void:
+	active_color_picker_button.color = default_active_color
+	active_color_picker_button.color_changed.emit(default_active_color)
+
+
+func _on_reset_selected_color_button_pressed() -> void:
+	selected_color_picker_button.color = default_selected_color
+	selected_color_picker_button.color_changed.emit(default_selected_color)

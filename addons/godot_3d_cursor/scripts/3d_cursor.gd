@@ -25,13 +25,27 @@ var scale_affect_labels: bool = true:
 		scale_affect_labels = value
 		set_meta("scale_affect_labels", value)
 ## The reference to the plugin core.
-var plugin_context: Plugin3DCursor
+var plugin_context: Plugin3DCursor:
+	set(context):
+		plugin_context = context
+		_connect_signals()
+var signal_hub: Cursor3DSignalHub:
+	get:
+		if plugin_context == null:
+			return null
+		return plugin_context.signal_hub
 ## The ID of the cursor
 var cursor_id: int = -1
 
 # The standard scale of the 3D Cursor. This size is chosen because of the
 # size of the .png used for the cursor. Please don't touch (private var)
 var _scale: float = 0.25
+var _initialized: bool = false
+var _selected: bool = false
+
+var _normal_color: Color = Color.hex(0xD9B500FF)
+var _active_color: Color = Color.DARK_ORANGE
+var _selected_color: Color = Color.hex(0x00F2FFFF)
 
 ## The sprite of the [Cursor3D]
 @onready var sprite_3d: Sprite3D = $Sprite3D
@@ -39,6 +53,12 @@ var _scale: float = 0.25
 @onready var title_label: Label3D = $Sprite3D/TitleLabel
 ## The number label of the [Cursor3D].
 @onready var number_label: Label3D = $Sprite3D/NumberLabel
+
+
+func _init() -> void:
+	if not Engine.is_editor_hint():
+		return
+	EditorInterface.get_selection().selection_changed.connect(_on_selection_changed)
 
 
 func _enter_tree() -> void:
@@ -52,6 +72,7 @@ func _enter_tree() -> void:
 		show_number_label = get_meta("show_number_label")
 	if has_meta("scale_affect_labels"):
 		scale_affect_labels = get_meta("scale_affect_labels")
+	set_meta("_edit_lock_", true)
 
 
 func _process(delta: float) -> void:
@@ -61,6 +82,10 @@ func _process(delta: float) -> void:
 	# If the plugin is disabled remove the cursor
 	if Engine.is_editor_hint() and not EditorInterface.is_plugin_enabled("godot_3d_cursor"):
 		queue_free()
+
+	if not _initialized and cursor_id != -1:
+		number_label.text = "#{0}".format([cursor_id])
+		_initialized = true
 
 	# No manual user input allowed on rotation and scale;
 	# Reset any user input to 0 or 1 respectively
@@ -82,8 +107,16 @@ func _process(delta: float) -> void:
 		title_label.scale = Vector3(label_scale, label_scale, label_scale)
 		number_label.scale = Vector3(label_scale, label_scale, label_scale)
 
-	if cursor_id != -1:
-		number_label.text = "#{0}".format([cursor_id])
+	if plugin_context == null:
+		return
+
+	if _selected:
+		_apply_color(_selected_color) # Blue Color
+		return
+	if plugin_context.cursor == self:
+		_apply_color(_active_color)
+		return
+	_apply_color(_normal_color) # Yellow Color
 
 
 ## Sets up the [member Cursor3D.plugin_context]
@@ -97,6 +130,19 @@ func setup(plugin_context: Plugin3DCursor, cursor_id: int) -> void:
 	set_meta("scale_affect_labels", scale_affect_labels)
 	visibility_changed.connect(_on_visibility_changed)
 
+	_set_normal_color(plugin_context.settings_dock.cursor_normal_color)
+	_set_active_color(plugin_context.settings_dock.cursor_active_color)
+	_set_selected_color(plugin_context.settings_dock.cursor_selected_color)
+
+
+func _connect_signals() -> void:
+	if not signal_hub.cursor_normal_color_changed.is_connected(_set_normal_color):
+		signal_hub.cursor_normal_color_changed.connect(_set_normal_color)
+	if not signal_hub.cursor_active_color_changed.is_connected(_set_active_color):
+		signal_hub.cursor_active_color_changed.connect(_set_active_color)
+	if not signal_hub.cursor_selected_color_changed.is_connected(_set_selected_color):
+		signal_hub.cursor_selected_color_changed.connect(_set_selected_color)
+
 
 func _on_visibility_changed() -> void:
 	if plugin_context == null:
@@ -105,3 +151,25 @@ func _on_visibility_changed() -> void:
 		return
 	plugin_context.settings_dock.toggle_action_buttons_for_disabled_cursor()
 	plugin_context.settings_dock.set_toggle_cursor_button_label()
+
+
+func _on_selection_changed() -> void:
+	if plugin_context == null:
+		return
+	_selected = self in plugin_context.editor_selection.get_selected_nodes()
+
+
+func _apply_color(color: Color) -> void:
+	number_label.modulate = color
+
+
+func _set_normal_color(color: Color) -> void:
+	_normal_color = color
+
+
+func _set_active_color(color: Color) -> void:
+	_active_color = color
+
+
+func _set_selected_color(color: Color) -> void:
+	_selected_color = color

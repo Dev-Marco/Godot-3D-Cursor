@@ -150,15 +150,24 @@ func _get_click_location(create_new_cursor: bool = false, recover_cursor: bool =
 	var just_created: bool = false
 
 	var newest_cursor: Cursor3D = plugin_context.get_newest_cursor()
-	if not create_new_cursor and recover_cursor and newest_cursor != null:
+	# When the Key for recovering a cursor and creating a new one are pressed together ignore it.
+	if create_new_cursor and recover_cursor:
+		return
+	# When a new cursor should be created, do so
+	if create_new_cursor:
+		plugin_context.create_cursor()
+		# Let the rest of the method know that a new cursor was created
+		just_created = true
+	if ((recover_cursor and newest_cursor) or (cursor == null and newest_cursor != null)) \
+	 and not just_created and plugin_context.settings_dock.auto_recover_check_box.button_pressed:
 		plugin_context.signal_hub.cursor_recovered.emit(newest_cursor)
 		cursor_actions.place_cursor(hit["position"])
 		return
-
-	# When the cursor is not yet created instantiate it, add it to the scene
-	# and position it at the collision detected by the raycast
-	if cursor == null or create_new_cursor:
+	# If we did not exit this method yet that means the auto recover setting was probably disabled.
+	# If the active cursor is null we have to create a new one then.
+	if cursor == null:
 		plugin_context.create_cursor()
+		# Let the rest of the method know that a new cursor was created
 		just_created = true
 
 	# If the cursor is not in the node tree at this point it means that the

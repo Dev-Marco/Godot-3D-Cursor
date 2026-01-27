@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b50uqk4jtkpb1" path="res://addons/godot_3d_cursor/assets/3d_cursor.png" id="2_wdtam"]
 
 [node name="3DCursor" type="Marker3D" groups=["Plugin3DCursor"]]
+gizmo_extents = 0.0
 script = ExtResource("1_22sio")
 
 [node name="Sprite3D" type="Sprite3D" parent="." groups=["Plugin3DCursorComponent"]]
@@ -22,6 +23,6 @@ text = "3D Cursor"
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 3.2, 0)
 billboard = 1
 no_depth_test = true
-modulate = Color(0.8513751, 0.7096352, 0, 1)
+modulate = Color(0.8509804, 0.70980394, 0, 1)
 text = "#"
 font_size = 24

@@ -40,16 +40,16 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="3DCursorSettingsHBox" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/3DCursorSettingsHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "3D Cursor Settings"
 
-[node name="InfoButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="InfoButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/3DCursorSettingsHBox"]
 layout_mode = 2
 theme_override_fonts/font = SubResource("SystemFont_6ifjp")
 theme_override_font_sizes/font_size = 10
@@ -206,6 +206,97 @@ text = "Clear"
 [node name="HSeparator2" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
+[node name="GeneralSettingsLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "General Settings"
+
+[node name="AutoRecoverCursor" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+tooltip_text = "Automatically recovers the newest 3D Cursor within a scene if no active cursor is set. Create a new 3D Cursor with Shift + Ctrl + Right Click"
+
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/AutoRecoverCursor"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "Auto Recover Cursor"
+horizontal_alignment = 2
+
+[node name="AutoRecoverCheckBox" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/AutoRecoverCursor"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+button_pressed = true
+text = "On"
+
+[node name="NormalColorHBox" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+tooltip_text = "The color of the ID label of a 3D Cursor"
+
+[node name="NormalColorLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/NormalColorHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Normal Color"
+horizontal_alignment = 2
+
+[node name="NormalColorPickerButton" type="ColorPickerButton" parent="ScrollContainer/MarginContainer/VBoxContainer/NormalColorHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "The color of the ID label of a 3D Cursor"
+color = Color(0.8509804, 0.70980394, 0, 1)
+
+[node name="ResetNormalColorButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/NormalColorHBox"]
+layout_mode = 2
+tooltip_text = "Resets the normal color the default"
+text = "Reset"
+
+[node name="ActiveColorHBox" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+tooltip_text = "The color of the ID label of the active 3D Cursor"
+
+[node name="ActiveColorLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveColorHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Active Color"
+horizontal_alignment = 2
+
+[node name="ActiveColorPickerButton" type="ColorPickerButton" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveColorHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "The color of the ID label of the active 3D Cursor"
+color = Color(1, 0.54901963, 0, 1)
+
+[node name="ResetActiveColorButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/ActiveColorHBox"]
+layout_mode = 2
+tooltip_text = "Resets the normal color the default"
+text = "Reset"
+
+[node name="SelectedColorHBox" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+tooltip_text = "The color of the ID label of any selected 3D Cursor"
+
+[node name="SelectedColorLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/SelectedColorHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Selected Color"
+horizontal_alignment = 2
+
+[node name="SelectedColorPickerButton" type="ColorPickerButton" parent="ScrollContainer/MarginContainer/VBoxContainer/SelectedColorHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "The color of the ID label of any selected 3D Cursor"
+color = Color(0, 0.9490196, 1, 1)
+
+[node name="ResetSelectedColorButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/SelectedColorHBox"]
+layout_mode = 2
+tooltip_text = "Resets the normal color the default"
+text = "Reset"
+
+[node name="HSeparator5" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
 [node name="ExtensionsLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
@@ -356,7 +447,7 @@ text = "Create Path3D From Cursors"
 
 [node name="InfoDialog" parent="." instance=ExtResource("5_haihr")]
 
-[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer/InfoButton" to="." method="_on_info_button_pressed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/3DCursorSettingsHBox/InfoButton" to="." method="_on_info_button_pressed"]
 [connection signal="value_changed" from="ScrollContainer/MarginContainer/VBoxContainer/Scale/ScaleSpinBox" to="." method="_on_scale_spin_box_value_changed"]
 [connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ScaleAffectLabels/ScaleAffectLabelsCheckBox" to="." method="_on_scale_affect_labels_check_box_toggled"]
 [connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ShowTitleLabel/ShowTitleLabelCheckBox" to="." method="_on_show_title_label_check_box_toggled"]
@@ -364,6 +455,12 @@ text = "Create Path3D From Cursors"
 [connection signal="item_selected" from="ScrollContainer/MarginContainer/VBoxContainer/RaycastMode/RaycastModeOptionButton" to="." method="_on_raycast_mode_option_button_item_selected"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/DeselectCursorButton" to="." method="_on_deselect_cursor_button_pressed"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
+[connection signal="color_changed" from="ScrollContainer/MarginContainer/VBoxContainer/NormalColorHBox/NormalColorPickerButton" to="." method="_on_normal_color_picker_button_color_changed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/NormalColorHBox/ResetNormalColorButton" to="." method="_on_reset_normal_color_button_pressed"]
+[connection signal="color_changed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveColorHBox/ActiveColorPickerButton" to="." method="_on_active_color_picker_button_color_changed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveColorHBox/ResetActiveColorButton" to="." method="_on_reset_active_color_button_pressed"]
+[connection signal="color_changed" from="ScrollContainer/MarginContainer/VBoxContainer/SelectedColorHBox/SelectedColorPickerButton" to="." method="_on_selected_color_picker_button_color_changed"]
+[connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/SelectedColorHBox/ResetSelectedColorButton" to="." method="_on_reset_selected_color_button_pressed"]
 [connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/UseTerrain3D/UseTerrain3DCheckBox" to="." method="_on_use_terrain_3d_check_box_toggled"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/AddRemoveTerrain3DGroup/AddTerrain3DGroupButton" to="." method="_on_add_terrain_3d_group_button_pressed"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/AddRemoveTerrain3DGroup/RemoveTerrain3DGroupButton" to="." method="_on_remove_terrain_3d_group_button_pressed"]

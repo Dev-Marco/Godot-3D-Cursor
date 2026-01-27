@@ -13,6 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.2.0] - 2026-01-27
+
+### Added
+- Semantic coloring for ID labels of 3D Cursor instances.
+	- Default color for inactive cursors is yellow.
+	- Default color for the active cursor is orange.
+	- Default color for selected cursors (including the active one) is light blue.
+	- Colors can be adjusted via the settings dock under **General Settings** (not session persistent).
+- **Auto Recover Cursor** option added to the settings dock (equivalent to `Shift + Alt + Right Click`).
+	- When placing a 3D Cursor with `Shift + Right Click` while no active cursor is selected:
+		- **Enabled**: The most recently created cursor in the current scene is recovered as the active cursor and moved to the target location. If no cursor exists, a new one is created at the target location.
+		- **Disabled**: A new 3D Cursor is created and placed at the target location.
+
+### Fixed
+- After reloading a project containing one or more 3D Cursor instances in the active scene, creating a new cursor could cause the plugin to not recognize existing cursors.
+
+### Changed
+- Set Gizmo extents of 3D Cursors to `0`.
+
 ## [2.1.2] - 2026-01-25
 
 ## Fixed
