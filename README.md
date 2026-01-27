@@ -9,6 +9,7 @@ It provides an intuitive and precise way to place and position nodes within a 3D
 - Precise placement for points of a `Path3D`s curve
 - Multiple cursor actions via *Pie Menu*, *Command Palette* and *Settings Dock*
 - Customizable cursor appearance and behavior
+- Semantic, customizable color coding for 3D Cursor ID labels to improve visual clarity.
 - Multiple independent *3D Cursor* instances per scene
 - Create `Path3D` nodes along the alphabetically sorted list of *3D Cursor* instances
 - Editor-only functionality (no runtime impact)
@@ -23,6 +24,15 @@ It provides an intuitive and precise way to place and position nodes within a 3D
 	- Settings are stored per *3D Cursor* instance and saved internally.
 - **Scene Compatibility**: The *3D Cursor* can be placed independently across multiple scenes without limitations. If the plugin is disabled, opening a scene containing *3D Cursor* instances will cause them to free themselves.
 - **Editor Exclusive**: *3D Cursor* instances are editor-only and will not be displayed in-game.
+- **Semantic Coloring of 3D Cursor IDs**:
+	- **Inactive cursors** are displayed in yellow.
+	- **The active cursor** is highlighted in orange.
+	- **Selected cursors** (including the active one, if applicable) are shown in light blue.
+	- The colors can be customized via the settings dock under **General Settings**.
+
+> [!Note]
+> Color changes are not session persistent.
+
 
 ![Placing Cursor](videos/placing_cursor.gif)
 
