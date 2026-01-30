@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.2.1] - 2026-01-30
+
+## Fixed
+- After invoking the **Create Path3D From Cursors** action, the title of the node selector dialog would not reset back to the default "Select a Node" on other actions.
+
 ## [2.2.0] - 2026-01-27
 
 ### Added
