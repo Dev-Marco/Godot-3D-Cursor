@@ -274,6 +274,24 @@ func get_settings_from_active_cursor() -> void:
 	show_number_label_check_box.set_pressed_no_signal(cursor.show_number_label)
 
 
+func get_node_selector_dialog() -> Window:
+	var controls: Array = EditorInterface.get_base_control().find_children(
+		"*", "SceneTreeDialog", true, false
+	)
+	return null if controls.is_empty() else controls.back()
+
+
+func set_node_selector_title(title: String) -> void:
+	var node_selector: Window = get_node_selector_dialog()
+	if node_selector == null:
+		return
+	node_selector.title = title
+
+
+func reset_node_selector_title() -> void:
+	set_node_selector_title("Select a Node")
+
+
 func _on_use_terrain_3d_check_box_toggled(toggled_on: bool) -> void:
 	add_remove_terrain_3d_group.visible = toggled_on
 
@@ -343,12 +361,11 @@ func _on_create_path_3d_from_cursors_button_pressed() -> void:
 	if plugin_context.get_all_cursors().is_empty():
 		return
 	EditorInterface.popup_node_selector(_create_path_3d_from_cursors, ["Node3D"])
-	var controls: Array = EditorInterface.get_base_control().find_children("*", "SceneTreeDialog", true, false)
-	if not controls.is_empty():
-		controls.back().title = "Select a parent for the new Path3D"
+	set_node_selector_title("Select a parent for the new Path3D")
 
 
 func _create_path_3d_from_cursors(node_path: NodePath) -> void:
+	reset_node_selector_title()
 	if node_path == null or node_path.is_empty():
 		return
 	# Get the node from the NodePath
@@ -361,7 +378,6 @@ func _create_path_3d_from_cursors(node_path: NodePath) -> void:
 	path_3d.curve = Curve3D.new()
 	for cursor: Cursor3D in plugin_context.get_all_cursors():
 		path_3d.curve.add_point(path_3d.to_local(cursor.global_position))
-
 
 
 func _on_scale_spin_box_value_changed(value: float) -> void:
