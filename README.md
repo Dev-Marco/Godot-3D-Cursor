@@ -63,7 +63,7 @@ The *Pie Menu* provides quick access to common *3D Cursor* actions directly with
 
 ### Raycast Mode
 - **Physicsless**: Does not require collision shapes to calculate the mouse click position, allowing physics to run on another thread. Compatible with **Terrain3D** by *TokisanGames*.
-- **Physics** *(Legacy)*: Requires collision shapes to calculate the mouse click position. Physics must not run on another thread. Partially compatible with **Terrain3D** by *TokisanGames* (see issue [#3]).
+- **Physics** *(Legacy)*: Requires collision shapes to calculate the mouse click position. Physics must not run on another thread. Partially compatible with **Terrain3D** by *TokisanGames* (see issue [#3](https://github.com/Dev-Marco/Godot-3D-Cursor/issues/3)).
 
 ![Raycast Mode](screenshots/settings_dock_raycast_mode.jpg)
 
@@ -137,7 +137,7 @@ When a single `Path3D` node is selected, additional points can be added directly
   **Workaround:** Press `F` to reset the editor focus and restore the expected navigation behavior.
 - A more robust solution is being investigated, but this behavior is currently caused by editor-internal state handling.
 
-### Plugin Compatibility
+## Plugin Compatibility
 If you are developing a Godot plugin or addon and believe compatibility with this plugin would be useful, feel free to reach out.
 Compatibility and integration are handled on this plugin’s side where possible.
 
@@ -159,7 +159,13 @@ Compatibility and integration are handled on this plugin’s side where possible
 
 ## Feedback
 Feedback, bug reports, and contributions are very welcome.
-Feel free to open an issue or pull request.
+Feel free to [open an issue](https://github.com/Dev-Marco/Godot-3D-Cursor/issues) or pull request.
+
+## Feature Requests
+Have an idea to make the 3D Cursor workflow even better?
+I'm always looking to improve the plugin and would love to hear your suggestions.
+
+Please feel free to [open an issue](https://github.com/Dev-Marco/Godot-3D-Cursor/issues) and label it as a **"Feature Request"**. Whether it's a small shortcut or a major workflow integration—all ideas are welcome!
 
 ## License
 This plugin is open-source and licensed under the **ISC License**.
