@@ -166,11 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed *3D Cursor* not functioning until switching editor tabs after startup or plugin activation.
 
----
-
 ## [1.4.1] - 2025-12-17
-
----
 
 ## [1.4.0] - 2025-12-17
 
@@ -183,15 +179,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - License shift from **MIT** to **ISC** (equivalent to MIT).
 
----
-
 ## [1.3.5] - 2025-12-14
 
 ### Fixed
 
 - *3D Cursor* placement not working in orthogonal view; fixed #7
-
----
 
 ## [1.3.4] - 2025-11-17
 
@@ -199,27 +191,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Warning if the 'Run on Separate Thread' project setting is activated. (#3)
 
----
-
 ## [1.3.3] - 2025-11-10
 
 ### Fixed
 
 - The plugin does not work in scenes where the root is not a `Node3D` or inherits from it. Fixing #4
 
----
-
 ## [1.3.2] - 2025-09-10
-
----
 
 ## [1.3.1] - 2025-08-29
 
 ### Fixed
 
 - *Pie Menu* opening with no *3D Cursor* in the scene.
-
----
 
 ## [1.3.0] - 2024-11-11
 
@@ -229,16 +213,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Background for *Pie Menu*
 - Selection indicator for *Pie Menu*
 
----
-
 ## [1.2.0] - 2024-11-02
 
 ### Added
 
 - *Pie Menu* for quick access to *3D Cursor* actions, similar to Blender `Shift + S`
 - Undo / Redo functionality for most *3D Cursor* actions.
-
----
 
 ## [1.1.0] - 2024-10-28
 
@@ -247,15 +227,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cursor recovery when visiting another scene containing a *3D Cursor*.
 - Cursor remove command.
 
----
-
 ## [1.0.1] - 2024-10-28
 
 ### Fixed
 
 - Wrong location of cursor texture.
-
----
 
 ## [1.0.0] - 2024-10-28
 
