@@ -25,6 +25,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+scroll_vertical = 354
 
 [node name="MarginContainer" type="MarginContainer" parent="ScrollContainer" unique_id=117692796]
 layout_mode = 2
@@ -204,6 +205,302 @@ layout_mode = 2
 text = "Clear"
 
 [node name="HSeparator2" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=546429837]
+layout_mode = 2
+
+[node name="Shortcuts" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=1227721285]
+layout_mode = 2
+
+[node name="Shortcuts" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=2079149745]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Shortcuts"
+
+[node name="Set3DCursorLocation" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=1349344783]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation" unique_id=1509957097]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/HBoxContainer" unique_id=1995599798]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Set 3D Cursor Location"
+horizontal_alignment = 2
+
+[node name="Set3DCursorLocationLineEdit" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/HBoxContainer" unique_id=263086153]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_force_pass_scroll_events = false
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="Modifiers" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation" unique_id=1368745689]
+layout_mode = 2
+alignment = 2
+
+[node name="AltModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers" unique_id=698336058]
+layout_mode = 2
+tooltip_text = "Alt or Option key"
+text = "Alt"
+
+[node name="ShiftModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers" unique_id=1501807095]
+layout_mode = 2
+tooltip_text = "Shift key"
+text = "Shift"
+
+[node name="CtrlModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers" unique_id=1883910862]
+layout_mode = 2
+tooltip_text = "Control key"
+text = "Ctrl"
+
+[node name="WindowsModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers" unique_id=931925597]
+layout_mode = 2
+tooltip_text = "Meta / Windows or Command key"
+text = "Windows"
+
+[node name="VSeparator" type="VSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers" unique_id=212270843]
+layout_mode = 2
+
+[node name="AutoRemapControlModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers" unique_id=1519397284]
+layout_mode = 2
+tooltip_text = "Automatically remaps between 'Meta' ('Command') and 'Control' depending on current platform."
+text = "Command / Control (auto)"
+
+[node name="Separator" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=1535112635]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Separator" unique_id=1744951210]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="HSeparator" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Separator" unique_id=587569418]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 7.0
+theme_override_constants/separation = 16
+
+[node name="ShowPieMenu" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=1128495723]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu" unique_id=1153125807]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/HBoxContainer" unique_id=196055029]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Set 3D Cursor Location"
+horizontal_alignment = 2
+
+[node name="ShowPieMenuLineEdit" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/HBoxContainer" unique_id=1484577753]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_force_pass_scroll_events = false
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="Modifiers" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu" unique_id=757775904]
+layout_mode = 2
+alignment = 2
+
+[node name="AltModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers" unique_id=2051930219]
+layout_mode = 2
+tooltip_text = "Alt or Option key"
+text = "Alt"
+
+[node name="ShiftModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers" unique_id=1627587629]
+layout_mode = 2
+tooltip_text = "Shift key"
+text = "Shift"
+
+[node name="CtrlModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers" unique_id=907950495]
+layout_mode = 2
+tooltip_text = "Control key"
+text = "Ctrl"
+
+[node name="WindowsModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers" unique_id=1777508116]
+layout_mode = 2
+tooltip_text = "Meta / Windows or Command key"
+text = "Windows"
+
+[node name="VSeparator" type="VSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers" unique_id=780352634]
+layout_mode = 2
+
+[node name="AutoRemapControlModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers" unique_id=1701620587]
+layout_mode = 2
+tooltip_text = "Automatically remaps between 'Meta' ('Command') and 'Control' depending on current platform."
+text = "Command / Control (auto)"
+
+[node name="Separator2" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=16845796]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Separator2" unique_id=987148493]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="HSeparator" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Separator2" unique_id=778066061]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 7.0
+theme_override_constants/separation = 16
+
+[node name="CreateNew3DCursor" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=1438947883]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor" unique_id=678663608]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/HBoxContainer" unique_id=2008628390]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Set 3D Cursor Location"
+horizontal_alignment = 2
+
+[node name="CreateNew3DCursorLineEdit" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/HBoxContainer" unique_id=1666931154]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_force_pass_scroll_events = false
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="Modifiers" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor" unique_id=1352574147]
+layout_mode = 2
+alignment = 2
+
+[node name="AltModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers" unique_id=781063810]
+layout_mode = 2
+tooltip_text = "Alt or Option key"
+text = "Alt"
+
+[node name="ShiftModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers" unique_id=1804367858]
+layout_mode = 2
+tooltip_text = "Shift key"
+text = "Shift"
+
+[node name="CtrlModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers" unique_id=1358552981]
+layout_mode = 2
+tooltip_text = "Control key"
+text = "Ctrl"
+
+[node name="WindowsModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers" unique_id=1689606105]
+layout_mode = 2
+tooltip_text = "Meta / Windows or Command key"
+text = "Windows"
+
+[node name="VSeparator" type="VSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers" unique_id=745534869]
+layout_mode = 2
+
+[node name="AutoRemapControlModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers" unique_id=1594578976]
+layout_mode = 2
+tooltip_text = "Automatically remaps between 'Meta' ('Command') and 'Control' depending on current platform."
+text = "Command / Control (auto)"
+
+[node name="Separator3" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=1312715849]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Separator3" unique_id=2128906719]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="HSeparator" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Separator3" unique_id=1277701694]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 7.0
+theme_override_constants/separation = 16
+
+[node name="Recover3DCursor" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=121288323]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor" unique_id=1423405983]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/HBoxContainer" unique_id=410451667]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Set 3D Cursor Location"
+horizontal_alignment = 2
+
+[node name="Recover3DCursorLineEdit" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/HBoxContainer" unique_id=1015056143]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_force_pass_scroll_events = false
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="Modifiers" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor" unique_id=275185550]
+layout_mode = 2
+alignment = 2
+
+[node name="AltModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers" unique_id=1774633802]
+layout_mode = 2
+tooltip_text = "Alt or Option key"
+text = "Alt"
+
+[node name="ShiftModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers" unique_id=636215618]
+layout_mode = 2
+tooltip_text = "Shift key"
+text = "Shift"
+
+[node name="CtrlModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers" unique_id=437447623]
+layout_mode = 2
+tooltip_text = "Control key"
+text = "Ctrl"
+
+[node name="WindowsModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers" unique_id=538593891]
+layout_mode = 2
+tooltip_text = "Meta / Windows or Command key"
+text = "Windows"
+
+[node name="VSeparator" type="VSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers" unique_id=1759018904]
+layout_mode = 2
+
+[node name="AutoRemapControlModifier" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers" unique_id=241759931]
+layout_mode = 2
+tooltip_text = "Automatically remaps between 'Meta' ('Command') and 'Control' depending on current platform."
+text = "Command / Control (auto)"
+
+[node name="HSeparator" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=1690697573]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 7.0
+theme_override_constants/separation = 24
+
+[node name="ShortcutActions" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts" unique_id=1395940354]
+layout_mode = 2
+alignment = 2
+
+[node name="ApplyButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShortcutActions" unique_id=1459163891]
+layout_mode = 2
+text = "Apply"
+
+[node name="ResetButton" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShortcutActions" unique_id=1093094012]
+layout_mode = 2
+text = "Reset"
+
+[node name="HSeparator6" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=1792622790]
 layout_mode = 2
 
 [node name="GeneralSettingsLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=1759202440]
@@ -455,6 +752,22 @@ text = "Create Path3D From Cursors"
 [connection signal="item_selected" from="ScrollContainer/MarginContainer/VBoxContainer/RaycastMode/RaycastModeOptionButton" to="." method="_on_raycast_mode_option_button_item_selected"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/DeselectCursorButton" to="." method="_on_deselect_cursor_button_pressed"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveCursor/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
+[connection signal="mouse_entered" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/HBoxContainer/Set3DCursorLocationLineEdit" to="." method="_on_set_3d_cursor_location_line_edit_mouse_entered"]
+[connection signal="mouse_exited" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/HBoxContainer/Set3DCursorLocationLineEdit" to="." method="_on_set_3d_cursor_location_line_edit_mouse_exited"]
+[connection signal="text_changed" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/HBoxContainer/Set3DCursorLocationLineEdit" to="." method="_on_set_3d_cursor_location_line_edit_text_changed"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/AutoRemapControlModifier" to="." method="_toggle_shortcut_modifiers_for" binds= ["set_location"]]
+[connection signal="mouse_entered" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/HBoxContainer/ShowPieMenuLineEdit" to="." method="_on_show_pie_menu_line_edit_mouse_entered"]
+[connection signal="mouse_exited" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/HBoxContainer/ShowPieMenuLineEdit" to="." method="_on_show_pie_menu_line_edit_mouse_exited"]
+[connection signal="text_changed" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/HBoxContainer/ShowPieMenuLineEdit" to="." method="_on_set_3d_cursor_location_line_edit_text_changed"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/AutoRemapControlModifier" to="." method="_toggle_shortcut_modifiers_for" binds= ["show_pie_menu"]]
+[connection signal="mouse_entered" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/HBoxContainer/CreateNew3DCursorLineEdit" to="." method="_on_create_new_3d_cursor_line_edit_mouse_entered"]
+[connection signal="mouse_exited" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/HBoxContainer/CreateNew3DCursorLineEdit" to="." method="_on_create_new_3d_cursor_line_edit_mouse_exited"]
+[connection signal="text_changed" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/HBoxContainer/CreateNew3DCursorLineEdit" to="." method="_on_set_3d_cursor_location_line_edit_text_changed"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/AutoRemapControlModifier" to="." method="_toggle_shortcut_modifiers_for" binds= ["create_new"]]
+[connection signal="mouse_entered" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/HBoxContainer/Recover3DCursorLineEdit" to="." method="_on_recover_3d_cursor_line_edit_mouse_entered"]
+[connection signal="mouse_exited" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/HBoxContainer/Recover3DCursorLineEdit" to="." method="_on_recover_3d_cursor_line_edit_mouse_exited"]
+[connection signal="text_changed" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/HBoxContainer/Recover3DCursorLineEdit" to="." method="_on_set_3d_cursor_location_line_edit_text_changed"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/AutoRemapControlModifier" to="." method="_toggle_shortcut_modifiers_for" binds= ["recover_cursor"]]
 [connection signal="color_changed" from="ScrollContainer/MarginContainer/VBoxContainer/NormalColorHBox/NormalColorPickerButton" to="." method="_on_normal_color_picker_button_color_changed"]
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/NormalColorHBox/ResetNormalColorButton" to="." method="_on_reset_normal_color_button_pressed"]
 [connection signal="color_changed" from="ScrollContainer/MarginContainer/VBoxContainer/ActiveColorHBox/ActiveColorPickerButton" to="." method="_on_active_color_picker_button_color_changed"]

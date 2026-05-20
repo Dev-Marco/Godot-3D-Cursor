@@ -47,6 +47,7 @@ var cursor_selected_color: Color:
 		if selected_color_picker_button == null:
 			return default_selected_color
 		return selected_color_picker_button.color
+var set_3d_cursor_location_shortcut: String = ""
 
 ## The container that holds the buttons that add/remove the 'Terrain3D' group
 ## from [Terrain3D] instances.
@@ -87,6 +88,66 @@ var cursor_selected_color: Color:
 @onready var normal_color_picker_button: ColorPickerButton = %NormalColorPickerButton
 @onready var active_color_picker_button: ColorPickerButton = %ActiveColorPickerButton
 @onready var selected_color_picker_button: ColorPickerButton = %SelectedColorPickerButton
+@onready var set_3d_cursor_location_line_edit: LineEdit = %Set3DCursorLocationLineEdit
+@onready var show_pie_menu_line_edit: LineEdit = %ShowPieMenuLineEdit
+@onready var create_new_3d_cursor_line_edit: LineEdit = %CreateNew3DCursorLineEdit
+@onready var recover_3d_cursor_line_edit: LineEdit = %Recover3DCursorLineEdit
+
+@onready var alt_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/AltModifier
+@onready var shift_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/ShiftModifier
+@onready var ctrl_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/CtrlModifier
+@onready var windows_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/WindowsModifier
+@onready var auto_remap_control_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/AutoRemapControlModifier
+@onready var alt_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/AltModifier
+@onready var shift_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/ShiftModifier
+@onready var ctrl_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/CtrlModifier
+@onready var windows_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/WindowsModifier
+@onready var auto_remap_control_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/AutoRemapControlModifier
+@onready var alt_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/AltModifier
+@onready var shift_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/ShiftModifier
+@onready var ctrl_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/CtrlModifier
+@onready var windows_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/WindowsModifier
+@onready var auto_remap_control_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/AutoRemapControlModifier
+@onready var alt_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/AltModifier
+@onready var shift_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/ShiftModifier
+@onready var ctrl_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/CtrlModifier
+@onready var windows_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/WindowsModifier
+@onready var auto_remap_control_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/AutoRemapControlModifier
+
+@onready var _optional_modifiers = {
+	"set_location": [ctrl_modifier_1, windows_modifier_1],
+	"show_pie_menu": [ctrl_modifier_2, windows_modifier_2],
+	"create_new": [ctrl_modifier_3, windows_modifier_3],
+	"recover_cursor": [ctrl_modifier_4, windows_modifier_4],
+}
+@onready var set_3d_cursor_location_modifiers = {
+	"alt": alt_modifier_1,
+	"shift": shift_modifier_1,
+	"ctrl": ctrl_modifier_1,
+	"windows": windows_modifier_1,
+	"auto_remap": auto_remap_control_modifier_1
+}
+@onready var show_pie_menu_modifiers = {
+	"alt": alt_modifier_2,
+	"shift": shift_modifier_2,
+	"ctrl": ctrl_modifier_2,
+	"windows": windows_modifier_2,
+	"auto_remap": auto_remap_control_modifier_2
+}
+@onready var create_new_3d_cursor_modifiers = {
+	"alt": alt_modifier_3,
+	"shift": shift_modifier_3,
+	"ctrl": ctrl_modifier_3,
+	"windows": windows_modifier_3,
+	"auto_remap": auto_remap_control_modifier_3
+}
+@onready var recover_3d_cursor_modifiers = {
+	"alt": alt_modifier_4,
+	"shift": shift_modifier_4,
+	"ctrl": ctrl_modifier_4,
+	"windows": windows_modifier_4,
+	"auto_remap": auto_remap_control_modifier_4
+}
 
 
 ## Sets up the [member SettingsDock.plugin_context] and connects to multiple
@@ -292,6 +353,12 @@ func reset_node_selector_title() -> void:
 	set_node_selector_title("Select a Node")
 
 
+func _toggle_shortcut_modifiers_for(toggled_on: bool, shortcut: String) -> void:
+	for modifier: CheckBox in _optional_modifiers[shortcut]:
+		modifier.disabled = toggled_on
+		modifier.visible = not toggled_on
+
+
 func _on_use_terrain_3d_check_box_toggled(toggled_on: bool) -> void:
 	add_remove_terrain_3d_group.visible = toggled_on
 
@@ -447,3 +514,79 @@ func _on_reset_active_color_button_pressed() -> void:
 func _on_reset_selected_color_button_pressed() -> void:
 	selected_color_picker_button.color = default_selected_color
 	selected_color_picker_button.color_changed.emit(default_selected_color)
+
+
+func _on_set_3d_cursor_location_line_edit_text_changed(new_text: String) -> void:
+	printt(set_3d_cursor_location_shortcut, new_text)
+
+func _input(event: InputEvent) -> void:
+	if not (event is InputEventMouseButton or event is InputEventKey):
+		return
+	if event is InputEventMouseButton and (event as InputEventMouseButton).double_click:
+		return
+	if event.is_released():
+		return
+	if set_3d_cursor_location_line_edit.has_focus():
+		_parse_event(event, set_3d_cursor_location_line_edit, set_3d_cursor_location_modifiers)
+	elif show_pie_menu_line_edit.has_focus():
+		_parse_event(event, show_pie_menu_line_edit, show_pie_menu_modifiers)
+	elif create_new_3d_cursor_line_edit.has_focus():
+		_parse_event(event, create_new_3d_cursor_line_edit, create_new_3d_cursor_modifiers)
+	elif recover_3d_cursor_line_edit.has_focus():
+		_parse_event(event, recover_3d_cursor_line_edit, recover_3d_cursor_modifiers)
+
+
+func _on_set_3d_cursor_location_line_edit_mouse_exited() -> void:
+	set_3d_cursor_location_line_edit.release_focus()
+
+func _on_set_3d_cursor_location_line_edit_mouse_entered() -> void:
+	set_3d_cursor_location_line_edit.grab_focus()
+
+
+func _on_show_pie_menu_line_edit_mouse_exited() -> void:
+	show_pie_menu_line_edit.release_focus()
+
+func _on_show_pie_menu_line_edit_mouse_entered() -> void:
+	show_pie_menu_line_edit.grab_focus()
+
+func _on_create_new_3d_cursor_line_edit_mouse_exited() -> void:
+	create_new_3d_cursor_line_edit.release_focus()
+
+func _on_create_new_3d_cursor_line_edit_mouse_entered() -> void:
+	create_new_3d_cursor_line_edit.grab_focus()
+
+
+func _on_recover_3d_cursor_line_edit_mouse_exited() -> void:
+	recover_3d_cursor_line_edit.release_focus()
+
+func _on_recover_3d_cursor_line_edit_mouse_entered() -> void:
+	recover_3d_cursor_line_edit.grab_focus()
+
+
+func _parse_event(event: InputEvent, line_edit: LineEdit, modifier_buttons):
+	line_edit.grab_focus()
+	if event is InputEventMouseButton:
+		var btn: String = ""
+		match event.button_index:
+			1:
+				btn = "Left Mouse Button"
+			2:
+				btn = "Right Mouse Button"
+			3:
+				btn = "Middle Mouse Button"
+			4:
+				btn = "Mouse Wheel Up"
+			5:
+				btn = "Mouse Wheel Down"
+		line_edit.text = btn
+	elif event is InputEventKey:
+		var key_string = OS.get_keycode_string(event.keycode)
+		var physical_string = OS.get_keycode_string(event.physical_keycode)
+		var unicode_string = OS.get_keycode_string(event.unicode)
+		var btn: String = "{0} or {1} (Physical) or {2} (Unicode)".format(
+			[key_string, physical_string, unicode_string]
+		)
+		line_edit.text = btn
+	modifier_buttons["alt"].button_pressed = event.alt_pressed
+	modifier_buttons["shift"].button_pressed = event.shift_pressed
+	modifier_buttons["ctrl"].button_pressed = event.ctrl_pressed
