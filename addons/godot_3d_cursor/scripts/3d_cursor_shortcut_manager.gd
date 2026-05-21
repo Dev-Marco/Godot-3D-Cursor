@@ -25,6 +25,9 @@ var editor_settings: EditorSettings:
 
 var config: ConfigFile
 
+static func check_compatibility() -> bool:
+	return Engine.get_version_info().hex >= 0x040600
+
 func setup(plugin_context: Plugin3DCursor) -> void:
 	if plugin_context == null:
 		push_error("The Cursor3DShortcutManager requires a valid instance of Plugin3DCursor"
@@ -72,7 +75,8 @@ func create_shortcut(
 
 func apply_shortcuts(shortcuts: Dictionary[String, Shortcut]) -> void:
 	for shortcut_path: String in shortcuts.keys():
-		editor_settings.add_shortcut(shortcut_path, shortcuts[shortcut_path])
+		if check_compatibility():
+			editor_settings.add_shortcut(shortcut_path, shortcuts[shortcut_path])
 		registered_shortcuts[shortcut_path] = shortcuts[shortcut_path]
 		config.set_value("shortcuts", shortcut_path, shortcuts[shortcut_path])
 		plugin_context.signal_hub.shortcut_loaded.emit(shortcuts[shortcut_path], shortcut_path)
