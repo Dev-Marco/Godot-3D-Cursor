@@ -28,6 +28,9 @@ var plugin_context: Plugin3DCursor
 var signal_hub: Cursor3DSignalHub:
 	get:
 		return plugin_context.signal_hub
+var shortcut_manager: Cursor3DShortcutManager:
+	get:
+		return plugin_context.shortcut_manager
 
 var default_normal_color: Color = Color.hex(0xd9b500ff)
 var default_active_color: Color = Color.hex(0xff8c00ff)
@@ -93,26 +96,28 @@ var set_3d_cursor_location_shortcut: String = ""
 @onready var create_new_3d_cursor_line_edit: LineEdit = %CreateNew3DCursorLineEdit
 @onready var recover_3d_cursor_line_edit: LineEdit = %Recover3DCursorLineEdit
 
-@onready var alt_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/AltModifier
-@onready var shift_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/ShiftModifier
-@onready var ctrl_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/CtrlModifier
-@onready var windows_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/WindowsModifier
-@onready var auto_remap_control_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Set3DCursorLocation/Modifiers/AutoRemapControlModifier
-@onready var alt_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/AltModifier
-@onready var shift_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/ShiftModifier
-@onready var ctrl_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/CtrlModifier
-@onready var windows_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/WindowsModifier
-@onready var auto_remap_control_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/ShowPieMenu/Modifiers/AutoRemapControlModifier
-@onready var alt_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/AltModifier
-@onready var shift_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/ShiftModifier
-@onready var ctrl_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/CtrlModifier
-@onready var windows_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/WindowsModifier
-@onready var auto_remap_control_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/CreateNew3DCursor/Modifiers/AutoRemapControlModifier
-@onready var alt_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/AltModifier
-@onready var shift_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/ShiftModifier
-@onready var ctrl_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/CtrlModifier
-@onready var windows_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/WindowsModifier
-@onready var auto_remap_control_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/Shortcuts/Recover3DCursor/Modifiers/AutoRemapControlModifier
+@onready var shortcuts: VBoxContainer = %Shortcuts
+@onready var shortcut_section_toggle_button: Button = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Heading/ShortcutSectionToggleButton
+@onready var alt_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Set3DCursorLocation/Modifiers/AltModifier
+@onready var shift_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Set3DCursorLocation/Modifiers/ShiftModifier
+@onready var ctrl_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Set3DCursorLocation/Modifiers/CtrlModifier
+@onready var windows_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Set3DCursorLocation/Modifiers/WindowsModifier
+@onready var auto_remap_control_modifier_1: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Set3DCursorLocation/Modifiers/AutoRemapControlModifier
+@onready var alt_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/ShowPieMenu/Modifiers/AltModifier
+@onready var shift_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/ShowPieMenu/Modifiers/ShiftModifier
+@onready var ctrl_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/ShowPieMenu/Modifiers/CtrlModifier
+@onready var windows_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/ShowPieMenu/Modifiers/WindowsModifier
+@onready var auto_remap_control_modifier_2: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/ShowPieMenu/Modifiers/AutoRemapControlModifier
+@onready var alt_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/CreateNew3DCursor/Modifiers/AltModifier
+@onready var shift_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/CreateNew3DCursor/Modifiers/ShiftModifier
+@onready var ctrl_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/CreateNew3DCursor/Modifiers/CtrlModifier
+@onready var windows_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/CreateNew3DCursor/Modifiers/WindowsModifier
+@onready var auto_remap_control_modifier_3: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/CreateNew3DCursor/Modifiers/AutoRemapControlModifier
+@onready var alt_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Recover3DCursor/Modifiers/AltModifier
+@onready var shift_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Recover3DCursor/Modifiers/ShiftModifier
+@onready var ctrl_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Recover3DCursor/Modifiers/CtrlModifier
+@onready var windows_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Recover3DCursor/Modifiers/WindowsModifier
+@onready var auto_remap_control_modifier_4: CheckBox = $ScrollContainer/MarginContainer/VBoxContainer/ShortcutsSection/Shortcuts/Recover3DCursor/Modifiers/AutoRemapControlModifier
 
 @onready var _optional_modifiers = {
 	"set_location": [ctrl_modifier_1, windows_modifier_1],
@@ -172,6 +177,7 @@ func setup(plugin_context: Plugin3DCursor) -> void:
 	signal_hub.active_cursor_deleted.connect(_on_active_cursor_deleted)
 	signal_hub.remove_all_cursors_from_scene.connect(_on_all_cursors_removed_from_scene)
 	signal_hub.cursor_recovered.connect(_on_cursor_recovered)
+	signal_hub.shortcut_loaded.connect(_on_shortcut_loaded)
 
 	# If the current version of Godot is not compatible, disable the
 	# 'Physicsless' raycast mode and select 'Physics' instead.
@@ -516,9 +522,6 @@ func _on_reset_selected_color_button_pressed() -> void:
 	selected_color_picker_button.color_changed.emit(default_selected_color)
 
 
-func _on_set_3d_cursor_location_line_edit_text_changed(new_text: String) -> void:
-	printt(set_3d_cursor_location_shortcut, new_text)
-
 func _input(event: InputEvent) -> void:
 	if not (event is InputEventMouseButton or event is InputEventKey):
 		return
@@ -563,9 +566,32 @@ func _on_recover_3d_cursor_line_edit_mouse_entered() -> void:
 	recover_3d_cursor_line_edit.grab_focus()
 
 
-func _parse_event(event: InputEvent, line_edit: LineEdit, modifier_buttons):
-	line_edit.grab_focus()
-	if event is InputEventMouseButton:
+func _on_shortcut_loaded(shortcut: Shortcut, path: String) -> void:
+	var line_edit: LineEdit = null
+	var modifiers: Dictionary = {}
+	if path.ends_with("Set 3D Cursor location"):
+		line_edit = set_3d_cursor_location_line_edit
+		modifiers = set_3d_cursor_location_modifiers
+	elif path.ends_with("Show Pie Menu"):
+		line_edit = show_pie_menu_line_edit
+		modifiers = show_pie_menu_modifiers
+	elif path.ends_with("Create new 3D Cursor"):
+		line_edit = create_new_3d_cursor_line_edit
+		modifiers = create_new_3d_cursor_modifiers
+	elif path.ends_with("Recover 3D Cursor"):
+		line_edit = recover_3d_cursor_line_edit
+		modifiers = recover_3d_cursor_modifiers
+
+	if line_edit == null or modifiers.is_empty():
+		return
+	line_edit.text = shortcut.get_as_text()
+	_parse_event(shortcut.events.front(), line_edit, modifiers, false, false)
+
+
+func _parse_event(event: InputEvent, line_edit: LineEdit, modifier_buttons, grab_focus: bool = true, extra_info: bool = true) -> void:
+	if event is InputEventMouseButton and event.button_index in [1, 2, 3]:
+		line_edit.set_meta("shortcut_type", Cursor3DShortcutManager.ShortcutType.MOUSE)
+		line_edit.set_meta("keycode", event.button_index)
 		var btn: String = ""
 		match event.button_index:
 			1:
@@ -574,19 +600,118 @@ func _parse_event(event: InputEvent, line_edit: LineEdit, modifier_buttons):
 				btn = "Right Mouse Button"
 			3:
 				btn = "Middle Mouse Button"
-			4:
-				btn = "Mouse Wheel Up"
-			5:
-				btn = "Mouse Wheel Down"
 		line_edit.text = btn
 	elif event is InputEventKey:
+		line_edit.set_meta("shortcut_type", Cursor3DShortcutManager.ShortcutType.KEY)
+		line_edit.set_meta("keycode", event.keycode)
 		var key_string = OS.get_keycode_string(event.keycode)
 		var physical_string = OS.get_keycode_string(event.physical_keycode)
 		var unicode_string = OS.get_keycode_string(event.unicode)
-		var btn: String = "{0} or {1} (Physical) or {2} (Unicode)".format(
-			[key_string, physical_string, unicode_string]
+		var extra_string: String = " or {0} (Physical) or {1} (Unicode)".format(
+			[physical_string, unicode_string]
+		)
+		var btn: String = ("{0}{1}" if extra_info else "{0}").format(
+			[key_string, extra_string]
 		)
 		line_edit.text = btn
 	modifier_buttons["alt"].button_pressed = event.alt_pressed
 	modifier_buttons["shift"].button_pressed = event.shift_pressed
 	modifier_buttons["ctrl"].button_pressed = event.ctrl_pressed
+	if grab_focus:
+		line_edit.grab_focus()
+
+
+func reset_shortcuts(only_ui: bool = false) -> void:
+	set_3d_cursor_location_line_edit.text = "Right Mouse Button"
+	set_3d_cursor_location_line_edit.set_meta("shortcut_type", Cursor3DShortcutManager.ShortcutType.MOUSE)
+	set_3d_cursor_location_line_edit.set_meta("keycode", MOUSE_BUTTON_RIGHT)
+	set_3d_cursor_location_modifiers["alt"].button_pressed = false
+	set_3d_cursor_location_modifiers["shift"].button_pressed = true
+	set_3d_cursor_location_modifiers["ctrl"].button_pressed = false
+	set_3d_cursor_location_modifiers["windows"].button_pressed = false
+	set_3d_cursor_location_modifiers["auto_remap"].button_pressed = false
+
+	show_pie_menu_line_edit.text = "S or S (Physical) or S (Unicode)"
+	show_pie_menu_line_edit.set_meta("shortcut_type", Cursor3DShortcutManager.ShortcutType.KEY)
+	set_3d_cursor_location_line_edit.set_meta("keycode", KEY_S)
+	show_pie_menu_modifiers["alt"].button_pressed = false
+	show_pie_menu_modifiers["shift"].button_pressed = true
+	show_pie_menu_modifiers["ctrl"].button_pressed = false
+	show_pie_menu_modifiers["windows"].button_pressed = false
+	show_pie_menu_modifiers["auto_remap"].button_pressed = false
+
+	create_new_3d_cursor_line_edit.text = "Right Mouse Button"
+	create_new_3d_cursor_line_edit.set_meta("shortcut_type", Cursor3DShortcutManager.ShortcutType.MOUSE)
+	create_new_3d_cursor_line_edit.set_meta("keycode", MOUSE_BUTTON_RIGHT)
+	create_new_3d_cursor_modifiers["alt"].button_pressed = false
+	create_new_3d_cursor_modifiers["shift"].button_pressed = true
+	create_new_3d_cursor_modifiers["ctrl"].button_pressed = true
+	create_new_3d_cursor_modifiers["windows"].button_pressed = false
+	create_new_3d_cursor_modifiers["auto_remap"].button_pressed = false
+
+	recover_3d_cursor_line_edit.text = "Right Mouse Button"
+	recover_3d_cursor_line_edit.set_meta("shortcut_type", Cursor3DShortcutManager.ShortcutType.MOUSE)
+	recover_3d_cursor_line_edit.set_meta("keycode", MOUSE_BUTTON_RIGHT)
+	recover_3d_cursor_modifiers["alt"].button_pressed = true
+	recover_3d_cursor_modifiers["shift"].button_pressed = true
+	recover_3d_cursor_modifiers["ctrl"].button_pressed = false
+	recover_3d_cursor_modifiers["windows"].button_pressed = false
+	recover_3d_cursor_modifiers["auto_remap"].button_pressed = false
+
+	if not only_ui:
+		shortcut_manager.hard_reset_shortcuts()
+
+
+func _get_shortcut_from_meta(line_edit: LineEdit, modifiers: Dictionary) -> Dictionary:
+	if not line_edit.has_meta("shortcut_type"):
+		return {}
+	if not line_edit.has_meta("keycode"):
+		return {}
+	if not line_edit.has_meta("shortcut_name"):
+		return {}
+	var shortcut_type: Cursor3DShortcutManager.ShortcutType = line_edit.get_meta("shortcut_type")
+	var keycode: int = line_edit.get_meta("keycode")
+	var shortcut = shortcut_manager.create_shortcut(
+		shortcut_type,
+		keycode,
+		modifiers["alt"].button_pressed,
+		modifiers["shift"].button_pressed,
+		modifiers["ctrl"].button_pressed,
+		modifiers["windows"].button_pressed,
+		modifiers["auto_remap"].button_pressed
+	)
+	return { Cursor3DShortcutManager.shortcut_path + line_edit.get_meta("shortcut_name"): shortcut }
+
+
+func apply_shortcuts() -> void:
+	var shortcut_type: Cursor3DShortcutManager.ShortcutType
+	if set_3d_cursor_location_line_edit.has_meta("shortcut_type"):
+		shortcut_type = set_3d_cursor_location_line_edit.get_meta("shortcut_type")
+	var shortcuts: Dictionary[String, Shortcut] = {}
+	shortcuts.merge(_get_shortcut_from_meta(
+		set_3d_cursor_location_line_edit,
+		set_3d_cursor_location_modifiers
+	))
+	shortcuts.merge(_get_shortcut_from_meta(
+		show_pie_menu_line_edit,
+		show_pie_menu_modifiers
+	))
+	shortcuts.merge(_get_shortcut_from_meta(
+		create_new_3d_cursor_line_edit,
+		create_new_3d_cursor_modifiers
+	))
+	shortcuts.merge(_get_shortcut_from_meta(
+		recover_3d_cursor_line_edit,
+		recover_3d_cursor_modifiers
+	))
+
+	shortcut_manager.apply_shortcuts(shortcuts)
+
+
+func _on_shortcut_section_toggle_button_toggled(toggled_on: bool) -> void:
+	shortcuts.visible = not toggled_on
+	shortcut_section_toggle_button.text = "Hide Shortcuts" if shortcuts.visible else "Show Shortcuts"
+
+
+func _on_reset_button_pressed() -> void:
+	reset_shortcuts()

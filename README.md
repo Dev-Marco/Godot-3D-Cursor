@@ -13,6 +13,7 @@ It provides an intuitive and precise way to place and position nodes within a 3D
 - Multiple independent *3D Cursor* instances per scene
 - Create `Path3D` nodes along the alphabetically sorted list of *3D Cursor* instances
 - Editor-only functionality (no runtime impact)
+- **NEW**: Customizable shortcuts within the settings dock.
 
 ## 3D Cursor
 - **3D Cursor Placement**: Use `Shift + Right Click` to place the *3D Cursor* in a 3D scene. The cursor can be placed on `CSGShape3D` nodes as well as any mesh-based nodes. Compatible with Godot’s standard editor gizmos.
@@ -112,6 +113,24 @@ Allowed object property types:
 Dragging a valid node or object property onto the button reveals the extracted target position below it.
 
 ![Move Active 3D Cursor to](videos/drag_node_on_move_button.gif)
+
+### [NEW] Customizable Shortcuts
+- Hover over the input for each shortcut and press the desired key or mouse button (with or without modifier keys).
+> [!Note]
+> Modifier keys can be toggled separately if necessary.
+
+- Similar behavior to Godot's own shortcut system (allows Mouse Buttons as well).
+- Available Shortcuts to be set:
+	- **Set 3D Cursor Location** (default: `Shift + Right Mouse Button`)
+	- **Create a new 3D Cursor** (default: `Shift + Ctrl + Right Mouse Button`)
+	- **Recover 3D Cursor** (default: `Shift + Alt + Right Mouse Button`)
+	- **Show Pie Menu** (default: `Shift + S`; useful to rebind if you're using Freeflight)
+- Press the **Apply**-Button to apply the new shortcuts.
+- Press the **Reset**-Button to revert all shortcuts to their default state.
+- Press the **Hide Shortcuts** button to collapse the shotcuts section (Won't disable set shortcuts)
+- Shortcuts are **project persistent** and will be saved in a hidden config file at `res://addons/godot_3d_cursor/.config/shortcuts.cfg`
+
+![Customizable Shortcuts](screenshots/settings_dock_shortcuts.jpg)
 
 ### Path3D Compatibility
 When a `Path3D` node is selected in the scene tree, adding a new point to its curve will place the point at the position of the active 3D Cursor. This requires exactly one selected node and an active 3D Cursor.

@@ -51,6 +51,7 @@ var cursor_actions: Cursor3DActions
 var command_palette_manager: Cursor3DCommandPaletteManager
 var input_manager: Cursor3DInputManager
 var raycast_engine: Cursor3DRaycastEngine
+var shortcut_manager: Cursor3DShortcutManager
 
 ## This variable holds the name of the currently active tab. It is useful to
 ## prevent triggering certain Inputs outside of the 3D tab.
@@ -88,6 +89,7 @@ func _enter_tree() -> void:
 	_preload_3d_cursor_ui_components()
 	_setup_pie_menu()
 	_setup_settings_dock()
+	_setup_shortcut_manager()
 
 
 func _exit_tree() -> void:
@@ -102,12 +104,14 @@ func _exit_tree() -> void:
 	command_palette_manager.queue_free()
 	input_manager.queue_free()
 	raycast_engine.queue_free()
+	#_remove_shortcuts()
+	shortcut_manager.queue_free()
 
 
 ### --------------------------  Setup Functions  --------------------------- ###
 
 ## This function sets up all warnings connected to the 3D Cursor.
-func _provide_3d_cursor_warnings():
+func _provide_3d_cursor_warnings() -> void:
 	if not Cursor3DRaycastEngine.check_compatibility():
 		push_warning(
 			"Godot 3D Cursor 1.4.0 requires features introduced in Godot 4.5. "
@@ -118,7 +122,7 @@ func _provide_3d_cursor_warnings():
 
 
 ## This function sets up all events necessary for the 3D Cursor to work correctly.
-func _setup_editor_events():
+func _setup_editor_events() -> void:
 	# Register the switching of tabs in the editor. We only want the
 	# 3D Cursor functionality within the 3D tab
 	main_screen_changed.connect(_on_main_screen_changed)
@@ -133,7 +137,7 @@ func _setup_editor_events():
 
 
 ## This function preloads every scene for the 3D Cursor.
-func _preload_3d_cursor_ui_components():
+func _preload_3d_cursor_ui_components() -> void:
 	# Loading the 3D Cursor scene for later instancing
 	cursor_scene = preload("uid://dfpatff4d5okj")
 	pie_menu_scene = preload("uid://igrlue2n5478")
@@ -141,7 +145,7 @@ func _preload_3d_cursor_ui_components():
 
 
 ## This function sets up the pie menu for the 3D Cursor.
-func _setup_pie_menu():
+func _setup_pie_menu() -> void:
 	# Instantiating the pie menu for the 3D Cursor commands
 	pie_menu = pie_menu_scene.instantiate()
 	pie_menu.hide()
@@ -150,17 +154,23 @@ func _setup_pie_menu():
 
 
 ## This function sets up the settings dock for the 3D Cursor.
-func _setup_settings_dock():
+func _setup_settings_dock() -> void:
 	# Instantiating the settings dock
 	settings_dock = settings_dock_scene.instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, settings_dock)
 	settings_dock.setup(self)
 
 
+func _setup_shortcut_manager() -> void:
+	shortcut_manager = Cursor3DShortcutManager.new()
+	add_child(shortcut_manager)
+	shortcut_manager.setup(self)
+
+
 ### --------------------------  Remove Functions  -------------------------- ###
 
 ## This method disconnects the editor events.
-func _disconnect_editor_events():
+func _disconnect_editor_events() -> void:
 	# Removing listeners
 	main_screen_changed.disconnect(_on_main_screen_changed)
 	scene_changed.disconnect(_on_scene_changed)
@@ -169,19 +179,19 @@ func _disconnect_editor_events():
 
 
 ## This method will free the cursor and remove the reference to the [Cursor3D] scene.
-func _free_3d_cursor():
+func _free_3d_cursor() -> void:
 	# Deleting the 3D Cursor
 	free_cursor()
 	cursor_scene = null
 
 
-func _free_all_3d_cursors():
+func _free_all_3d_cursors() -> void:
 	for cursor: Cursor3D in get_all_cursors():
 		cursor.queue_free()
 
 
 ## This method will free the pie menu and remove the reference to the [PieMenu] scene.
-func _free_pie_menu():
+func _free_pie_menu() -> void:
 	# Deleting the pie menu
 	if pie_menu != null:
 		pie_menu.queue_free()
@@ -189,12 +199,16 @@ func _free_pie_menu():
 
 
 ## This method will free the settings dock and remove the reference to the [SettingsDock] scene.
-func _free_settings_dock():
+func _free_settings_dock() -> void:
 	# Deleting the settings dock
 	if settings_dock != null:
 		remove_control_from_docks(settings_dock)
 		settings_dock.queue_free()
 	settings_dock_scene = null
+
+
+func _remove_shortcuts() -> void:
+	shortcut_manager.remove_all_shortcuts()
 
 
 ### --------------------------  Editor Bindings  --------------------------- ###

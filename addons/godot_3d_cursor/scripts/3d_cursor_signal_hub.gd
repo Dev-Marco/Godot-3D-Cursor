@@ -33,3 +33,5 @@ signal raycast_mode_changed(raycast_mode: Cursor3DRaycastEngine.RaycastMode)
 signal cursor_normal_color_changed(color: Color)
 signal cursor_active_color_changed(color: Color)
 signal cursor_selected_color_changed(color: Color)
+
+signal shortcut_loaded(shortcut: Shortcut, path: String)

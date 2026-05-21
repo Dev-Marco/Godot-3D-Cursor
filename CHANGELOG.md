@@ -13,6 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.3.0] - 2026-05-21
+
+### Added
+- A shortcuts section in the settings dock
+	- Hover over the input for each shortcut and press the desired key or mouse button (with or without modifier keys).
+	- Toggle desired modifier keys separately if necessary.
+	- Similar behavior to Godot's own shortcut system (allows Mouse Buttons as well).
+	- Available Shortcuts to be set:
+		- **Set 3D Cursor Location** (default: `Shift + Right Mouse Button`)
+		- **Create a new 3D Cursor** (default: `Shift + Ctrl + Right Mouse Button`)
+		- **Recover 3D Cursor** (default: `Shift + Alt + Right Mouse Button`)
+		- **Show Pie Menu** (default: `Shift + S`; useful to rebind if you're using Freeflight)
+	- Press the **Apply**-Button to apply the new shortcuts.
+	- Press the **Reset**-Button to revert all shortcuts to their default state.
+	- Press the **Hide Shortcuts** button to collapse the shotcuts section (Won't disable set shortcuts)
+- Shortcuts are project persistent and will be saved in a hidden config file at `res://addons/godot_3d_cursor/.config/shortcuts.cfg` (Please don't touch)
+
 ## [2.2.1] - 2026-01-30
 
 ### Fixed
