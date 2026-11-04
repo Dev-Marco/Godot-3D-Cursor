@@ -222,7 +222,13 @@ func _on_main_screen_changed(screen_name: String) -> void:
 
 
 func _on_scene_changed(scene_root: Node) -> void:
-	signal_hub.cursor_recovered.emit(last_active_cursor)
+	# The active cursor is only remembered for this editor session, so a scene opened with
+	# cursors saved in it recovers the newest one, unless it was cleared this session.
+	if not _last_active_cursors_by_scene.has(current_scene_path) and settings_dock != null \
+			and settings_dock.auto_recover_check_box.button_pressed:
+		signal_hub.cursor_recovered.emit(get_newest_cursor())
+	else:
+		signal_hub.cursor_recovered.emit(last_active_cursor)
 	cursor_counter[current_scene_path] = get_all_cursors().size()
 	# If a scene with cursors in it is loaded after restarting the engine the reference to the
 	# plugin_context might be lost. We reassign the plugin_context to every cursor without an
