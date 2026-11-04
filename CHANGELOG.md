@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.3.1] - 2026-11-04
+
+Thank you to GitHub user *reidhannaford* for providing the fixes in the pull requests 9 and 12.
+
+### Fixed
+- When a scene is instanced (with Instantiate Child Scene, by dragging it in from the FileSystem dock, or by another plugin), its own children enter the tree one by one causing everyone of them to be placed at the cursor's position.
+- Some `preload` calls might result in errors displayed in the console during engine startup.
+
 ## [2.3.0] - 2026-05-21
 
 ### Added
