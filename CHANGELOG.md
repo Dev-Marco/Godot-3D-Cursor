@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.4.0] - 2026-11-05
+
+Thank you to GitHub user *reidhannaford* for providing the fixes in the pull requests 10 and 11.
+
+### Added
+- A Constant Screen Size for 3D Cursors that can be toggled separately.
+
+### Changed
+- If the setting "Auto Recover Cursor" is enabled, opening a scene with a 3D Cursor inside will automatically assign it as the active cursor. Even works after engine restart.
+
 ## [2.3.1] - 2026-11-04
 
 Thank you to GitHub user *reidhannaford* for providing the fixes in the pull requests 9 and 12.
