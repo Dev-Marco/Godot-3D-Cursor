@@ -56,6 +56,9 @@ var shortcut_manager: Cursor3DShortcutManager
 ## This variable holds the name of the currently active tab. It is useful to
 ## prevent triggering certain Inputs outside of the 3D tab.
 var _main_screen: String = ""
+## The editor's scene tree dock, found by class name since it is not exposed to scripts.
+## New nodes are placed at the 3D Cursor when it announces them.
+var _scene_tree_dock: Node
 var cursor_counter: Dictionary[String, int] = {}
 var current_scene_path: String:
 	get:
@@ -127,10 +130,18 @@ func _setup_editor_events() -> void:
 	# 3D Cursor functionality within the 3D tab
 	main_screen_changed.connect(_on_main_screen_changed)
 	scene_changed.connect(_on_scene_changed)
-	# We want to place newly added Nodes that inherit [Node3D] at
-	# the location of the 3D Cursor. Therefore we listen to the
-	# node_added event
-	get_tree().node_added.connect(_on_node_added)
+	# We want to place newly created Nodes that inherit [Node3D] at the
+	# location of the 3D Cursor. The scene tree dock emits node_created for
+	# the nodes it makes (Create Node dialog, Instantiate Child Scene) and
+	# nothing else, so duplicates, pastes, reparents and undo/redo stay put.
+	_scene_tree_dock = _find_scene_tree_dock()
+	if _scene_tree_dock == null:
+		push_warning(
+			"Godot 3D Cursor could not find the editor's scene tree dock. "
+			+ "New nodes will not be placed at the 3D Cursor."
+		)
+	else:
+		_scene_tree_dock.connect("node_created", _on_node_created)
 	# We want to know when the user might select a Path3D node so we have to
 	# listen to any changes on the editor selection.
 	editor_selection.selection_changed.connect(_on_selection_changed)
@@ -176,7 +187,9 @@ func _disconnect_editor_events() -> void:
 	# Removing listeners
 	main_screen_changed.disconnect(_on_main_screen_changed)
 	scene_changed.disconnect(_on_scene_changed)
-	get_tree().node_added.disconnect(_on_node_added)
+	if is_instance_valid(_scene_tree_dock) \
+			and _scene_tree_dock.is_connected("node_created", _on_node_created):
+		_scene_tree_dock.disconnect("node_created", _on_node_created)
 	editor_selection.selection_changed.disconnect(_on_selection_changed)
 
 
@@ -232,33 +245,30 @@ func _on_scene_changed(scene_root: Node) -> void:
 			c.plugin_context = self
 
 
-## Connected to the node_added event of the get_tree()
-func _on_node_added(node: Node) -> void:
-	var edited_root: Node = EditorInterface.get_edited_scene_root()
-	var parent: Node = node.get_parent()
+## Connected to the scene tree dock's node_created signal. The dock emits it for
+## the node made through the Create Node dialog and for each scene it instantiates,
+## passing only the node itself, so an instanced scene keeps its own layout.
+func _on_node_created(node: Node) -> void:
 	if not cursor_available():
 		return
 	if EditorInterface.get_edited_scene_root() != cursor.owner:
 		return
-	if node.name == cursor.name:
-		return
-	if cursor.is_ancestor_of(node):
-		return
 	if not node is Node3D:
 		return
-	if node.is_in_group(CURSOR_COMPONENT_GROUP):
+	if not node.is_inside_tree():
 		return
-	# Only move the top node of what was added into the edited scene. An
-	# instanced scene's own children enter the tree right after its root, and
-	# snapping each of them to the cursor too collapses the scene onto one
-	# point. Nodes added outside the edited scene, such as another plugin's
-	# previews, are left alone.
-	if parent != edited_root and (parent == null or parent.owner != edited_root):
-		return
-	# Apply the position of the new node to the 3D Cursors position if the
-	# 3D cursor is available, the node is not the 3D cursor itself, the node
-	# is no descendant of the 3D Cursor and the node inherits [Node3D]
 	node.global_position = cursor.global_position
+
+
+## Finds the editor's scene tree dock. SceneTreeDock is an editor-internal class, so it
+## has no script binding; the editor's control tree is searched for it by class name.
+func _find_scene_tree_dock() -> Node:
+	var docks: Array[Node] = EditorInterface.get_base_control().find_children(
+		"*", "SceneTreeDock", true, false
+	)
+	if docks.is_empty():
+		return null
+	return docks.front()
 
 
 ### -------------------------  3D Cursor Actions  -------------------------- ###
