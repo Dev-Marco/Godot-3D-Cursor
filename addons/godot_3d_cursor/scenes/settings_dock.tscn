@@ -77,6 +77,22 @@ min_value = 0.1
 step = 0.1
 value = 1.0
 
+[node name="ConstantScreenSize" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=1160040383]
+layout_mode = 2
+tooltip_text = "Keeps the 3D Cursor the same size on screen however near or far the camera is, like Blender's 3D cursor"
+
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/ConstantScreenSize" unique_id=211575361]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Constant Screen Size"
+horizontal_alignment = 2
+
+[node name="ConstantScreenSizeCheckBox" type="CheckBox" parent="ScrollContainer/MarginContainer/VBoxContainer/ConstantScreenSize" unique_id=1522832314]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "On"
+
 [node name="ScaleAffectLabels" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer" unique_id=1710460476]
 layout_mode = 2
 
@@ -763,6 +779,7 @@ text = "Reset"
 
 [connection signal="pressed" from="ScrollContainer/MarginContainer/VBoxContainer/3DCursorSettingsHBox/InfoButton" to="." method="_on_info_button_pressed"]
 [connection signal="value_changed" from="ScrollContainer/MarginContainer/VBoxContainer/Scale/ScaleSpinBox" to="." method="_on_scale_spin_box_value_changed"]
+[connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ConstantScreenSize/ConstantScreenSizeCheckBox" to="." method="_on_constant_screen_size_check_box_toggled"]
 [connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ScaleAffectLabels/ScaleAffectLabelsCheckBox" to="." method="_on_scale_affect_labels_check_box_toggled"]
 [connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ShowTitleLabel/ShowTitleLabelCheckBox" to="." method="_on_show_title_label_check_box_toggled"]
 [connection signal="toggled" from="ScrollContainer/MarginContainer/VBoxContainer/ShowNumberLabel/ShowNumberLabelCheckBox" to="." method="_on_show_number_label_check_box_toggled"]

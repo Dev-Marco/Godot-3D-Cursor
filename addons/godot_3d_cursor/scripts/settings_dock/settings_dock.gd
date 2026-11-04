@@ -69,6 +69,9 @@ var set_3d_cursor_location_shortcut: String = ""
 @onready var toggle_cursor_button: Button = %ToggleCursorButton
 ## The spinner for the scale setting of the [Cursor3D].
 @onready var scale_spin_box: SpinBox = %ScaleSpinBox
+## The setting that toggles whether the active [Cursor3D] keeps the same size
+## on screen however far away it is.
+@onready var constant_screen_size_check_box: CheckBox = %ConstantScreenSizeCheckBox
 ## The setting that toggles whether the labels of the active [Cursor3D] scale
 ## with it.
 @onready var scale_affect_labels_check_box: CheckBox = %ScaleAffectLabelsCheckBox
@@ -326,6 +329,7 @@ func _focus_selection_in_editor(zoom_to: bool = false) -> void:
 
 func reset_cursor_settings() -> void:
 	scale_spin_box.set_value_no_signal(1.0)
+	constant_screen_size_check_box.set_pressed_no_signal(false)
 	scale_affect_labels_check_box.set_pressed_no_signal(true)
 	show_title_label_check_box.set_pressed_no_signal(true)
 	show_number_label_check_box.set_pressed_no_signal(true)
@@ -336,6 +340,7 @@ func get_settings_from_active_cursor() -> void:
 	if cursor == null:
 		return
 	scale_spin_box.set_value_no_signal(cursor.size_scale)
+	constant_screen_size_check_box.set_pressed_no_signal(cursor.constant_screen_size)
 	scale_affect_labels_check_box.set_pressed_no_signal(cursor.scale_affect_labels)
 	show_title_label_check_box.set_pressed_no_signal(cursor.show_title_label)
 	show_number_label_check_box.set_pressed_no_signal(cursor.show_number_label)
@@ -457,6 +462,12 @@ func _on_scale_spin_box_value_changed(value: float) -> void:
 	if plugin_context.cursor == null:
 		return
 	plugin_context.cursor.size_scale = value
+
+
+func _on_constant_screen_size_check_box_toggled(toggled_on: bool) -> void:
+	if plugin_context.cursor == null:
+		return
+	plugin_context.cursor.constant_screen_size = toggled_on
 
 
 func _on_scale_affect_labels_check_box_toggled(toggled_on: bool) -> void:

@@ -7,6 +7,12 @@ var size_scale: float = 1.0:
 	set(value):
 		size_scale = value
 		set_meta("size_scale", value)
+## This setting decides whether the [Cursor3D] keeps the same size on screen
+## however near or far the editor camera is, like Blender's 3D cursor.
+var constant_screen_size: bool = false:
+	set(value):
+		constant_screen_size = value
+		set_meta("constant_screen_size", value)
 ## This setting decides whether the label with the text '3D Cursor' should
 ## be displayed
 var show_title_label: bool = true:
@@ -37,6 +43,13 @@ var signal_hub: Cursor3DSignalHub:
 ## The ID of the cursor
 var cursor_id: int = -1
 
+# The share of the editor viewport's height the [Cursor3D] covers at a
+# size_scale of 1 when constant_screen_size is on.
+const SCREEN_HEIGHT: float = 0.06
+# The height of the cursor's texture in world units at a scale of 1
+# (512 px at the Sprite3D's default pixel_size of 0.01).
+const TEXTURE_HEIGHT: float = 5.12
+
 # The standard scale of the 3D Cursor. This size is chosen because of the
 # size of the .png used for the cursor. Please don't touch (private var)
 var _scale: float = 0.25
@@ -66,6 +79,8 @@ func _enter_tree() -> void:
 		cursor_id = get_meta("cursor_id")
 	if has_meta("size_scale"):
 		size_scale = get_meta("size_scale")
+	if has_meta("constant_screen_size"):
+		constant_screen_size = get_meta("constant_screen_size")
 	if has_meta("show_title_label"):
 		show_title_label = get_meta("show_title_label")
 	if has_meta("show_number_label"):
@@ -97,7 +112,10 @@ func _process(delta: float) -> void:
 	number_label.visible = show_number_label
 
 	# Set the scale of the 3D Cursor
-	sprite_3d.scale = Vector3(_scale * size_scale, _scale * size_scale, _scale * size_scale)
+	if constant_screen_size and Engine.is_editor_hint():
+		sprite_3d.scale = Vector3.ONE * _get_screen_scale() * size_scale
+	else:
+		sprite_3d.scale = Vector3(_scale * size_scale, _scale * size_scale, _scale * size_scale)
 	# Scale the labels alongside the cursor
 	if scale_affect_labels:
 		title_label.scale = Vector3.ONE * 4
@@ -125,6 +143,7 @@ func setup(plugin_context: Plugin3DCursor, cursor_id: int) -> void:
 	self.cursor_id = cursor_id
 	set_meta("cursor_id", cursor_id)
 	set_meta("size_scale", size_scale)
+	set_meta("constant_screen_size", constant_screen_size)
 	set_meta("show_title_label", show_title_label)
 	set_meta("show_number_label", show_number_label)
 	set_meta("scale_affect_labels", scale_affect_labels)
@@ -133,6 +152,20 @@ func setup(plugin_context: Plugin3DCursor, cursor_id: int) -> void:
 	_set_normal_color(plugin_context.settings_dock.cursor_normal_color)
 	_set_active_color(plugin_context.settings_dock.cursor_active_color)
 	_set_selected_color(plugin_context.settings_dock.cursor_selected_color)
+
+
+## Returns the scale at which the [Cursor3D] covers [constant SCREEN_HEIGHT] of
+## the editor viewport's height at its distance from the editor camera.
+func _get_screen_scale() -> float:
+	var camera: Camera3D = EditorInterface.get_editor_viewport_3d().get_camera_3d()
+	if camera == null:
+		return _scale
+	# Half the height of what the camera sees at the cursor's depth
+	var half_height: float = camera.size * 0.5
+	if camera.projection != Camera3D.PROJECTION_ORTHOGONAL:
+		var depth: float = maxf(-camera.to_local(global_position).z, camera.near)
+		half_height = depth * tan(deg_to_rad(camera.fov) * 0.5)
+	return SCREEN_HEIGHT * half_height * 2.0 / TEXTURE_HEIGHT
 
 
 func _connect_signals() -> void:
