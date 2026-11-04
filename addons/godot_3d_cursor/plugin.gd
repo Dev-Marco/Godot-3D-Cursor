@@ -86,7 +86,7 @@ func _enter_tree() -> void:
 	add_child(raycast_engine)
 	_provide_3d_cursor_warnings()
 	_setup_editor_events()
-	_preload_3d_cursor_ui_components()
+	_load_3d_cursor_ui_components()
 	_setup_pie_menu()
 	_setup_settings_dock()
 	_setup_shortcut_manager()
@@ -136,12 +136,14 @@ func _setup_editor_events() -> void:
 	editor_selection.selection_changed.connect(_on_selection_changed)
 
 
-## This function preloads every scene for the 3D Cursor.
-func _preload_3d_cursor_ui_components() -> void:
-	# Loading the 3D Cursor scene for later instancing
-	cursor_scene = preload("uid://dfpatff4d5okj")
-	pie_menu_scene = preload("uid://igrlue2n5478")
-	settings_dock_scene = preload("uid://dt0ngqiwc0150")
+## This function loads every scene for the 3D Cursor.
+func _load_3d_cursor_ui_components() -> void:
+	# Loading the 3D Cursor scene for later instancing. These are loaded at
+	# runtime rather than preloaded: their scripts are typed against
+	# Plugin3DCursor, so a preload here is a load cycle that fails with "Busy".
+	cursor_scene = load("uid://dfpatff4d5okj")
+	pie_menu_scene = load("uid://igrlue2n5478")
+	settings_dock_scene = load("uid://dt0ngqiwc0150")
 
 
 ## This function sets up the pie menu for the 3D Cursor.
