@@ -30,12 +30,15 @@ var scale_affect_labels: bool = true:
 	set(value):
 		scale_affect_labels = value
 		set_meta("scale_affect_labels", value)
-## The reference to the plugin core.
-var plugin_context: Plugin3DCursor:
+## The reference to the plugin core. This and [member signal_hub] are typed as
+## [Node] because the plugin's classes depend on editor classes, which do not
+## exist in an exported project. Naming them here would keep this script from
+## loading there.
+var plugin_context: Node:
 	set(context):
 		plugin_context = context
 		_connect_signals()
-var signal_hub: Cursor3DSignalHub:
+var signal_hub: Node:
 	get:
 		if plugin_context == null:
 			return null
@@ -71,7 +74,7 @@ var _selected_color: Color = Color.hex(0x00F2FFFF)
 func _init() -> void:
 	if not Engine.is_editor_hint():
 		return
-	EditorInterface.get_selection().selection_changed.connect(_on_selection_changed)
+	_get_editor_interface().get_selection().selection_changed.connect(_on_selection_changed)
 
 
 func _enter_tree() -> void:
@@ -95,7 +98,7 @@ func _process(delta: float) -> void:
 	if not Engine.is_editor_hint():
 		hide()
 	# If the plugin is disabled remove the cursor
-	if Engine.is_editor_hint() and not EditorInterface.is_plugin_enabled("godot_3d_cursor"):
+	if Engine.is_editor_hint() and not _get_editor_interface().is_plugin_enabled("godot_3d_cursor"):
 		queue_free()
 
 	if not _initialized and cursor_id != -1:
@@ -138,7 +141,7 @@ func _process(delta: float) -> void:
 
 
 ## Sets up the [member Cursor3D.plugin_context]
-func setup(plugin_context: Plugin3DCursor, cursor_id: int) -> void:
+func setup(plugin_context: Node, cursor_id: int) -> void:
 	self.plugin_context = plugin_context
 	self.cursor_id = cursor_id
 	set_meta("cursor_id", cursor_id)
@@ -157,7 +160,7 @@ func setup(plugin_context: Plugin3DCursor, cursor_id: int) -> void:
 ## Returns the scale at which the [Cursor3D] covers [constant SCREEN_HEIGHT] of
 ## the editor viewport's height at its distance from the editor camera.
 func _get_screen_scale() -> float:
-	var camera: Camera3D = EditorInterface.get_editor_viewport_3d().get_camera_3d()
+	var camera: Camera3D = _get_editor_interface().get_editor_viewport_3d().get_camera_3d()
 	if camera == null:
 		return _scale
 	# Half the height of what the camera sees at the cursor's depth
@@ -166,6 +169,10 @@ func _get_screen_scale() -> float:
 		var depth: float = maxf(-camera.to_local(global_position).z, camera.near)
 		half_height = depth * tan(deg_to_rad(camera.fov) * 0.5)
 	return SCREEN_HEIGHT * half_height * 2.0 / TEXTURE_HEIGHT
+
+
+func _get_editor_interface() -> Object:
+	return Engine.get_singleton(&"EditorInterface")
 
 
 func _connect_signals() -> void:
