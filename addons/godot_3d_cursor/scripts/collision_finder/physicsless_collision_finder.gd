@@ -202,13 +202,6 @@ func get_closest_collision(from: Vector3, to: Vector3, editor_camera: Camera3D) 
 		elif candidate is CSGShape3D:
 			hit = await _hit_csg_segment(candidate, from, to)
 
-		# If the Terrain3D plugin is installed we check our hit againt the Terrain-Checker as well
-		if ClassDB.class_exists("Terrain3D"):
-			hit = Terrain3DExtension.get_closest_hit_point(
-				candidate.get_tree().get_nodes_in_group("Terrain3D"),
-				from, to
-			)
-
 		# When the current hit is empty we go to the next iteration of the loop
 		if hit.is_empty():
 			continue
@@ -220,6 +213,17 @@ func get_closest_collision(from: Vector3, to: Vector3, editor_camera: Camera3D) 
 		if distance < best_dist:
 			best_dist = distance
 			best_hit = hit
+
+	# If the Terrain3D plugin is installed we check our hit againt the Terrain-Checker as well
+	if ClassDB.class_exists("Terrain3D"):
+		var terrain_hit = Terrain3DExtension.get_closest_hit_point(
+			editor_camera.get_tree().get_nodes_in_group("Terrain3D"),
+			from, to
+		)
+
+		if not terrain_hit.is_empty():
+			if from.distance_to(terrain_hit["position"]) < best_dist:
+				best_hit = terrain_hit
 
 	# After iterating over all candidates we return the best hit
 	return best_hit

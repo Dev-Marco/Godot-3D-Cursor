@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > - **1.4.x (LTS)** supports **Godot 4.2+** and receives bug fixes only.
 > - **2.x.x** supports **Godot 4.5+** and receives new features and improvements.
 
+## [2.4.1] - 2026-11-27
+
+### Fixed
+- The cursor can not be placed if the Terrain3D plugin is installed but no Terrain3D instance is present in the scene. Fixes #17.
+
 ## [2.4.0] - 2026-11-05
 
 Thank you to GitHub user *reidhannaford* for providing the fixes in the pull requests 10 and 11.
